@@ -1,6 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Routes from './Routes.js'
 
 class App extends React.Component{
   render(){
@@ -8,6 +8,7 @@ class App extends React.Component{
         <div className="App">
           <header className="App-header">
             Drinks with Friends
+              <Routes/>
           </header>
         </div>
     );
