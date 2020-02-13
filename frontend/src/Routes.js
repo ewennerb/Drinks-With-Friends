@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, BrowserRouter } from "react-router-dom";
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
@@ -9,12 +9,15 @@ export default class Routes extends React.Component {
 
     render(){
         return (
-            <Switch>
-                <Route exact path="/" component={Search} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/register" compnent={Register}/>
-                <Route exact path="/profile" component={Profile}/>
-            </Switch>
+            <BrowserRouter>
+                <Switch>
+                    <Route exact path="/" render={() => Search} />
+                    <Route exact path="/login" render={() => Login} />
+                    <Route exact path="/register" render={() => Register}/>
+                    <Route exact path="/profile" render={() => Profile}/>
+                </Switch>
+            </BrowserRouter>
+
         );
     }
 }
