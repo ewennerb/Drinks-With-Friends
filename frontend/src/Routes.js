@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
-import profile from "./pages/Profile"
+import Profile from "./pages/Profile"
 
 export default class Routes extends React.Component {
 
