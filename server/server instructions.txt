@@ -1,0 +1,12 @@
+INSTALL JAVA / MAVEN
+Download java jdk 11 from oracle
+Install java jdk 11
+Add JAVA_HOME as an evniroment variable with value of where jdk 11 is installed
+Add %JAVA_HOME%\bin to PATH
+Download maven (apache-maven-3.6.3)
+add apache-maven-3.6.3\bin to path also
+type "java --version" and "mvn -v" to ensure it is correct
+
+RUN SERVER
+mvn dependency:tree	-fix and reload dependencies
+mvn spring-boot:run	-run server
