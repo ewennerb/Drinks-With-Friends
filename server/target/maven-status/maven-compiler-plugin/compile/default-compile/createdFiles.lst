@@ -1,1 +1,3 @@
-Example.class
+server\Greeting\GreetingController.class
+server\Greeting\Greeting.class
+server\main.class
