@@ -8,5 +8,8 @@ add apache-maven-3.6.3\bin to path also
 type "java --version" and "mvn -v" to ensure it is correct
 
 RUN SERVER
-mvn dependency:tree	-fix and reload dependencies
-mvn spring-boot:run	-run server
+mvn dependency:tree	//fix and reload dependencies
+mvn spring-boot:run	//run server
+
+STOP SERVER
+taskkill /PID %PID% /F
