@@ -1,9 +1,19 @@
 package server.Drink;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
 
 @RestController
 public class DrinkController {
+
+    private ArrayList<String> DOTD;
+
+    DrinkController(ArrayList<String> dotd) {
+        this.DOTD = dotd;
+    }
+
+    
 
     @GetMapping("/drinks")
     public String findAll() {
@@ -26,6 +36,12 @@ public class DrinkController {
     @DeleteMapping("/drinks/{name}")
     public String deleteDrink() {
         //find a single drink
+        return "drink";
+    }
+
+    @GetMapping("/drinks/dotd")
+    public String drinkOfTheDay() {
+        //pull the drink of the day
         return "drink";
     }
 }
