@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css';
 
 
 class Login extends React.Component{
