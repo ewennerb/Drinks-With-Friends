@@ -15,11 +15,14 @@ public class main {
 		String url = "jdbc:mysql://localhost:3306/";
 		Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 		Statement smt = conn.createStatement();
-		ResultSet rs = smt.executeQuery("select userName from test_schema.user where userId=1");
-		String all="";
+		ResultSet rs = smt.executeQuery("select * from test_schema.user");
+		String all="UserName\n\nPassword<br>";
 		while (rs.next())
 		{
 			all+=rs.getString("userName");
+			all+="\n\n";
+			all+=rs.getString("password");
+			all+="<br>";
 			System.out.println(all);
 		}
 		conn.close();
@@ -29,8 +32,6 @@ public class main {
 		return "FAIL";
 	}
 
-
-        //return "Hello World!";
     }
 
     public static void main(String[] args) {
