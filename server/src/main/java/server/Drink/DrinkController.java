@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping(path="/drink")
 public class DrinkController {
 
     private ArrayList<String> DOTD;
@@ -15,31 +16,31 @@ public class DrinkController {
 
     
 
-    @GetMapping("/drinks")
+    @GetMapping("/")
     public String findAll() {
         //find a single drink
-        return "ALL";
+        return "TESt ALL";
     }
 
-    @GetMapping("/drinks/{name}")
+    @GetMapping("/{name}")
     public String findDrink() {
         //find a single drink
         return "drink";
     }
 
-    @PostMapping("/drinks")
+    @PostMapping("/")
     public String saveDrink(@RequestBody String savedDrink) {
         //savea single drink
         return "success";
     }
 
-    @DeleteMapping("/drinks/{name}")
+    @DeleteMapping("/{name}")
     public String deleteDrink() {
         //find a single drink
         return "drink";
     }
 
-    @GetMapping("/drinks/dotd")
+    @GetMapping("/dotd")
     public String drinkOfTheDay() {
         //pull the drink of the day
         return "drink";
