@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 
 
@@ -28,9 +28,40 @@ class Login extends React.Component{
                         Login
                     </Button>
 
-                    <Button onClick={() => this.forgotPasswordClicked()} attached='bottom' color='grey' fluid size='small'>
-                        Forgot Password?
-                    </Button>
+
+                    <Modal //Begin Modal
+                        //open={open}
+                        onOpen={(e)=> this.openModal}
+                        onClose={this.close}
+                        size='small'
+                        trigger={
+                        <Button primary icon >
+                            Forgot Username/Password
+                        </Button>
+                        }
+                    >
+                        <Modal.Content>
+                            {/* This is where the logic for username/password shoulr go -- Paul */}
+                            <Header as='h2' color='grey' textAlign='center'>
+                                Account Reset
+                            </Header>
+
+                            <Form size='large'>
+                                <Segment stacked>
+                                    <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
+
+                                    <Button onClick={() => this.sendEmail()} color='grey' fluid size='large' >
+                                        Send Email
+                                    </Button>
+                                </Segment>
+                            </Form>
+                        </Modal.Content>
+
+                        <Modal.Actions>
+                            <Button icon='check' content='Close Window' onClick={this.onOpen} />
+                        </Modal.Actions> 
+                    </Modal> 
+
 
                     </Segment>
                  </Form>
@@ -43,14 +74,34 @@ class Login extends React.Component{
     loginClicked(){
         console.log('Login Clicked')
     }
-
-    forgotPasswordClicked(e){
-        console.log('Forgot Password Clicked')
-        
+    sendEmail(){
+        console.log('Email Sent')
+    }
+    openModal(e){
+        e.setState({visible:true})
+    }
+    closeModal(e){
+        e.setState({visible:false})
     }
 
-
-
 }
+
+
+// const ModalExampleMultiple = () => (
+//     <Modal trigger={<Button>Multiple Modals</Button>}>
+//       <Modal.Header>Modal #1</Modal.Header>
+//       {/* <Modal.Content image>
+//         <div className='image'>
+//           <Icon name='right arrow' />
+//       </div> */}
+//         <Modal.Description>
+//           <p>We have more to share with you. Follow us along to modal 2</p>
+//         </Modal.Description>
+//       {/* </Modal.Content>
+//       <Modal.Actions>
+//         <NestedModal />
+//       </Modal.Actions> */}
+//     </Modal>
+//   )
 
 export default Login
