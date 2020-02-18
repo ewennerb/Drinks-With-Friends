@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Form, Grid, Message, Segment, Icon} from "semantic-ui-react";
+import {Button, Form, Grid, Message, Segment, Icon, Header} from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 
@@ -13,6 +13,7 @@ export default class Register extends React.Component {
         this.handleConfChange = this.handleConfChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
+            email: '',
             username: '',
             password: '',
             conf_pass: '',
@@ -57,6 +58,11 @@ export default class Register extends React.Component {
     };
 
 
+    async handleEmailChange(event){
+        const value = event.target.value;
+        await this.setState({email: value});
+    };
+
     //Handles changes that happen to the 'username' field
     async handleUserChange(event) {
         const value = event.target.value;
@@ -82,64 +88,77 @@ export default class Register extends React.Component {
     render() {
 
         let hidden = true;
-        if (this.state.msg !== ""){
+        if (this.state.msg !== "") {
             hidden = false;
         }
 
         return (
-                    <Grid textAlign='center' style={{width: '475px'}} verticalAlign='middle' inverted>
-                        <Grid.Column>
-                            <Form size='big' widths={'equal'}>
-                                <Segment>
-                                    Create an Account
-                                    <br/>
-                                    <Form.Input
-                                        fluid icon='user'
-                                        iconPosition='left'
-                                        placeholder='Username'
-                                        required={true}
-                                        value={this.state.username}
-                                        onChange={this.handleUserChange}
-                                        width='200px'
-                                        size="large"
-                                    />
-                                    <Form.Input
-                                        fluid icon='lock'
-                                        iconPosition='left'
-                                        placeholder='Password'
-                                        type='password'
-                                        required={true}
-                                        value={this.state.password}
-                                        onChange={this.handlePassChange}
-                                        width="200px"
-                                        size="large"
-                                    />
-                                    <Form.Input
-                                        fluid icon='lock'
-                                        iconPosition='left'
-                                        placeholder='Confirm Password'
-                                        type='password'
-                                        required={true}
-                                        value={this.state.conf_pass}
-                                        onChange={this.handleConfChange}
-                                        width="200px"
-                                        size="large"
-                                    />
-                                    <Button color='yellow' fluid size='large' onClick={this.handleSubmit}>
-                                        Register
-                                    </Button>
-                                    <Message hidden={hidden} color='red'>
-                                        {this.state.msg}
-                                    </Message>
-                                    <br/>
-                                    <Message>
-                                        <Icon name='help' />
-                                        Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
-                                    </Message>
-                                </Segment>
-                            </Form>
-                        </Grid.Column>
-                    </Grid>
+            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+                <Grid.Column style={{maxWidth: 450}}>
+                    <Form size='big' widths={'equal'}>
+                        <Segment textAlign="center">
+                            <Header as='h2' color='grey' textAlign='center'>
+                               Register for an Account
+                            </Header>
+
+                            <br/>
+                            <Form.Input
+                                fluid icon='address book'
+                                iconPosition='left'
+                                placeholder='Email'
+                                required={true}
+                                value={this.state.email}
+                                onChange={this.handleEmailChange}
+                                width='200px'
+                                size="large"
+                            />
+                            <Form.Input
+                                fluid icon='user'
+                                iconPosition='left'
+                                placeholder='Username'
+                                required={true}
+                                value={this.state.username}
+                                onChange={this.handleUserChange}
+                                width='200px'
+                                size="large"
+                            />
+                            <Form.Input
+                                fluid icon='lock'
+                                iconPosition='left'
+                                placeholder='Password'
+                                type='password'
+                                required={true}
+                                value={this.state.password}
+                                onChange={this.handlePassChange}
+                                width="200px"
+                                size="large"
+                            />
+                            <Form.Input
+                                fluid icon='lock'
+                                iconPosition='left'
+                                placeholder='Confirm Password'
+                                type='password'
+                                required={true}
+                                value={this.state.conf_pass}
+                                onChange={this.handleConfChange}
+                                width="200px"
+                                size="large"
+                            />
+                            <Button color='yellow' fluid size='large' onClick={this.handleSubmit}>
+                                Register
+                            </Button>
+                            <Message hidden={hidden} color='red'>
+                                {this.state.msg}
+                            </Message>
+                            <br/>
+                            <Message>
+                                <Icon name='help'/>
+                                Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
+                            </Message>
+                        </Segment>
+                    </Form>
+                </Grid.Column>
+            </Grid>
         )
     }
 }
