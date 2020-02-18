@@ -7,7 +7,6 @@ class App extends React.Component{
   render(){
     return (
         <div className="App">
-            <h1>DRINKS WITH FRIENDS</h1>
             <Routes/>
         </div>
     );

@@ -11,31 +11,37 @@ import Profile from "./pages/Profile"
 
 import {
     Container,
+    Grid,
     Menu,
     Header,
     Icon,
+    GridColumn,
 
 } from "semantic-ui-react"
 
 export default class Routes extends React.Component {
-
+    
     render(){
         return (
-
             <div className="Routes">
+            <Menu borderless attached="top" size="huge">
+                <Menu.Item
+                icon="beer"
+                content="Drinks with Friends"        
+                />
+                <Menu.Item
+                icon="user circle outline"
+                position="right"
+                size="large"
+                />
+                <Menu.Item
+                content="Username"
+                />
+                <Menu.Item
+                icon="minus"
+                />
+            </Menu>
 
-            <Menu attached="top">
-                 <Icon name="home" position="left" />
-                
-                <Menu.Menu>
-
-                </Menu.Menu>
-            </Menu>   
-
-            <Header as='h2' icon='plug' content='Uptime Guarantee' />
-            <Container>
-                <h1>peepee</h1>
-            </Container>
 
             <BrowserRouter>
 
