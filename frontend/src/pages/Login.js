@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
+import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 
 
@@ -24,20 +25,21 @@ class Login extends React.Component{
                         type='password'
                     />
 
-                    <Button onClick={() => this.loginClicked()} color='grey' fluid size='large' >
+                    <Button onClick={() => this.loginClicked()} color='blue' fluid size='large' >
                         Login
                     </Button>
 
 
                     <Modal //Begin Modal
-                        //open={open}
-                        onOpen={(e)=> this.openModal}
+                        onOpen={this.open}
                         onClose={this.close}
                         size='small'
                         trigger={
-                        <Button primary icon >
-                            Forgot Username/Password
-                        </Button>
+                        <Message>
+                            {/* Link to open Modal */}
+                            <Icon name='help'/>
+                            Forgot Username or Password?&nbsp;<Link to='/login'>Click here</Link>&nbsp;to reset.
+                        </Message>
                         }
                     >
                         <Modal.Content>
@@ -49,8 +51,8 @@ class Login extends React.Component{
                             <Form size='large'>
                                 <Segment stacked>
                                     <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
-
-                                    <Button onClick={() => this.sendEmail()} color='grey' fluid size='large' >
+                                    {/* Login Button */}
+                                    <Button onClick={() => this.sendEmail()} color='blue' fluid size='large' >
                                         Send Email
                                     </Button>
                                 </Segment>
@@ -58,7 +60,7 @@ class Login extends React.Component{
                         </Modal.Content>
 
                         <Modal.Actions>
-                            <Button icon='check' content='Close Window' onClick={this.onOpen} />
+                            <Button icon='check' content='Close Window' onClick={this.close} />
                         </Modal.Actions> 
                     </Modal> 
 
@@ -77,12 +79,7 @@ class Login extends React.Component{
     sendEmail(){
         console.log('Email Sent')
     }
-    openModal(e){
-        e.setState({visible:true})
-    }
-    closeModal(e){
-        e.setState({visible:false})
-    }
+    
 
 }
 
