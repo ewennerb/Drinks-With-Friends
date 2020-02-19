@@ -1,3 +1,5 @@
 #big gitignore guy
 /.idea
 *.iml
+/server/target/
+
