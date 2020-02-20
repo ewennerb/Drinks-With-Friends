@@ -10,7 +10,7 @@ public class main {
 
     @RequestMapping("/")
     String home() {
-
+	
 	try{
 		String url = "jdbc:mysql://localhost:3306/";
 		Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");

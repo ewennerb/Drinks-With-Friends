@@ -3,6 +3,7 @@ package server.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping(path="/user")
 public class UserController {
 
     @GetMapping("/user")
@@ -11,19 +12,19 @@ public class UserController {
         return "ALL";
     }
 
-    @GetMapping("/user/{name}")
+    @GetMapping("/{name}")
     public String findDrink() {
         //find a single user
         return "user";
     }
 
-    @PostMapping("/user")
+    @PostMapping("/")
     public String saveDrink(@RequestBody String username) {
         //save a single user
         return "success";
     }
 
-    @DeleteMapping("/user/{name}")
+    @DeleteMapping("/{name}")
     public String deleteDrink() {
         //find a single user
         return "success";
