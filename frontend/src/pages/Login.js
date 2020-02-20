@@ -4,7 +4,31 @@ import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 
 
-class Login extends React.Component{
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.state = {modalOpen: false};
+    }
+
+    handleClose() {
+        this.setState(
+            {
+                modalOpen: false
+            }
+        )
+    }
+
+    handleOpen() {
+        this.setState(
+            {
+                modalOpen: true
+            }
+        )
+    }
+
+
     render(){
         return(
             <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
@@ -29,18 +53,16 @@ class Login extends React.Component{
                         Login
                     </Button>
 
-
-                    <Modal //Begin Modal
-                        onOpen={this.open}
-                        onClose={this.close}
-                        size='small'
-                        trigger={
                         <Message>
                             {/* Link to open Modal */}
                             <Icon name='help'/>
-                            Forgot Username or Password?&nbsp;<Link to='/login'>Click here</Link>&nbsp;to reset.
+                            Forgot Username or Password?&nbsp;<a onClick={this.handleOpen}>Click here</a>&nbsp;to reset.
                         </Message>
-                        }
+
+                    <Modal //Begin Modal
+                        open={this.state.modalOpen}
+                        onClose={this.handleClose}
+                        size='small'
                     >
                         <Modal.Content>
                             {/* This is where the logic for username/password shoulr go -- Paul */}
@@ -60,7 +82,7 @@ class Login extends React.Component{
                         </Modal.Content>
 
                         <Modal.Actions>
-                            <Button icon='check' content='Close Window' onClick={this.close} />
+                            <Button icon='check' content='Close Window' onClick={this.handleClose.bind(this)} />
                         </Modal.Actions> 
                     </Modal> 
 
