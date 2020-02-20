@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 
 
-import "../css/Profile.css"
+//import "../css/Profile.css"
 
 class Profile extends Component{
   constructor(props){
@@ -38,7 +38,10 @@ class Profile extends Component{
             peepee
             </Grid.Column>
 
-            <Grid.Column color="red"/>
+            <Grid.Column color="red">
+              edit profile
+
+            </Grid.Column>/>
           </Grid.Row>
 
           <Grid.Row>
