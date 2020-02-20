@@ -66,8 +66,6 @@ export default class Routes extends React.Component {
                         </Segment>
                     </Sidebar.Pusher>
                 </Sidebar.Pushable>
-
-
             </div>
 
         );

@@ -3,11 +3,14 @@ package server.Drink;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import server.SQL.DrinkSQL;
 
 @RestController
 public class DrinkController {
 
     private ArrayList<String> DOTD;
+	
+
 
     DrinkController(ArrayList<String> dotd) {
         this.DOTD = dotd;
@@ -18,7 +21,8 @@ public class DrinkController {
     @GetMapping("/drinks")
     public String findAll() {
         //find a single drink
-        return "ALL";
+		DrinkSQL test = new DrinkSQL();
+		return test.getAllDrinks();
     }
 
     @GetMapping("/drinks/{name}")
