@@ -4,7 +4,7 @@ import {
   Menu,
   Grid,
   Icon,
-  
+  Button,
 
 } from "semantic-ui-react";
 
@@ -39,6 +39,12 @@ class Profile extends Component{
             </Grid.Column>
 
             <Grid.Column color="red">
+              <Button animated="fade">
+                <Button.Content visible>Edit Profile</Button.Content>
+                <Button.Content hidden>
+                  <Icon name="edit"/>
+                </Button.Content>
+              </Button>
               edit profile
 
             </Grid.Column>/>
