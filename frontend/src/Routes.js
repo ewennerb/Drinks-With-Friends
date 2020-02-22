@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
-import Profile from "./pages/Profile"
+import Profile from "./pages/MyProfile"
 
 import {
     Menu,
