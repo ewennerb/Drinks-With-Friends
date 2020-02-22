@@ -26,14 +26,16 @@ public class DrinkController {
     }
 
     @GetMapping("/drinks/{name}")
-    public String findDrink() {
+    public String findDrink(@PathVariable String name) {
         //find a single drink
-        return "drink";
+		System.out.println("Drink: "+ name);
+		DrinkSQL drink = new DrinkSQL();
+        return drink.getDrink(name);
     }
 
     @PostMapping("/drinks")
     public String saveDrink(@RequestBody String savedDrink) {
-        //savea single drink
+        //save a single drink
         return "success";
     }
 
