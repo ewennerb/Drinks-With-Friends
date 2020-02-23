@@ -123,4 +123,38 @@ public class UserSQL {
 		}
 	}
 
+	public boolean updatePassword(String userName, String oldPass, String newPass){
+		try{
+			//first check oldPass is what is in DB
+			String query = "select * from test_schema.user where userName = \""+userName+"\"";
+			rs = smt.executeQuery(query);
+
+			String p = " ";
+
+			while (rs.next()){
+				System.out.println("output: "+rs.getString("userName"));
+				p = rs.getString("password");
+			}
+
+
+			//then check if queried password is equal to inputted old password
+			System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
+			if (!p.equals(oldPass)){
+				System.out.println("Old password not correct.");
+				return false;
+			}
+			
+			//if it is, then update with new password
+			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+			
+			
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed updating password.");
+			return false;
+		}
+	}
+
 }
