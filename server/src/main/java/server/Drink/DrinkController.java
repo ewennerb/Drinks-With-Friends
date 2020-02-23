@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import server.SQL.DrinkSQL;
 
 @RestController
+@RequestMapping(path="/drink")
 public class DrinkController {
 
     private ArrayList<String> DOTD;
@@ -18,14 +19,14 @@ public class DrinkController {
 
     
 
-    @GetMapping("/drinks")
+    @GetMapping("/")
     public String findAll() {
         //find a single drink
 		DrinkSQL test = new DrinkSQL();
 		return test.getAllDrinks();
     }
 
-    @GetMapping("/drinks/{name}")
+    @GetMapping("/{name}")
     public String findDrink(@PathVariable String name) {
         //find a single drink
 		System.out.println("Drink: "+ name);
@@ -33,19 +34,19 @@ public class DrinkController {
         return drink.getDrink(name);
     }
 
-    @PostMapping("/drinks")
+    @PostMapping("/")
     public String saveDrink(@RequestBody String savedDrink) {
         //save a single drink
         return "success";
     }
 
-    @DeleteMapping("/drinks/{name}")
+    @DeleteMapping("/{name}")
     public String deleteDrink() {
         //find a single drink
         return "drink";
     }
 
-    @GetMapping("/drinks/dotd")
+    @GetMapping("/dotd")
     public String drinkOfTheDay() {
         //pull the drink of the day
         return "drink";
