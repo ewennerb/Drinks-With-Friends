@@ -1,6 +1,7 @@
 package server.User;
 
 import org.springframework.web.bind.annotation.*;
+import server.SQL.UserSQL;
 
 @RestController
 public class UserController {
@@ -8,13 +9,17 @@ public class UserController {
     @GetMapping("/user")
     public String findAll() {
         //find a single user
-        return "ALL";
+		UserSQL users = new UserSQL();
+		return users.getAllUsers();
+
     }
 
     @GetMapping("/user/{name}")
-    public String findDrink() {
+    public String findDrink(@PathVariable String name) {
         //find a single user
-        return "user";
+		System.out.println("User: "+ name);
+		UserSQL users = new UserSQL();
+        return users.getUser(name);
     }
 
     @PostMapping("/user")
