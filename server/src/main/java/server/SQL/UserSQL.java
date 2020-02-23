@@ -108,8 +108,11 @@ public class UserSQL {
 			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
 			rs=smt.executeQuery(query);
 
-			String dbName = rs.getString("userName");
-			if (userName == dbName){
+			String dbName = " ";
+			while(rs.next()){
+				dbName= rs.getString("userName");
+			}
+			if (userName.equals(dbName)){
 				System.out.println("Username not unique.");
 				return false;
 			} else {
@@ -122,6 +125,33 @@ public class UserSQL {
 			return false;
 		}
 	}
+
+	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
+		try{
+			//first need to checkUniqueUserName
+			if (!checkUniqueUserName(userName)) {
+				System.out.println("Username not unqiue. Cannot insert new user.");
+				return false;
+			}
+			//if unique then can insert User
+			String query = "insert into test_schema.user "+ 
+				"(userName, password, name, email, phoneNumber) "+
+				"values "+ 
+				"(\""+userName+"\", \""+password+"\", \""+name+"\", \""+email+"\", \""+phoneNumber+"\")";
+			System.out.println(query);
+
+			int insertResult = smt.executeUpdate(query);
+
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error inserting new user to DB.");
+			return false;
+		}
+
+
+	}
+
 
 	public boolean updatePassword(String userName, String oldPass, String newPass){
 		try{
