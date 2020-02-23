@@ -108,8 +108,11 @@ public class UserSQL {
 			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
 			rs=smt.executeQuery(query);
 
-			String dbName = rs.getString("userName");
-			if (userName == dbName){
+			String dbName = " ";
+			while(rs.next()){
+				dbName= rs.getString("userName");
+			}
+			if (userName.equals(dbName)){
 				System.out.println("Username not unique.");
 				return false;
 			} else {
@@ -119,6 +122,67 @@ public class UserSQL {
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed query");
+			return false;
+		}
+	}
+
+	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
+		try{
+			//first need to checkUniqueUserName
+			if (!checkUniqueUserName(userName)) {
+				System.out.println("Username not unqiue. Cannot insert new user.");
+				return false;
+			}
+			//if unique then can insert User
+			String query = "insert into test_schema.user "+ 
+				"(userName, password, name, email, phoneNumber) "+
+				"values "+ 
+				"(\""+userName+"\", \""+password+"\", \""+name+"\", \""+email+"\", \""+phoneNumber+"\")";
+			System.out.println(query);
+
+			int insertResult = smt.executeUpdate(query);
+
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error inserting new user to DB.");
+			return false;
+		}
+
+
+	}
+
+
+	public boolean updatePassword(String userName, String oldPass, String newPass){
+		try{
+			//first check oldPass is what is in DB
+			String query = "select * from test_schema.user where userName = \""+userName+"\"";
+			rs = smt.executeQuery(query);
+
+			String p = " ";
+
+			while (rs.next()){
+				System.out.println("output: "+rs.getString("userName"));
+				p = rs.getString("password");
+			}
+
+
+			//then check if queried password is equal to inputted old password
+			System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
+			if (!p.equals(oldPass)){
+				System.out.println("Old password not correct.");
+				return false;
+			}
+			
+			//if it is, then update with new password
+			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+			
+			
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed updating password.");
 			return false;
 		}
 	}
