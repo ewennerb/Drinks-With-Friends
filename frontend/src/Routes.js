@@ -25,6 +25,7 @@ export default class Routes extends React.Component {
             menuVisible: false,
             loggedIn: true,
             user: undefined,
+            darkMode: false,
         };
     }
 
@@ -33,7 +34,6 @@ export default class Routes extends React.Component {
             user: undefined,
             loggedIn: false,
         })
-
     }
 
     handlePageJump(e, { name }){
