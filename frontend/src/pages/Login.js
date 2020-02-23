@@ -1,6 +1,5 @@
 import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
-import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 
 
@@ -49,7 +48,7 @@ class Login extends React.Component {
                         type='password'
                     />
 
-                    <Button onClick={() => this.loginClicked()} color='blue' fluid size='large' >
+                    <Button onClick={() => this.loginClicked()} color='yellow' fluid size='large' >
                         Login
                     </Button>
 
@@ -74,7 +73,7 @@ class Login extends React.Component {
                                 <Segment stacked>
                                     <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
                                     {/* Login Button */}
-                                    <Button onClick={() => this.sendEmail()} color='blue' fluid size='large' >
+                                    <Button onClick={() => this.sendEmail()} color='yellow' fluid size='large' >
                                         Send Email
                                     </Button>
                                 </Segment>
@@ -83,13 +82,10 @@ class Login extends React.Component {
 
                         <Modal.Actions>
                             <Button icon='check' content='Close Window' onClick={this.handleClose.bind(this)} />
-                        </Modal.Actions> 
-                    </Modal> 
-
-
+                        </Modal.Actions>
+                    </Modal>
                     </Segment>
                  </Form>
-      
                 </Grid.Column>
             </Grid>
         ) //End Return
