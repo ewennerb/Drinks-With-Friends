@@ -35,7 +35,7 @@ class Profile extends Component{
             </Grid.Column>
           
             <Grid.Column >
-            peepee
+           
             </Grid.Column>
 
             <Grid.Column color="red"/>
