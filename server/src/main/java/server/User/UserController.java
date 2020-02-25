@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import server.SQL.UserSQL;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path="/user")
 public class UserController {
 
