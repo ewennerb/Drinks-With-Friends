@@ -1,13 +1,10 @@
 import React from "react";
-
-//import './css/Routes.css'
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-
-
+import {Link} from 'react-router-dom'
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
-import Profile from "./pages/Profile"
+import Profile from "./pages/MyProfile"
 
 import {
     Menu,
@@ -17,57 +14,144 @@ import {
 
 } from "semantic-ui-react"
 
+
 export default class Routes extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {menuVisible: false};
+        this.logOut = this.logOut.bind(this);
+        this.handlePageJump = this.handlePageJump.bind(this);
+        this.state = {
+            menuVisible: false,
+            loggedIn: true,
+            user: undefined,
+            darkMode: false,
+        };
     }
-    
+
+    logOut(){
+        this.setState({
+            user: undefined,
+            loggedIn: false,
+        })
+    }
+
+    handlePageJump(e, { name }){
+        this.setState({
+            menuVisible: false,
+            activeItem: name
+        });
+    }
+
+
     render(){
+        let menuItem;
+        const { activeItem } = this.state;
+        if (this.state.user !== undefined){
+            menuItem = <Menu.Item
+                as={Link}
+                to={{pathname: '/profile', state: {user: this.state.user}}}
+                icon="user circle outline"
+                position="right"
+                size="large"
+                content={this.state.user}
+            />;
+        }else{
+            menuItem = <Menu.Item
+                as={Link}
+                to={{pathname: '/login', }}
+                icon="log out"
+                position="right"
+                size="large"
+                content="Log In"
+            />;
+        }
+
         return (
             <div className="Routes">
                 {/* This is the navigation bar */}
-                <Menu borderless attached="top" size="huge">
-                    <Menu.Item
-                        icon="beer"
-                        content="Drinks with Friends"
-                    />
-                    <Menu.Item
-                        icon="user circle outline"
-                        position="right"
-                        size="large"
-                    />
-                    <Menu.Item
-                        content="Username"
-                    />
-                    <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
-                        <Icon name="sidebar" />Menu
-                    </Menu.Item>
-                </Menu>
-                <Sidebar.Pushable as={Segment} attached="bottom" >
-                    <Sidebar as={Menu} direction="right" animation="uncover" visible={this.state.menuVisible} icon="labeled" vertical inline inverted>
-                        {/*Todo - make these redirect to different links*/}
-                        <Menu.Item><Icon name="home" />Search</Menu.Item>
-                        <Menu.Item><Icon name="block layout" />My Profile</Menu.Item>
-                        <Menu.Item><Icon name="smile" />My Feed</Menu.Item>
-                        <Menu.Item><Icon name="calendar" />Bruh</Menu.Item>
-                    </Sidebar>
-                    <Sidebar.Pusher>
-                        <Segment basic placeholder>
-                            <BrowserRouter>
+                <BrowserRouter>
+                    <Menu borderless attached="top" size="huge">
+                        <Menu.Item
+                            as={Link}
+                            to={{pathname: '/search', state: {user: ""}}}
+                            icon="beer"
+                            content="Drinks with Friends"
+                        />
+                        {menuItem}
+                        <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
+                            <Icon name="sidebar"/>Menu
+                        </Menu.Item>
+                    </Menu>
+                    <Sidebar.Pushable as={Segment} attached="bottom">
+                        <Sidebar as={Menu} direction="right" animation="uncover" visible={this.state.menuVisible} icon="labeled" vertical width="thin">
+                            {/*Todo - make these redirect to different links*/}
+                            {/*TODO - PASS USER TO ALL CLASSES' PROPS*/}
+
+                            <Menu.Item>
+                                <Menu.Header>
+                                    <br/>
+                                    Navigation
+                                </Menu.Header>
+                                <Menu.Menu>
+                                    <Menu.Item
+                                        as={Link}
+                                        to={{pathname: '/search', state: {user: ""}}}
+                                        onClick={this.handlePageJump}
+                                        name={"Search For Drinks"}
+                                        active={activeItem === 'Search For Drinks'}
+                                        borderless
+                                    >
+                                        {/*<Icon name="search"/>*/}
+                                        {/*Search*/}
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        as={Link}
+                                        to={{pathname: '/feed', state: {user: ""}}}
+                                        name={"Activity Feed"}
+                                        active={activeItem === 'Activity Feed'}
+                                        onClick={this.handlePageJump}
+                                        borderless
+                                    >
+                                        {/*<Icon name="beer"/>*/}
+                                        {/*My Feed*/}
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        as={Link}
+                                        replace={false}
+                                        to={{pathname: '/profile', state: {user: ""}}}
+                                        name={"My Profile"}
+                                        active={activeItem === 'My Profile'}
+                                        onClick={this.handlePageJump}
+                                        borderless
+                                        position="right"
+                                    >
+                                        {/*<Icon name="user"/>*/}
+                                        {/*My Profile*/}
+                                    </Menu.Item>
+                                    <Menu.Item as={Link} to={{pathname: '/search', state: {user: ""}}} onClick={this.handlePageJump} name={"Log Out"} >
+                                        {/*<Icon name="log out" />Log Out*/}
+                                    </Menu.Item>
+                                    <Menu.Item content={<br/>}/>
+                                    <Menu.Item content="About Us"/>
+                                    <Menu.Item content="Dark Mode"/>
+                                </Menu.Menu>
+                            </Menu.Item>
+
+
+                        </Sidebar>
+                        <Sidebar.Pusher>
+                            <Segment basic placeholder>
                                 <Switch>
-                                    <Route exact path="/search" component={Search} />
+                                    <Route exact path="/search" component={Search}/>
                                     <Route exact path="/login" component={Login} />
                                     <Route exact path="/register" component={Register}/>
                                     <Route exact path="/profile" component={Profile}/>
                                 </Switch>
-                            </BrowserRouter>
-                        </Segment>
-                    </Sidebar.Pusher>
-                </Sidebar.Pushable>
-
-
+                            </Segment>
+                        </Sidebar.Pusher>
+                    </Sidebar.Pushable>
+                </BrowserRouter>
             </div>
 
         );
