@@ -9,6 +9,7 @@ import java.sql.*;
 public class main {
 
     @RequestMapping("/")
+	@CrossOrigin(origins = "http://localhost:3000")
     String home() {
 
 	try{

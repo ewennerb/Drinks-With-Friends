@@ -9,6 +9,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping(path="/drink")
+@CrossOrigin(origins = "http://localhost:3000")
 @EnableScheduling
 public class DrinkController {
 
