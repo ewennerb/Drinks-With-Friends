@@ -43,7 +43,7 @@ public class DrinkController {
     }
 
     @GetMapping("/{name}")
-    public String findDrink(@PathVariable String name) {
+    public Drink findDrink(@PathVariable String name) {
         // find a single drink
         System.out.println("Drink: " + name);
         DrinkSQL drink = new DrinkSQL();
