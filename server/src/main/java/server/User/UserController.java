@@ -5,6 +5,7 @@ import server.SQL.UserSQL;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path="/user")
 public class UserController {
 

@@ -13,7 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
-@RequestMapping(path = "/drink")
+@RequestMapping(path="/drink")
+@CrossOrigin(origins = "http://localhost:3000")
 @EnableScheduling
 public class DrinkController {
 
@@ -70,7 +71,7 @@ public class DrinkController {
         sm.addSerializer(Drink.class, new DrinkSerializer());
         om.registerModule(sm);
         String test = om.writeValueAsString(DOTD);
-        
+
         return test;
     }
     @Scheduled(cron = "*/10 * * * * *")
