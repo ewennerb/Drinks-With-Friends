@@ -46,8 +46,8 @@ public class DrinkSQL {
 				int likes=rs.getInt("likes");
 				int dislikes=rs.getInt("dislikes");
 				String publisher=rs.getString("publisher");
-				String[] ingreidientList = new String[]{ingredients};
-				Drink d = new Drink(drinkId, dName, description, ingreidientList, stockPhoto, likes, dislikes, publisher);
+				String[] ingredientList = new String[]{ingredients};
+				Drink d = new Drink(drinkId, dName, description, ingredientList, stockPhoto, likes, dislikes, publisher);
 				drink.add(d);
 
 				all+=drinkId+"\t"+dName+"\t"+stockPhoto+"\t"+description+"\t"+ingredients+"\t"+likes+"\t"+dislikes+"\t"+publisher;
@@ -63,13 +63,15 @@ public class DrinkSQL {
 		}
 	}
 
-	public String getDrink(String drinkName){
+	public Drink getDrink(String drinkName){
 		try{
 	
 			String query = "select * from test_schema.drink where name = \""+drinkName+"\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			String returnDrink = "Drink: "+drinkName+"<br>";
+			Drink drink = new Drink();
+
 
 			while (rs.next())
 			{
@@ -81,7 +83,8 @@ public class DrinkSQL {
 				int likes=rs.getInt("likes");
 				int dislikes=rs.getInt("dislikes");
 				String publisher=rs.getString("publisher");
-
+				String[] ingredientList = new String[]{ingredients};
+				drink = new Drink(drinkId, dName, description, ingredientList, stockPhoto, likes, dislikes, publisher);
 
 				returnDrink+=drinkId+"\t"+dName+"\t"+stockPhoto+"\t"+description+"\t"+ingredients+"\t"+likes+"\t"+dislikes+"\t"+publisher;
 				returnDrink+="<br>";
@@ -89,12 +92,12 @@ public class DrinkSQL {
 
 			conn.close();
 			System.out.println(returnDrink);
-			return returnDrink;
+			return drink;
 
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "/drink find Fail";
+			return null;
 		}
 	}
 	   	  
