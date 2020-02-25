@@ -11,7 +11,7 @@ public class main {
     @RequestMapping("/")
 	@CrossOrigin(origins = "http://localhost:3000")
     String home() {
-
+	
 	try{
 		String url = "jdbc:mysql://localhost:3306/";
 		Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");

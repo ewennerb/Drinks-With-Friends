@@ -1,32 +1,24 @@
 import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
+//import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
-        this.state = {modalOpen: false};
+        this.state = {
+            modalOpen: false,
+            email: '',
+            password: '',
+            logged_in: true,
+            email_reset: ''
+        };
     }
-
-    handleClose() {
-        this.setState(
-            {
-                modalOpen: false
-            }
-        )
-    }
-
-    handleOpen() {
-        this.setState(
-            {
-                modalOpen: true
-            }
-        )
-    }
-
 
     render(){
         return(
@@ -39,13 +31,24 @@ class Login extends React.Component {
 
                 <Form size='large'>
                     <Segment stacked>
-                    <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
+                    <Form.Input
+                        fluid icon='user'
+                        iconPosition='left'
+                        placeholder='E-mail address'
+                        required='true'
+                        value={this.state.email}
+                        onChange={this.handleEmailChange}
+                    />
+
                     <Form.Input
                         fluid
                         icon='lock'
                         iconPosition='left'
                         placeholder='Password'
                         type='password'
+                        required='true'
+                        value={this.state.password}
+                        onChange={this.handlePasswordChange}
                     />
 
                     <Button onClick={() => this.loginClicked()} color='yellow' fluid size='large' >
@@ -55,7 +58,7 @@ class Login extends React.Component {
                         <Message>
                             {/* Link to open Modal */}
                             <Icon name='help'/>
-                            Forgot Username or Password?&nbsp;<a onClick={this.handleOpen}>Click here</a>&nbsp;to reset.
+                            Forgot Username or Password?<a onClick={this.handleOpen}> Click here </a>to reset.
                         </Message>
 
                     <Modal //Begin Modal
@@ -71,7 +74,7 @@ class Login extends React.Component {
 
                             <Form size='large'>
                                 <Segment stacked>
-                                    <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
+                                    <Form.Input fluid icon='user' iconPosition='left' value={this.state.email} onChange={this.handleEmailChange}/>
                                     {/* Login Button */}
                                     <Button onClick={() => this.sendEmail()} color='yellow' fluid size='large' >
                                         Send Email
@@ -91,11 +94,36 @@ class Login extends React.Component {
         ) //End Return
     } //End Render
 
-    loginClicked(){
-        console.log('Login Clicked')
+
+    loginClicked(event){
+        console.log('Username and password saved')
+        console.log(this.state.email) //Prints email
+        console.log(this.state.password) //Prints password
+        //TODO: Put logic here to send data to server or whatever
     }
+    
     sendEmail(){
-        console.log('Email Sent')
+        console.log("email_reset: " + this.state.email_reset)
+    }
+
+    async handleEmailChange(event){
+        const value = event.target.value;
+        await this.setState({email: value});
+        console.log(value) //print
+    };
+
+    async handlePasswordChange(event){
+        const value = event.target.value;
+        await this.setState({password: value});
+        console.log(value) //print
+    };
+
+    handleClose() {
+        this.setState({modalOpen: false})
+    }
+
+    handleOpen() {
+        this.setState({modalOpen: true})
     }
     
 

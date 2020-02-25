@@ -5,6 +5,7 @@ import server.SQL.UserSQL;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping(path="/user")
 public class UserController {
 
     @GetMapping("/user")
@@ -31,13 +32,13 @@ public class UserController {
         return users.getUser(name);
     }
 
-    @PostMapping("/user")
+    @PostMapping("/")
     public String saveDrink(@RequestBody String username) {
         //save a single user
         return "success";
     }
 
-    @DeleteMapping("/user/{name}")
+    @DeleteMapping("/{name}")
     public String deleteDrink() {
         //find a single user
         return "success";
