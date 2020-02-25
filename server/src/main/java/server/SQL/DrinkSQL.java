@@ -1,5 +1,8 @@
 package server.SQL;
 import java.sql.*;
+import java.util.ArrayList;
+import server.Drink.Drink;
+
 
 
 public class DrinkSQL {
@@ -24,14 +27,15 @@ public class DrinkSQL {
 	}
 
 
-	public String getAllDrinks(){
+	public ArrayList<Drink> getAllDrinks(){
 		try{
 			//String url = "jdbc:mysql://localhost:3306/";
 			//Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 			//Statement smt = conn.createStatement();
 			rs = smt.executeQuery("select * from test_schema.drink");
 			String all = "Drink Info:<br>";
-
+			ArrayList<Drink> drink = new ArrayList<Drink>();
+			
 			while (rs.next())
 			{
 				int drinkId=rs.getInt("drinkId");
@@ -42,18 +46,20 @@ public class DrinkSQL {
 				int likes=rs.getInt("likes");
 				int dislikes=rs.getInt("dislikes");
 				String publisher=rs.getString("publisher");
-
+				String[] ingreidientList = new String[]{ingredients};
+				Drink d = new Drink(drinkId, dName, description, ingreidientList, stockPhoto, likes, dislikes, publisher);
+				drink.add(d);
 
 				all+=drinkId+"\t"+dName+"\t"+stockPhoto+"\t"+description+"\t"+ingredients+"\t"+likes+"\t"+dislikes+"\t"+publisher;
 				all+="<br>";
 			}
 			conn.close();
 			System.out.println(all);
-			return all;
+			return drink;
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "/drink Fail";
+			return null;
 		}
 	}
 
