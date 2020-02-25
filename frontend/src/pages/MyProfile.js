@@ -94,15 +94,12 @@ class Profile extends Component{
             </Grid.Column>
           <Grid.Row>
 
-
-
           </Grid.Row>
         </Grid>
 
       </div>  
     )
   }
-
 }
 
 export default Profile

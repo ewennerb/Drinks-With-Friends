@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @RestController
 @RequestMapping(path="/drink")
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping(path = "/drink")
 @EnableScheduling
 public class DrinkController {
 

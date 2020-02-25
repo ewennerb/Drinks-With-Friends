@@ -1,9 +1,10 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
+import {Link} from 'react-router-dom';
 import {
     Card,
     Input,
-    Icon,
+    Rating,
     Image,
     Segment,
     Header,
@@ -19,10 +20,13 @@ export default class Search extends React.Component{
         this.state = {
             searchText: "",
             response: undefined,
-            loaded: false
+            loaded: false,
+            loggedIn: false,
         }
     }
 
+
+    //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
         await this.getDOTD();
         this.setState({
@@ -30,6 +34,8 @@ export default class Search extends React.Component{
         })
     }
 
+
+    //Fetches the Drink of the Day
     async getDOTD(){
         await fetch('http://localhost:8080/drink/dotd', {
             method: 'GET',
@@ -48,13 +54,21 @@ export default class Search extends React.Component{
         }).catch(console.log);
     }
 
+
+    //Todo: Send the query parameters to the server and fuck shit up
+    async getSearchResults(){
+        return
+    }
+
+
+    //Records Search Bar Input
     async handleInputChange(event){
         const value = event.target.value;
         await this.setState({searchText: value});
     };
 
-    render(){
 
+    render(){
         if (this.state.loaded){
             return(
                 <div>
@@ -72,14 +86,14 @@ export default class Search extends React.Component{
                                         src='https://react.semantic-ui.com/images/avatar/large/molly.png'
                                     />
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        Nothing!
+                                        {this.state.response.name}
                                     </Header>
-                                    <Card.Content header="Today's Drink of the Day: NOTHING!"/>
+                                    <Card.Content header="A pretty good drink if I do say so myself"/>
 
                                     <Card.Meta>New User</Card.Meta>
 
                                     <Card.Content extra>
-                                        <Icon name='user' />4 Friends
+                                        <Rating icon='star' defaultRating={5} maxRating={5} />
                                     </Card.Content>
                                 </Segment>
                             </Card>
@@ -91,15 +105,23 @@ export default class Search extends React.Component{
                                 <Input
                                     action={{
                                         color: 'yellow',
-                                        labelPosition: 'right',
+                                        labelPosition: 'left',
                                         icon: 'search',
                                         content: 'Search',
                                     }}
                                     actionPosition='right'
-                                    actionPositisize="huge" fluid placeholder='Search...' onChange={this.handleInputChange}
+                                    size="huge"
+                                    fluid
+                                    placeholder='Search...'
+                                    onChange={this.handleInputChange}
                                 />
+                                <br/>
+                                <p hidden={this.state.loggedIn}>
+                                    <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
+                                </p>
 
                             </Grid.Row>
+
                         </Grid.Column>
                         <Grid.Column width={4}/>
                     </Grid>
