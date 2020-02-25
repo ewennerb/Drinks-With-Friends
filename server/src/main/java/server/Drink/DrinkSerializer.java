@@ -26,6 +26,12 @@ public class DrinkSerializer extends StdSerializer<Drink> {
         // TODO Auto-generated method stub
         gen.writeStartObject();
         gen.writeStringField("name", value.name);
+        gen.writeStringField("description", value.description);
+        gen.writeStringField("photo", value.photo);
+        gen.writeStringField("publisher", value.publisher);
+        gen.writeNumberField("likes", value.likes);
+        gen.writeNumberField("dislikes", value.dislikes);
+        gen.writeObjectField("ingredient", value.ingredients);
         gen.writeEndObject();
     }
 
