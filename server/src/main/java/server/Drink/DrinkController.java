@@ -71,8 +71,7 @@ public class DrinkController {
         om.registerModule(sm);
         String test = om.writeValueAsString(DOTD);
         
-        System.out.println(test);
-        return "drink";
+        return test;
     }
     @Scheduled(cron = "*/10 * * * * *")
     public void randomDOTD(){
