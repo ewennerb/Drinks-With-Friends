@@ -2,6 +2,7 @@ package server.User;
 
 import org.springframework.web.bind.annotation.*;
 import server.SQL.UserSQL;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping(path="/user")
@@ -11,8 +12,28 @@ public class UserController {
     public String findAll() {
         //find a single user
 		UserSQL users = new UserSQL();
-		return users.getAllUsers();
-
+		ArrayList<User> list = users.getAllUsers();
+		String out = "";
+		for (User user : list) {
+			out += user.userId + "\t";
+			out += user.darkMode + "\t";
+			out += user.userName + "\t";
+			out += user.password + "\t";
+			out += user.name + "\t";
+			out += user.email + "\t";
+			out += user.phoneNumber + "\t";
+			out += user.photo + "\t";
+			out += user.bio + "\t";
+			out += user.likedDrinks + "\t";
+			out += user.dislikedDrinks + "\t";
+			out += user.favoriteDrink + "\t";
+			out += user.publishedDrinks + "\t";
+			out += user.postHistory + "\t";
+			out += user.friendsList + "\t";
+			out += user.dateCreated + "\t";
+			out += user.lastLogin + "\t";
+		}
+		return out;
     }
 
     @GetMapping("/user/{name}")
