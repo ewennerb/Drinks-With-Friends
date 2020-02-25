@@ -19,6 +19,14 @@ public class UserController {
         //find a single user
 		System.out.println("User: "+ name);
 		UserSQL users = new UserSQL();
+		//testing updatePassword - change vals to retest
+		//users.updatePassword(name, "newPass", "newtestpass");
+		//testing insertUser
+		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");
+		//testing uniqueUserName
+		//users.checkUniqueUserName(name);
+
+
         return users.getUser(name);
     }
 
