@@ -71,7 +71,7 @@ export default class Routes extends React.Component {
             <div className="Routes">
                 {/* This is the navigation bar */}
                 <BrowserRouter>
-                    <Menu borderless attached="top" size="huge">
+                    <Menu attached="top" size="huge">
                         <Menu.Item
                             as={Link}
                             to={{pathname: '/search', state: {user: ""}}}

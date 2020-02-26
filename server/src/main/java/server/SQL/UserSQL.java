@@ -1,5 +1,8 @@
 package server.SQL;
+
 import java.sql.*;
+import java.util.ArrayList;
+import server.User.User;
 
 
 public class UserSQL {
@@ -21,10 +24,12 @@ public class UserSQL {
 
 	}
 
-	public String getAllUsers(){
+	public ArrayList<User> getAllUsers(){
 		try{
 			rs = smt.executeQuery("select * from test_schema.user");
 			String all = "User Info:<br>";
+			ArrayList<User> user = new ArrayList<User>();
+
 
 			while (rs.next())
 			{
@@ -44,18 +49,19 @@ public class UserSQL {
 				String friendsList = rs.getString("friendsList");
 				String dateCreated = rs.getString("dateCreated");
 				String lastLogin = rs.getString("lastLogin");
-
+				User u = new User();
+				user.add(u);
 			
 				all+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
 				all+="<br>";
 			}
 			conn.close();
 			System.out.println(all);
-			return all;
+			return user;
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "/user Fail";
+			return null;//"/user Fail";
 		}
 	}
 
@@ -126,6 +132,8 @@ public class UserSQL {
 		}
 	}
 
+	//userName doesUserEmailExists or null
+
 	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
 		try{
 			//first need to checkUniqueUserName
@@ -152,7 +160,7 @@ public class UserSQL {
 
 	}
 
-
+	//remove oldPass function
 	public boolean updatePassword(String userName, String oldPass, String newPass){
 		try{
 			//first check oldPass is what is in DB

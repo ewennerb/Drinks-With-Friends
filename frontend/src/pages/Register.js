@@ -26,21 +26,22 @@ export default class Register extends React.Component {
 
     //Queries the account creation API endpoint when the button is pressed.
     async handleSubmit() {
-        //Todo - Put 'fetch' method here
-        // await fetch('http://127.0.0.1:8888/account/', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         username: this.state.username,
-        //         password: this.state.password,
-        //         confirm_password: this.state.conf_pass,
-        //     })
-        // }).then(res => res.json()).then((data) => {
-        //     this.setState({response: data})
-        // }).catch(console.log);
+        //Todo - This 'Fetch' method will query the API on submission of the form
+        await fetch('http://127.0.0.1:8080/drink/dotd', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: this.state.username,
+                password: this.state.password,
+                confirm_password: this.state.conf_pass,
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data})
+        }).catch(console.log);
 
 
         // This logic will keep track of a 'logged-in' state

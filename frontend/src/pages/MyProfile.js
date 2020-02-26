@@ -134,12 +134,6 @@ handleOpen() {
           </Grid>
           
 
-
-
-
-
-
-
           {/* profile edit modal */}
           <Modal
           open={this.state.modalOpen}
@@ -158,7 +152,6 @@ handleOpen() {
       </Container>  
     )
   }
-
 }
 
 export default Profile
