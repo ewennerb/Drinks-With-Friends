@@ -11,6 +11,16 @@ public class Drink{
     protected String photo;
     protected String publisher;
     
+	public Drink(){
+		this.id = 0;
+		this.name = null;
+		this.description = null;
+		this.ingredients = null;
+		this.photo = null;
+		this.publisher = null;
+	}
+
+
     public Drink(int id, String name, String description, String[] ingredients, String photo, int likes, int dislikes, String publisher){
         this.id = id;
         this.name = name;

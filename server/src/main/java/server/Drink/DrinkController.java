@@ -17,7 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
-@RequestMapping(path = "/drink")
+@RequestMapping(path="/drink")
+@CrossOrigin(origins = "http://localhost:3000")
 @EnableScheduling
 public class DrinkController {
 
@@ -47,7 +48,7 @@ public class DrinkController {
     }
 
     @GetMapping("/{name}")
-    public String findDrink(@PathVariable String name) {
+    public Drink findDrink(@PathVariable String name) {
         // find a single drink
         System.out.println("Drink: " + name);
         DrinkSQL drink = new DrinkSQL();
@@ -80,6 +81,7 @@ public class DrinkController {
         SimpleModule sm = new SimpleModule("DrinkSerializer", new Version(1,0,0,null,null,null));
         sm.addSerializer(Drink.class, new DrinkSerializer());
         om.registerModule(sm);
+
         return om.writeValueAsString(DOTD);
     }
     @Scheduled(cron = "*/10 * * * * *")
