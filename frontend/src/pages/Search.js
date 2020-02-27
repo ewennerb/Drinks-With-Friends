@@ -1,5 +1,6 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
+import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {
     Card,
@@ -10,8 +11,10 @@ import {
     Header,
     Grid,
     Modal,
-    Button
+    Button,
+    Loader,
 } from 'semantic-ui-react'
+import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 const axios = require('axios');
 
 
@@ -20,11 +23,14 @@ export default class Search extends React.Component{
     constructor(props){
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
+        console.log(this.props.location.state);
         this.state = {
             searchText: "",
             response: undefined,
             loaded: false,
             loggedIn: false,
+            done: false,
+            is21: this.props.location.state.is21
         }
     }
 
@@ -33,7 +39,9 @@ export default class Search extends React.Component{
     async componentDidMount() {
         await this.getDOTD();
         this.setState({
-            loaded: true
+            loaded: true,
+            is21: this.props.location.state.is21,
+            done: true
         })
     }
 
@@ -72,18 +80,18 @@ export default class Search extends React.Component{
 
 
     render(){
-        if (!this.state.user) {
+        if (!this.state.done){
             return(
                 <div>
-                    <Modal size='fullscreen' open={true} centered>
-                        <Segment size="massive" placeholder inverted style={{width: "100%", height: "100vh"}} padded attached="top">
-                            ARE YE 21 YEHT?
-                        </Segment>
-                    </Modal>
+                    <Segment style={{ height: '100vh' }} textAlign={"center"}>
+                        <Dimmer active>
+                            <Loader content='Loading' />
+                        </Dimmer>
+                    </Segment>
                 </div>
-
             )
-        }else{
+        }
+            //IF dotd not ready return loader
             return(
                 <div>
                     <Grid style={{ height: '100vh' }} columns={16} centered>
@@ -94,7 +102,7 @@ export default class Search extends React.Component{
                             <Card style={{width: "500px"}} centered>
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    <Image
+                                    <Icon
                                         floated='left'
                                         size='small'
                                         src='https://react.semantic-ui.com/images/avatar/large/molly.png'
@@ -155,5 +163,4 @@ export default class Search extends React.Component{
         //         <div/>
         //     )
         // }
-    }
 }
