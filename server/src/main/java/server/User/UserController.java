@@ -54,7 +54,8 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public boolean insertUser(@RequestBody String username) {
+
+    public String saveUser(@RequestBody String username) {
         //save a single user
 		System.out.println("Inserting user: "+ username);
 		
