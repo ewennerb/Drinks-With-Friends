@@ -2,14 +2,14 @@ package server.Drink;
 
 public class Drink{
 
-    protected int likes;
-    protected int id;
-    protected int dislikes;
-    protected String name;
-    protected String description;
-    protected Ingredient[] ingredients;
-    protected String photo;
-    protected String publisher;
+    public int likes;
+    public int id;
+    public int dislikes;
+    public String name;
+    public String description;
+    public Ingredient[] ingredients;
+    public String photo;
+    public String publisher;
     
 	public Drink(){
 		this.id = 0;

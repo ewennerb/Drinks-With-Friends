@@ -3,9 +3,9 @@ package server.Drink;
 
 public class Ingredient{
 
-    protected String measurement;
-    protected String ingredient;
-    protected String quantity;
+    public String measurement;
+    public String ingredient;
+    public String quantity;
     
     public Ingredient(){
         this.measurement = null;
