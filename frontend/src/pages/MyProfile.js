@@ -12,9 +12,11 @@ import {
   Segment,
   
 } from "semantic-ui-react";
-import LikedDrinks from "./LikedDrinks.js"
-
-
+import LikedDrinks from "./userpages/LikedDrinks.js"
+import DislikedDrinks from "./userpages/DislikedDrinks.js"
+import Map from "./userpages/Map.js"
+import Friends from "./userpages/Friends.js"
+import Posts from "./userpages/Posts.js"
 //import "../css/Profile.css"
 
 class Profile extends Component{
@@ -25,7 +27,8 @@ class Profile extends Component{
     this.handleOpen = this.handleOpen.bind(this);
     this.state = {
       modalOpen: false, 
-      activeItem: "posts"
+      activeItem: "posts",
+      user: this.props.user
     };
 }
 
@@ -59,64 +62,72 @@ handleOpen() {
         <BrowserRouter>
           <Grid className="grid" columns={3} container padded relaxed textAlign="center">
           <Grid.Row container>
-          <Grid.Column color="blue">
+          <Grid.Column  
+            as={Link}
+            to={{pathname: `/${this.state.user}/posts`}}
+          >
           <Icon name="user circle outline" size="massive"/>
           </Grid.Column>
           
-          <Grid.Column >
+          <Grid.Column container textAlign="left">
+            <h2>Bio:</h2>
+            
+          </Grid.Column> 
           
+          <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+            <Button animated="fade" onClick={this.handleOpen}  >
+            <Button.Content visible>Edit Profile</Button.Content>
+            <Button.Content hidden>
+            <Icon name="edit"/>
+            </Button.Content>
+            </Button>
           </Grid.Column>
-          
-          <Grid.Column color="red">
-          <Button animated="fade" onClick={this.handleOpen}>
-          <Button.Content visible>Edit Profile</Button.Content>
-          <Button.Content hidden>
-          <Icon name="edit"/>
-          </Button.Content>
-          </Button>
-          
-          </Grid.Column>/>
           </Grid.Row>
           
-          <Grid.Row >
+          <Grid.Row centered columns={1} textAlign="right">          
+            {/* <Grid.Column stretched width={4}/> */}
+            <Grid.Column stretched verticalAlign="middle" >
+            <Menu  pointing secondary floated="right" widths={6}>
+            <Menu.Item
+            //  this one will be hard to decide how to do 
+              name="posts"
+              as={Link}
+              to={{pathname: `/${this.state.user}/posts`}}
+              active={activeItem === "posts"}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name="likedDrinks"
+              as={Link}
+              to={{pathname: `/${this.state.user}/likedDrinks`}}
+              active={activeItem === "likedDrinks"}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name="dislikedDrinks"
+              as={Link}
+              to={{pathname: `/${this.state.user}/dislikedDrinks`}}
+              active={activeItem === "dislikedDrinks"}
+              onClick={this.handleItemClick}
+            />
+            <Menu.Item
+              name="map"
+              as={Link}
+              to={{pathname: `/${this.state.user}/map`}}
+              active={activeItem === "map"}
+              onClick={this.handleItemClick}
           
-          <Grid.Column width={10} color="green" >
-          <Menu  pointing secondary stackable >
-          <Menu.Item
-          //  this one will be hard to decide how to do 
-           name="posts"
-           
-            active={activeItem === "posts"}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="likedDrinks"
-            as={Link}
-            to={{pathname: './likedDrinks'}}
-            active={activeItem === "likedDrinks"}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="dislikedDrinks"
-            as={Link}
-            to={{pathname: './dislikedDrings'}}
-            active={activeItem === "dislikedDrinks"}
-            onClick={this.handleItemClick}
-          />
-          <Menu.Item
-            name="map"
-            active={activeItem === "map"}
-            onClick={this.handleItemClick}
-          
-          />
-          <Menu.Item
-            name="friends"
-            active={activeItem === "friends"}
-            onClick={this.handleItemClick}
-          />
-          
-          </Menu>
-          </Grid.Column>
+            />
+            <Menu.Item
+              name="friends"
+              as={Link}
+              to={{pathname: `/${this.state.user}/friends`}}
+              active={activeItem === "friends"}
+              onClick={this.handleItemClick}
+            />
+            </Menu>
+
+            </Grid.Column>
           </Grid.Row>
           
           <Grid.Column>
@@ -126,8 +137,11 @@ handleOpen() {
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="./likedDrinks" component={LikedDrinks}/>
-
+              <Route exact path="/:user/posts" component={Posts} />
+              <Route exact path="/:user/likedDrinks" component={LikedDrinks}/>
+              <Route exact path="/:user/dislikedDrinks" component={DislikedDrinks}/>
+              <Route exact path="/:user/map" component={Map}/>
+              <Route exact path="/:user/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>

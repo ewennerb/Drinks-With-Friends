@@ -1,24 +1,53 @@
 import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
-//import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
-
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
         this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handleUserChange = this.handleUserChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleOpen = this.handleOpen.bind(this);
+        this.handleOpenUser = this.handleOpenUser.bind(this);
+        this.handleOpenPass = this.handleOpenPass.bind(this);
         this.state = {
             modalOpen: false,
-            email: '',
+            username: '',
             password: '',
             logged_in: true,
-            email_reset: ''
+            email_reset: '',
+            fUser: false, //if forgot username is clicked
+            fPass: false, //if forgot password is clicked
+            response: ''
         };
     }
+
+    sendEmail = async e => { //WORK IN PROGRESS
+        e.preventDefault();
+        if (this.state.email_reset == '') { //if nothing is enetered in the email box
+            this.setState({
+                showEmailError: false,
+                messageFromServer: '',
+            });
+        }
+        else { //If there is something in the email box
+            await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                console.log(data);
+                this.setState({response: data})
+            }).catch(console.log)
+            
+            // .catch(error => { //If there is no user with the given email
+            //     console.log;
+            // });
+        }
+    };
 
     render(){
         return(
@@ -34,10 +63,10 @@ class Login extends React.Component {
                     <Form.Input
                         fluid icon='user'
                         iconPosition='left'
-                        placeholder='E-mail address'
+                        placeholder='Username'
                         required='true'
-                        value={this.state.email}
-                        onChange={this.handleEmailChange}
+                        value={this.state.username}
+                        onChange={this.handleUserChange}
                     />
 
                     <Form.Input
@@ -58,7 +87,7 @@ class Login extends React.Component {
                         <Message>
                             {/* Link to open Modal */}
                             <Icon name='help'/>
-                            Forgot Username or Password?<a onClick={this.handleOpen}> Click here </a>to reset.
+                            Forgot <a onClick={this.handleOpenUser}> Username </a> or <a onClick={this.handleOpenPass}> Password</a>?
                         </Message>
 
                     <Modal //Begin Modal
@@ -74,8 +103,8 @@ class Login extends React.Component {
 
                             <Form size='large'>
                                 <Segment stacked>
-                                    <Form.Input fluid icon='user' iconPosition='left' value={this.state.email} onChange={this.handleEmailChange}/>
-                                    {/* Login Button */}
+                                    <Form.Input fluid icon='user' iconPosition='left' placeholder='Email' onChange={this.handleEmailChange}/>
+                                    {/* Send Email button*/}
                                     <Button onClick={() => this.sendEmail()} color='yellow' fluid size='large' >
                                         Send Email
                                     </Button>
@@ -95,56 +124,63 @@ class Login extends React.Component {
     } //End Render
 
 
-    loginClicked(event){
-        console.log('Username and password saved')
-        console.log(this.state.email) //Prints email
-        console.log(this.state.password) //Prints password
-        //TODO: Put logic here to send data to server or whatever
+    
+    //When the user types in stuff in the username box, the username variable is updated
+    async handleUserChange(event){
+        const value = event.target.value;
+        await this.setState({username: value});
+    };
+
+    //When the user types in stuff in the username box, the username variable is updated
+    async handleEmailChange(event){
+        const value = event.target.value;
+        await this.setState({email_reset: value});
+    };
+
+    //When the user types in stuff in the password box, the password variable is updated
+    async handlePasswordChange(event){
+        const value = event.target.value;
+        await this.setState({password: value});
+    };
+
+    //If "Username" is clicked
+    handleOpenUser() {
+        this.setState({modalOpen: true})
+        this.setState({fUser: true})
+    }
+
+    //If "Password" is clicked
+    handleOpenPass() {
+        this.setState({modalOpen: true})
+        this.setState({fPass: true})
+    }
+
+    //Close window button / modal
+    handleClose() {
+        this.setState({modalOpen: false})
+        //when the window is closed, all variables should be reset
+        this.setState({fUser: false})
+        this.setState({fPass: false})
+        this.setState({username: ''})
+        this.setState({password: ''})
+        this.setState({email_reset: ''})
     }
     
+    //when the "send email button is clicked"
     sendEmail(){
         console.log("email_reset: " + this.state.email_reset)
     }
 
-    async handleEmailChange(event){
-        const value = event.target.value;
-        await this.setState({email: value});
-        console.log(value) //print
-    };
-
-    async handlePasswordChange(event){
-        const value = event.target.value;
-        await this.setState({password: value});
-        console.log(value) //print
-    };
-
-    handleClose() {
-        this.setState({modalOpen: false})
+    //when the "login" button is clicked
+    loginClicked(event){
+        console.log('Username and password saved')
+        console.log(this.state.username) //Prints username
+        console.log(this.state.password) //Prints password
+        console.log('User: ' + this.state.fUser) //Prints fUser
+        console.log('Pass: ' + this.state.fPass) //Prints fPass
+        //TODO: Put logic here to send data to server or whatever
     }
-
-    handleOpen() {
-        this.setState({modalOpen: true})
-    }
-    
 
 }
-
-
-// const ModalExampleMultiple = () => (
-//     <Modal trigger={<Button>Multiple Modals</Button>}>
-//       <Modal.Header>Modal #1</Modal.Header>
-//       {/* <Modal.Content image>
-//         <div className='image'>
-//           <Icon name='right arrow' />
-//       </div> */}
-//         <Modal.Description>
-//           <p>We have more to share with you. Follow us along to modal 2</p>
-//         </Modal.Description>
-//       {/* </Modal.Content>
-//       <Modal.Actions>
-//         <NestedModal />
-//       </Modal.Actions> */}
-//     </Modal>
-//   )
 
 export default Login
