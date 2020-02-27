@@ -7,7 +7,7 @@ public class Drink{
     protected int dislikes;
     protected String name;
     protected String description;
-    protected String[] ingredients;
+    protected Ingredient[] ingredients;
     protected String photo;
     protected String publisher;
     
@@ -21,7 +21,7 @@ public class Drink{
 	}
 
 
-    public Drink(int id, String name, String description, String[] ingredients, String photo, int likes, int dislikes, String publisher){
+    public Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -37,9 +37,9 @@ public class Drink{
     public String toString() {
         String out = "";
         out += "name: " + this.name + "\n";
-        out += "description: " + this.description + "\ningredients: ";
-        for (String s : ingredients) {
-            out += s + " ";
+        out += "description: " + this.description + "\ningredients: \n";
+        for (Ingredient s : ingredients) {
+            out += " "+ s.toString();
         }
         out+= "\n";
         out += "publisher: " + this.publisher + "\n";

@@ -88,7 +88,12 @@ public class DrinkController {
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
+        Drink dd = ds.getDrink("test");
+        System.out.println(dd.toString());
+        return;
+        /*
         ArrayList<Drink> drinks = ds.getAllDrinks();
+
         if (drinks.size() <= 0) {
             return;
         }
@@ -103,5 +108,6 @@ public class DrinkController {
         }
 
         DOTD = drinks.get(pos);
+        */
     }
 }
