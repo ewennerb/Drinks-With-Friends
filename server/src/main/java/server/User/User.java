@@ -1,11 +1,8 @@
 package server.User;
 
-import java.util.Date;
-
 public class User{
 
 	protected int userId;
-	protected int darkMode;
 	protected String userName;
 	protected String password;
 	protected String name;
@@ -19,12 +16,12 @@ public class User{
 	protected String publishedDrinks;
 	protected String postHistory;
 	protected String friendsList;
-	protected Date dateCreated;
-	protected Date lastLogin;
+	protected String dateCreated;
+	protected String lastLogin;
+	protected int darkMode;
 
 	public User(){
 		this.userId = 0;
-		this.darkMode = 0;
 		this.userName = null;
 		this.password = null;
 		this.name = null;
@@ -40,13 +37,13 @@ public class User{
 		this.friendsList = null;
 		this.dateCreated = null;
 		this.lastLogin = null;
+		this.darkMode = 0;
 	}
 
 
-	public User(int userId, int darkMode, String userName, String password, String name, String email, String phoneNumber, String photo, String bio, String likedDrinks, String dislikedDrinks, String favoriteDrink, String publishedDrinks, String postHistory, String friendsList, Date dateCreated, Date lastLogin)
+	public User(int userId, String userName, String password, String name, String email, String phoneNumber, String photo, String bio, String likedDrinks, String dislikedDrinks, String favoriteDrink, String publishedDrinks, String postHistory, String friendsList, String dateCreated, String lastLogin, int darkMode)
 	{
 		this.userId = userId;
-		this.darkMode = darkMode;
 		this.userName = userName;
 		this.password = password;
 		this.name = name;
@@ -62,6 +59,7 @@ public class User{
 		this.friendsList = friendsList;
 		this.dateCreated = dateCreated;
 		this.lastLogin = lastLogin;
+		this.darkMode = darkMode;
 	}
 
 

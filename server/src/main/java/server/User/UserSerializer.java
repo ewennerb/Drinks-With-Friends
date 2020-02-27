@@ -27,7 +27,7 @@ public class UserSerializer extends StdSerializer<User> {
 		gen.writeStringField("name", value.name);
 		gen.writeStringField("email", value.password);
 		gen.writeStringField("phoneNumber", value.phoneNumber);
-		gen.writeStringField("profilePhoto", value.profilePhoto);
+		gen.writeStringField("photo", value.photo);
 		gen.writeStringField("bio", value.bio);
 		gen.writeStringField("likedDrinks", value.likedDrinks);
 		gen.writeStringField("dislikedDrinks", value.dislikedDrinks);
@@ -37,7 +37,7 @@ public class UserSerializer extends StdSerializer<User> {
 		gen.writeStringField("friendsList", value.friendsList);
 		gen.writeStringField("dateCreated", value.dateCreated);
 		gen.writeStringField("lastLogin", value.lastLogin);
-		gen.writeStringField("darkMode", value.darkMode);
+		gen.writeNumberField("darkMode", value.darkMode);
 		gen.writeEndObject();
 	}
 
