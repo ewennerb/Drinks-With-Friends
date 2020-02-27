@@ -12,8 +12,9 @@ import {
     Icon,
     Sidebar,
     Segment,
+    Form,
     Button,
-    Header
+    Header, Checkbox
 } from "semantic-ui-react"
 
 
@@ -24,12 +25,14 @@ export default class Routes extends React.Component {
         this.logOut = this.logOut.bind(this);
         this.handlePageJump = this.handlePageJump.bind(this);
         this.handleIs21 = this.handleIs21.bind(this);
+        this.handleCheck = this.handleCheck.bind(this);
         this.state = {
             menuVisible: false,
             loggedIn: true,
             user: undefined,
             darkMode: false,
-            is21: false
+            is21: false,
+            checked: false
         };
     }
 
@@ -49,6 +52,10 @@ export default class Routes extends React.Component {
 
     handleIs21(){
         this.setState({is21: true})
+    }
+
+    handleCheck(){
+        this.setState({checked: !this.state.checked})
     }
 
 
@@ -82,9 +89,22 @@ export default class Routes extends React.Component {
                 <BrowserRouter>
                     <div hidden={this.state.is21}>
                         <Segment style={{width: "100%", height: "100vh"}} placeholder inverted>
-                            <Header size="huge">WARNING</Header>
-                            <a onClick={this.handleIs21} >I am 21</a>
-                            <a href={"http://www.google.com"} onClick={window.close()}>I am baby</a>
+                            <Header size="huge">Confirm Your Age</Header>
+                            <Header size="large">We require our users to be 21 years old or over</Header>
+                            <br/>
+                            <Form inverted>
+                                <Checkbox
+                                    fitted
+                                    label={"I confirm that I am 21 years old or over"}
+                                    value={this.state.checked}
+                                    onClick={this.handleCheck}
+                                />
+                                <br/>
+                                <br/>
+                                <Button size="medium" inverted style={{width: "300px"}} disabled={!this.state.checked} onClick={this.handleIs21} content={"Submit"}/>
+                            </Form>
+                            <br/>
+                            <a href={"http://www.google.com"} onClick={window.close()}>I am baby get me out of here</a>
                         </Segment>
                     </div>
                     <div hidden={!this.state.is21}>
