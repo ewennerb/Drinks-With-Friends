@@ -102,7 +102,7 @@ export default class Search extends React.Component{
                             <Card style={{width: "500px"}} centered>
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    <Icon
+                                    <Image
                                         floated='left'
                                         size='small'
                                         src='https://react.semantic-ui.com/images/avatar/large/molly.png'
