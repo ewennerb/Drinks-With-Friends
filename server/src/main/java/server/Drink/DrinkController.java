@@ -3,12 +3,16 @@ package server.Drink;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import server.SQL.DrinkSQL;
 import java.util.Random;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -44,7 +48,7 @@ public class DrinkController {
     }
 
     @GetMapping("/{name}")
-    public String findDrink(@PathVariable String name) {
+    public Drink findDrink(@PathVariable String name) {
         // find a single drink
         System.out.println("Drink: " + name);
         DrinkSQL drink = new DrinkSQL();
@@ -52,9 +56,16 @@ public class DrinkController {
     }
 
     @PostMapping("/")
-    public String saveDrink(@RequestBody String savedDrink) {
+    public boolean insertDrink(@RequestBody String savedDrink)
+            throws JsonParseException, JsonMappingException, IOException {
         // save a single drink
-        return "success";
+        ObjectMapper om = new ObjectMapper();
+        SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1,0,0, null,null,null));
+        sm.addDeserializer(Drink.class, new DrinkDeserializer());
+        om.registerModule(sm);
+        Drink d = om.readValue(savedDrink, Drink.class);
+        System.out.println(d.toString());
+        return true;
     }
 
     @DeleteMapping("/{name}")
@@ -70,9 +81,8 @@ public class DrinkController {
         SimpleModule sm = new SimpleModule("DrinkSerializer", new Version(1,0,0,null,null,null));
         sm.addSerializer(Drink.class, new DrinkSerializer());
         om.registerModule(sm);
-        String test = om.writeValueAsString(DOTD);
 
-        return test;
+        return om.writeValueAsString(DOTD);
     }
     @Scheduled(cron = "*/10 * * * * *")
     public void randomDOTD(){
