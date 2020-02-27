@@ -115,7 +115,7 @@ public class UserSQL {
 			rs=smt.executeQuery(query);
 
 			String dbName = " ";
-			while(rs.next()){
+			while (rs.next()) {
 				dbName= rs.getString("userName");
 			}
 			if (userName.equals(dbName)){
@@ -133,6 +133,24 @@ public class UserSQL {
 	}
 
 	//userName doesUserEmailExists or null
+	public String doesUserEmailExist(String email){
+		try{
+			String query = "select userName from test_schema.user where email = \""+email+"\"";
+			rs=smt.executeQuery(query);
+
+			String dbEmail = "";
+			while (rs.next()) {
+				dbEmail = rs.getString("userName"); 
+			}
+			System.out.println("dbEmail "+dbEmail);
+			return dbEmail;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error getting userName from email");
+			return null;
+		}
+	}
+
 
 	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
 		try{

@@ -1,15 +1,24 @@
 package server.User;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import server.SQL.UserSQL;
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path="/user")
 public class UserController {
 
-    @GetMapping("/user")
+    @GetMapping("")
     public String findAll() {
         //find a single user
 		UserSQL users = new UserSQL();
@@ -37,7 +46,7 @@ public class UserController {
 		return out;
     }
 
-    @GetMapping("/user/{name}")
+    @GetMapping("/{name}")
     public String findUser(@PathVariable String name) {
         //find a single user
 		System.out.println("User: "+ name);
@@ -53,13 +62,45 @@ public class UserController {
         return users.getUser(name);
     }
 
+	@GetMapping("/find/{email}")
+	public String findUserNameByEmail(@PathVariable String email) 
+			throws JsonParseException, JsonMappingException, IOException {
+		System.out.print("testing" + email);
+
+
+/*		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(email, User.class);
+*/
+		ObjectMapper om2 = new ObjectMapper();
+		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+		sm2.addSerializer(User.class, new UserSerializer());
+		om2.registerModule(sm2);
+
+		UserSQL users = new UserSQL();
+		return "{ \"username\": " + om2.writeValueAsString( users.doesUserEmailExist(email) ) + "}";
+	}
+
     @PostMapping("/")
-    public String saveUser(@RequestBody String username) {
+    public boolean insertUser(@RequestBody String username) 
+			throws JsonParseException, JsonMappingException, IOException {
         //save a single user
-        return "success";
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(username, User.class);
+		System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");	
+
+        return true;
     }
 
-    @DeleteMapping("/{name}")
+    @DeleteMapping("/delete")
     public String deleteUser() {
         //find a single user
         return "success";
