@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 
 import 'semantic-ui-css/semantic.min.css';
 
-class LikedDrinks extends Component{
+class Friends extends Component{
   render(){
     return (
-        <div className="App">
-            Liked drinks ope
+        <div >
+              You have no friends
         </div>
     );
   }
 }
 
-export default LikedDrinks;
+export default Friends;

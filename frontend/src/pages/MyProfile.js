@@ -12,9 +12,11 @@ import {
   Segment,
   
 } from "semantic-ui-react";
-import LikedDrinks from "./LikedDrinks.js"
-
-
+import LikedDrinks from "./userpages/LikedDrinks.js"
+import DislikedDrinks from "./userpages/DislikedDrinks.js"
+import Map from "./userpages/Map.js"
+import Friends from "./userpages/Friends.js"
+import Posts from "./userpages/Posts.js"
 //import "../css/Profile.css"
 
 class Profile extends Component{
@@ -25,7 +27,8 @@ class Profile extends Component{
     this.handleOpen = this.handleOpen.bind(this);
     this.state = {
       modalOpen: false, 
-      activeItem: "posts"
+      activeItem: "posts",
+      user: this.props.user
     };
 }
 
@@ -84,33 +87,39 @@ handleOpen() {
           <Menu  pointing secondary stackable >
           <Menu.Item
           //  this one will be hard to decide how to do 
-           name="posts"
-           
+            name="posts"
+            as={Link}
+            to={{pathname: `/${this.state.user}/posts`}}
             active={activeItem === "posts"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
             name="likedDrinks"
             as={Link}
-            to={{pathname: './likedDrinks'}}
+            to={{pathname: `/${this.state.user}/likedDrinks`}}
             active={activeItem === "likedDrinks"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
             name="dislikedDrinks"
             as={Link}
-            to={{pathname: './dislikedDrings'}}
+            to={{pathname: `/${this.state.user}/dislikedDrinks`}}
             active={activeItem === "dislikedDrinks"}
             onClick={this.handleItemClick}
           />
           <Menu.Item
             name="map"
+            as={Link}
+            to={{pathname: `/${this.state.user}/map`}}
             active={activeItem === "map"}
+            
             onClick={this.handleItemClick}
           
           />
           <Menu.Item
             name="friends"
+            as={Link}
+            to={{pathname: `/${this.state.user}/friends`}}
             active={activeItem === "friends"}
             onClick={this.handleItemClick}
           />
@@ -126,8 +135,11 @@ handleOpen() {
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="./likedDrinks" component={LikedDrinks}/>
-
+              <Route exact path="/:user/posts" component={Posts} />
+              <Route exact path="/:user/likedDrinks" component={LikedDrinks}/>
+              <Route exact path="/:user/dislikedDrinks" component={DislikedDrinks}/>
+              <Route exact path="/:user/map" component={Map}/>
+              <Route exact path="/:user/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>
