@@ -1,7 +1,10 @@
 import React from "react";
-import {Button, Form, Grid, Message, Segment, Icon, Header} from "semantic-ui-react";
+import {Button, Form, Grid, Message, Segment, Icon, Header, Label} from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
+// import {PhoneInput} from 'react-phone-input-2';
+import 'react-phone-input-2/lib/semantic-ui.css'
+
 
 
 export default class Register extends React.Component {
@@ -11,15 +14,18 @@ export default class Register extends React.Component {
         this.handleUserChange = this.handleUserChange.bind(this);
         this.handlePassChange = this.handlePassChange.bind(this);
         this.handleConfChange = this.handleConfChange.bind(this);
+        this.handlePhoneChange = this.handlePhoneChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             email: '',
             username: '',
+            phoneNum: '',
             password: '',
             conf_pass: '',
             msg: '',
             registered: false,
-            response: null
+            response: null,
+            enabled: true
         };
     }
 
@@ -27,7 +33,7 @@ export default class Register extends React.Component {
     //Queries the account creation API endpoint when the button is pressed.
     async handleSubmit() {
         //Todo - This 'Fetch' method will query the API on submission of the form
-        await fetch('http://127.0.0.1:8080/drink/dotd', {
+        await fetch('http://127.0.0.1:8080/users/insert', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -37,6 +43,7 @@ export default class Register extends React.Component {
                 username: this.state.username,
                 password: this.state.password,
                 confirm_password: this.state.conf_pass,
+
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);
@@ -59,10 +66,6 @@ export default class Register extends React.Component {
     };
 
 
-    async handleEmailChange(event){
-        const value = event.target.value;
-        await this.setState({email: value});
-    };
 
     //Handles changes that happen to the 'username' field
     async handleUserChange(event) {
@@ -70,6 +73,15 @@ export default class Register extends React.Component {
         await this.setState({username: value});
     };
 
+    async handleEmailChange(event){
+        const value = event.target.value;
+        await this.setState({email: value});
+    };
+
+    async handlePhoneChange(event){
+        const value = event.target.value;
+        await this.setState({phoneNum: value});
+    }
 
     //Handles changes that happen to the 'password' field
     async handlePassChange(event){
@@ -81,7 +93,19 @@ export default class Register extends React.Component {
     //Handles changes that happen to the 'confirm password' field
     async handleConfChange(event){
         const value = event.target.value;
-        await this.setState({conf_pass: value});
+        if (this.state.password !== value){
+            await this.setState({
+                conf_pass: value,
+                msg: "Passwords do not match",
+                enabled: false
+            })
+        }else{
+            await this.setState({
+                conf_pass: value,
+                msg: "",
+                enabled: true
+            })
+        }
     };
 
 
@@ -104,6 +128,16 @@ export default class Register extends React.Component {
 
                             <br/>
                             <Form.Input
+                                fluid icon='user'
+                                iconPosition='left'
+                                placeholder='Username'
+                                required={true}
+                                value={this.state.username}
+                                onChange={this.handleUserChange}
+                                width='200px'
+                                size="large"
+                            />
+                            <Form.Input
                                 fluid icon='address book'
                                 iconPosition='left'
                                 placeholder='Email'
@@ -113,14 +147,22 @@ export default class Register extends React.Component {
                                 width='200px'
                                 size="large"
                             />
+                            {/*Todo: Getting this to work would be cool*/}
+                            {/*<PhoneInput*/}
+                            {/*    country={'us'}*/}
+                            {/*    value={this.state.phoneNum}*/}
+                            {/*    placeholder="XXX-XXX-XXXX"*/}
+                            {/*    onChange={this.handlePhoneChange}*/}
+                            {/*/>*/}
                             <Form.Input
-                                fluid icon='user'
+                                fluid icon='phone'
                                 iconPosition='left'
-                                placeholder='Username'
+                                placeholder='Password'
+                                type='phone'
                                 required={true}
-                                value={this.state.username}
-                                onChange={this.handleUserChange}
-                                width='200px'
+                                value={this.state.phoneNum}
+                                onChange={this.handlePhoneChange}
+                                width="200px"
                                 size="large"
                             />
                             <Form.Input
@@ -134,6 +176,7 @@ export default class Register extends React.Component {
                                 width="200px"
                                 size="large"
                             />
+                            <Label as={Message} hidden={hidden} pointing='right' size="tiny" active={hidden}>{this.state.msg}</Label>
                             <Form.Input
                                 fluid icon='lock'
                                 iconPosition='left'
@@ -145,7 +188,8 @@ export default class Register extends React.Component {
                                 width="200px"
                                 size="large"
                             />
-                            <Button color='yellow' fluid size='large' onClick={this.handleSubmit}>
+
+                            <Button color='yellow' fluid size='large' active={this.state.enabled} onClick={this.handleSubmit}>
                                 Register
                             </Button>
                             <Message hidden={hidden} color='red'>

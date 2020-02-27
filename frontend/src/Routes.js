@@ -5,6 +5,7 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
+import ActivityFeed from "./pages/ActivityFeed"
 
 import {
     Menu,
@@ -108,13 +109,13 @@ export default class Routes extends React.Component {
                                     <Menu.Item
                                         as={Link}
                                         to={{pathname: '/feed', state: {user: ""}}}
-                                        name={"Activity Feed"}
-                                        active={activeItem === 'Activity Feed'}
+                                        name={"Activity ActivityFeed"}
+                                        active={activeItem === 'Activity ActivityFeed'}
                                         onClick={this.handlePageJump}
                                         borderless
                                     >
                                         {/*<Icon name="beer"/>*/}
-                                        {/*My Feed*/}
+                                        {/*My ActivityFeed*/}
                                     </Menu.Item>
                                     <Menu.Item
                                         as={Link}
@@ -129,7 +130,7 @@ export default class Routes extends React.Component {
                                         {/*<Icon name="user"/>*/}
                                         {/*My Profile*/}
                                     </Menu.Item>
-                                    <Menu.Item as={Link} to={{pathname: '/search', state: {user: ""}}} onClick={this.handlePageJump} name={"Log Out"} >
+                                    <Menu.Item as={Link} to={{pathname: '/', state: {user: ""}}} onClick={this.handlePageJump} name={"Log Out"} >
                                         {/*<Icon name="log out" />Log Out*/}
                                     </Menu.Item>
                                     <Menu.Item content={<br/>}/>
@@ -143,8 +144,9 @@ export default class Routes extends React.Component {
                         <Sidebar.Pusher>
                             <Segment basic placeholder>
                                 <Switch>
-                                    <Route exact path="/search" component={Search}/>
+                                    <Route exact path="/" component={Search}/>
                                     <Route exact path="/login" component={Login} />
+                                    <Route exact path="/feed" component={ActivityFeed}/>
                                     <Route exact path="/register" component={Register}/>
                                     <Route exact path="/profile" component={Profile}/>
                                 </Switch>

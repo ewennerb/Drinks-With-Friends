@@ -9,7 +9,10 @@ import {
     Segment,
     Header,
     Grid,
+    Modal,
+    Button
 } from 'semantic-ui-react'
+const axios = require('axios');
 
 
 export default class Search extends React.Component{
@@ -69,7 +72,18 @@ export default class Search extends React.Component{
 
 
     render(){
-        if (this.state.loaded){
+        if (!this.state.user) {
+            return(
+                <div>
+                    <Modal size='fullscreen' open={true} centered>
+                        <Segment size="massive" placeholder inverted style={{width: "100%", height: "100vh"}} padded attached="top">
+                            ARE YE 21 YEHT?
+                        </Segment>
+                    </Modal>
+                </div>
+
+            )
+        }else{
             return(
                 <div>
                     <Grid style={{ height: '100vh' }} columns={16} centered>
@@ -129,10 +143,17 @@ export default class Search extends React.Component{
                     <Grid></Grid>
                 </div>
             )
-        }else{
-            return(
-                <div/>
-            )
         }
+
+
+
+
+        // if (this.state.loaded){
+        //
+        // }else{
+        //     return(
+        //         <div/>
+        //     )
+        // }
     }
 }
