@@ -76,19 +76,15 @@ public class DrinkController {
 
     @GetMapping("/dotd")
     public String drinkOfTheDay() throws JsonProcessingException {
-        //pull the drink of the day
-        ObjectMapper om = new ObjectMapper();
-        SimpleModule sm = new SimpleModule("DrinkSerializer", new Version(1,0,0,null,null,null));
-        sm.addSerializer(Drink.class, new DrinkSerializer());
-        om.registerModule(sm);
-
-        return om.writeValueAsString(DOTD);
+        return new ObjectMapper().writeValueAsString(DOTD);
     }
     @Scheduled(cron = "*/10 * * * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
+        
         ArrayList<Drink> drinks = ds.getAllDrinks();
+
         if (drinks.size() <= 0) {
             return;
         }
@@ -103,5 +99,7 @@ public class DrinkController {
         }
 
         DOTD = drinks.get(pos);
+        System.out.println(DOTD.toString());
+        
     }
 }
