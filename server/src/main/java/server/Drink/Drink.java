@@ -23,5 +23,20 @@ public class Drink{
 
     }
 
+    @Override
+    public String toString() {
+        String out = "";
+        out += "name: " + this.name + "\n";
+        out += "description: " + this.description + "\ningredients: ";
+        for (String s : ingredients) {
+            out += s + " ";
+        }
+        out+= "\n";
+        out += "publisher: " + this.publisher + "\n";
+        out += "photo: " + this.photo + "\n";
+        out += "likes: " + (likes) + " dislikes: " + (dislikes) + "\n";
+        return out;
+    }
+
 
 }
