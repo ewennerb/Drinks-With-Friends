@@ -23,7 +23,7 @@ public class DrinkSerializer extends StdSerializer<Drink> {
 
     @Override
     public void serialize(Drink value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-        // TODO Auto-generated method stub
+        
         gen.writeStartObject();
         gen.writeStringField("name", value.name);
         gen.writeStringField("description", value.description);

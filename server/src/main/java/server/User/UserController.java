@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{name}")
-    public String findDrink(@PathVariable String name) {
+    public String findUser(@PathVariable String name) {
         //find a single user
 		System.out.println("User: "+ name);
 		UserSQL users = new UserSQL();
@@ -54,13 +54,13 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public String saveDrink(@RequestBody String username) {
+    public String saveUser(@RequestBody String username) {
         //save a single user
         return "success";
     }
 
     @DeleteMapping("/{name}")
-    public String deleteDrink() {
+    public String deleteUser() {
         //find a single user
         return "success";
     }
