@@ -18,9 +18,36 @@ class Login extends React.Component {
             logged_in: true,
             email_reset: '',
             fUser: false, //if forgot username is clicked
-            fPass: false //if forgot password is clicked
+            fPass: false, //if forgot password is clicked
+            response: ''
         };
     }
+
+    sendEmail = async e => { //WORK IN PROGRESS
+        e.preventDefault();
+        if (this.state.email_reset == '') { //if nothing is enetered in the email box
+            this.setState({
+                showEmailError: false,
+                messageFromServer: '',
+            });
+        }
+        else { //If there is something in the email box
+            await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                console.log(data);
+                this.setState({response: data})
+            }).catch(console.log)
+            
+            // .catch(error => { //If there is no user with the given email
+            //     console.log;
+            // });
+        }
+    };
 
     render(){
         return(
