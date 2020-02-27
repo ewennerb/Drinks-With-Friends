@@ -179,10 +179,10 @@ public class UserSQL {
 	}
 
 	//remove oldPass function
-	public boolean updatePassword(String userName, String oldPass, String newPass){
+	public boolean updatePassword(String userName, String newPass){
 		try{
 			//first check oldPass is what is in DB
-			String query = "select * from test_schema.user where userName = \""+userName+"\"";
+			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
 			rs = smt.executeQuery(query);
 
 			String p = " ";
@@ -194,11 +194,11 @@ public class UserSQL {
 
 
 			//then check if queried password is equal to inputted old password
-			System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
+			/*System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
 			if (!p.equals(oldPass)){
 				System.out.println("Old password not correct.");
 				return false;
-			}
+			}*/
 			
 			//if it is, then update with new password
 			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";

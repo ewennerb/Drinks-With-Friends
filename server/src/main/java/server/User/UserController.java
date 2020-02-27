@@ -88,14 +88,14 @@ public class UserController {
 			throws JsonParseException, JsonMappingException, IOException {
         //save a single user
 		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(User.class, new UserDeserializer());
 		om.registerModule(sm);
 		User u = om.readValue(username, User.class);
 		System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
-		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");	
+		users.insertUser(username, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");	
 
         return true;
     }
