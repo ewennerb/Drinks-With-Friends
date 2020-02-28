@@ -70,7 +70,7 @@ export default class Search extends React.Component{
 
     //Todo: Send the query parameters to the server and fuck shit up
     async getSearchResults(){
-        await fetch('http://localhost:8080/drink/search?' + this.state.searchText, {
+        await fetch('http://localhost:8080/drink/search?s=' + this.state.searchText, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
