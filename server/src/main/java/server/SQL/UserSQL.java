@@ -152,12 +152,12 @@ public class UserSQL {
 	}
 
 
-	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
+	public String insertUser(String userName, String password, String name, String email, String phoneNumber){
 		try{
 			//first need to checkUniqueUserName
 			if (!checkUniqueUserName(userName)) {
 				System.out.println("Username not unqiue. Cannot insert new user.");
-				return false;
+				return "{ \"status\" : \"Error: user already exists.\"}";
 			}
 			//if unique then can insert User
 			String query = "insert into test_schema.user "+ 
@@ -168,11 +168,11 @@ public class UserSQL {
 
 			int insertResult = smt.executeUpdate(query);
 
-			return true;
+			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error inserting new user to DB.");
-			return false;
+			return "{ \"status\" : \"Error: SQL insert failed.\"}";
 		}
 
 

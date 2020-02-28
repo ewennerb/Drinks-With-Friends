@@ -84,7 +84,7 @@ public class UserController {
 	}
 
     @PostMapping("/")
-    public boolean insertUser(@RequestBody String username) 
+    public String insertUser(@RequestBody String username) 
 			throws JsonParseException, JsonMappingException, IOException {
         //save a single user
 		ObjectMapper om = new ObjectMapper();
@@ -95,9 +95,9 @@ public class UserController {
 		System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
-		users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
+		String insert  = users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
 
-        return true;
+	    return insert;
     }
 
     @DeleteMapping("/delete")
