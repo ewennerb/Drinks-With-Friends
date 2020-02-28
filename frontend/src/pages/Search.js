@@ -10,7 +10,7 @@ import {
     Segment,
     Header,
     Grid,
-    Loader, Button,
+    Loader, Button, List
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 
@@ -30,6 +30,7 @@ export default class Search extends React.Component{
             loaded: false,
             loggedIn: false,
             done: false,
+            results: [],
             // is21: this.props.location.state.is21,
             searchable: false,
         }
@@ -40,9 +41,10 @@ export default class Search extends React.Component{
     async componentDidMount() {
         await this.getDOTD();
         this.setState({
-            loaded: true,
+            loaded: false,
             user: this.props.user,
             done: true,
+            results: [],
             searchable: false
         })
     }
@@ -61,10 +63,11 @@ export default class Search extends React.Component{
             //     password: this.state.password,
             //     confirm_password: this.state.conf_pass,
             // })
-        }).then(res => res.json()).then((data) => {
+        }).then(res => res.json()).then(async (data) => {
             console.log(data);
-            this.setState({dotd: data})
+            await this.setState({dotd: data})
         }).catch(console.log);
+        await this.setState({done: true})
     }
 
 
@@ -76,10 +79,11 @@ export default class Search extends React.Component{
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-        }).then(res => res.json()).then((data) => {
+        }).then(res => res.json()).then(async (data) => {
             console.log(data);
-            this.setState({response: data, modalOpen: false})
+            this.setState({results: data.results})
         }).catch(console.log);
+        this.setState({loaded: true})
     }
 
 
@@ -97,16 +101,19 @@ export default class Search extends React.Component{
 
 
     render(){
+
         if (!this.state.done){
             return(
                 <div>
-                    <Segment style={{ height: '100vh' }} textAlign={"center"}>
+                    <Segment style={{ height: '40vh' }} textAlign={"center"}>
                         <Dimmer active>
                             <Loader content='Loading' />
                         </Dimmer>
                     </Segment>
                 </div>
             )
+        }else{
+
         }
             //IF dotd not ready return loader
             return(
@@ -119,19 +126,31 @@ export default class Search extends React.Component{
                             <Card style={{width: "500px"}} centered>
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    <Image
-                                        floated='left'
-                                        size='small'
-                                        src='https://react.semantic-ui.com/images/avatar/large/molly.png'
-                                    />
+                                    {/*<Image*/}
+                                    {/*    floated='left'*/}
+                                    {/*    size='small'*/}
+                                    {/*    src='https://react.semantic-ui.com/images/avatar/large/molly.png'*/}
+                                    {/*/>*/}
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
                                         {this.state.dotd.name}
                                     </Header>
                                     {/*<Card.Content header={this.state.dotd.description}/>*/}
-                                    <Card.Content header={"Description Here"}/>
+                                    <Card.Description content={this.state.dotd.description}/>
+                                    <br/>
+                                    <Card.Content>
+                                        <List bulleted>
+                                            {this.state.dotd.ingredients.map(ingr => {
+                                                return(
+                                                    <List.Item>
+                                                        {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                                    </List.Item>
+                                                )
+                                            })}
+                                        </List>
+                                    </Card.Content>
 
                                     {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
-                                    <Card.Meta>Publisher Here</Card.Meta>
+                                    <Card.Meta>{this.state.dotd.publisher}</Card.Meta>
 
                                     <Card.Content extra>
                                         <Rating icon='star' defaultRating={5} maxRating={5}/>
@@ -166,16 +185,46 @@ export default class Search extends React.Component{
                                 <p hidden={this.state.loggedIn}>
                                     <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
                                 </p>
+                                <br/>
+                                <br/>
+                                {this.state.results.map(result => {
+                                    return (
+                                        <Card style={{width: "500px"}} centered>
+                                            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                                                <Header textAlign="center" style={{marginTop: "0px"}}>
+                                                    {result.name}
+                                                </Header>
+                                                <Card.Description header={result.description}/>
+                                                <br/>
+                                                <Card.Content>
+                                                    <List bulleted>
+                                                        {result.ingredients.map(ingr => {
+                                                            return(
+                                                                <List.Item>
+                                                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                                                </List.Item>
+                                                            )
+                                                        })}
+                                                    </List>
+                                                </Card.Content>
 
+
+                                                {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
+                                                <Card.Meta>{result.publisher}</Card.Meta>
+
+                                                <Card.Content extra>
+                                                    <Rating icon='star' defaultRating={5} maxRating={5}/>
+                                                </Card.Content>
+                                            </Segment>
+                                        </Card>
+                                    )
+                                })}
                             </Grid.Row>
 
                         </Grid.Column>
                         <Grid.Column width={4}/>
                     </Grid>
-                    {/*Todo: Put a second grid below for rendering search results*/}
-                    <Grid>
 
-                    </Grid>
                 </div>
             )
         }
