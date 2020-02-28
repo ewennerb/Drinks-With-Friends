@@ -1,5 +1,6 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
+import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {
     Card,
@@ -9,7 +10,10 @@ import {
     Segment,
     Header,
     Grid,
+    Loader,
 } from 'semantic-ui-react'
+import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
+const axios = require('axios');
 
 
 export default class Search extends React.Component{
@@ -17,11 +21,15 @@ export default class Search extends React.Component{
     constructor(props){
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
+        console.log(this.props.location.state);
         this.state = {
             searchText: "",
             response: undefined,
             loaded: false,
             loggedIn: false,
+            done: false,
+            is21: this.props.location.state.is21,
+            searchable: false,
         }
     }
 
@@ -30,7 +38,10 @@ export default class Search extends React.Component{
     async componentDidMount() {
         await this.getDOTD();
         this.setState({
-            loaded: true
+            loaded: true,
+            is21: this.props.location.state.is21,
+            done: true,
+            searchable: false
         })
     }
 
@@ -64,12 +75,29 @@ export default class Search extends React.Component{
     //Records Search Bar Input
     async handleInputChange(event){
         const value = event.target.value;
-        await this.setState({searchText: value});
+        let searchable;
+        if(value !== ' ' && value !== undefined && value !== ""){
+            searchable = false;
+        }else{
+            searchable = true;
+        }
+        await this.setState({searchText: value, searchable: searchable});
     };
 
 
     render(){
-        if (this.state.loaded){
+        if (!this.state.done){
+            return(
+                <div>
+                    <Segment style={{ height: '100vh' }} textAlign={"center"}>
+                        <Dimmer active>
+                            <Loader content='Loading' />
+                        </Dimmer>
+                    </Segment>
+                </div>
+            )
+        }
+            //IF dotd not ready return loader
             return(
                 <div>
                     <Grid style={{ height: '100vh' }} columns={16} centered>
@@ -126,13 +154,21 @@ export default class Search extends React.Component{
                         <Grid.Column width={4}/>
                     </Grid>
                     {/*Todo: Put a second grid below for rendering search results*/}
-                    <Grid></Grid>
+                    <Grid>
+
+                    </Grid>
                 </div>
             )
-        }else{
-            return(
-                <div/>
-            )
         }
-    }
+
+
+
+
+        // if (this.state.loaded){
+        //
+        // }else{
+        //     return(
+        //         <div/>
+        //     )
+        // }
 }
