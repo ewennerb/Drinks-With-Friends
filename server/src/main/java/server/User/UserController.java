@@ -95,7 +95,7 @@ public class UserController {
 		System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
-		users.insertUser(username, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");	
+		users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
 
         return true;
     }
