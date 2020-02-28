@@ -201,6 +201,8 @@ class Login extends React.Component {
     //when the "send email button is clicked"
     async sendEmail() {
         console.log("email_reset: " + this.state.email_reset);
+
+        //GET INFO
         await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
                  method: 'GET',
                  headers: {
@@ -211,6 +213,55 @@ class Login extends React.Component {
                  console.log(data);
                  this.setState({response: data});
              });
+
+        if (this.state.fPass) { //Forgot Password
+            await fetch('http://localhost:8080/user/resetPasswordEmail', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userName: this.state.response,
+                        phoneNumber: '',
+                        password: '',
+                        name: '',
+                        email: this.state.email_reset,
+                    })
+                }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                    console.log(data);
+                    this.setState({response: data});
+                }).catch(console.log);
+        }
+
+
+        else { //forgot username
+            await fetch('http://localhost:8080/user/forgotUsername', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userName: this.state.response,
+                    phoneNumber: '',
+                    password: '',
+                    name: '',
+                    email: this.state.email_reset,
+                })
+            }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                console.log(data);
+                this.setState({response: data});
+            }).catch(console.log);
+        }
+
+
+
+
+
+
+
+             
         //         var nodemailer = require('nodemailer');
 
         //         // create reusable transporter object using the default SMTP transport
@@ -275,13 +326,13 @@ class Login extends React.Component {
 //                 console.log('Message Sent')
 //             }
 // });
-        this.props.passState(this.state.user, this.state.logged_in);
-        return (
-            <Redirect to={{
-                pathname: '/ResetPassword',
-                state: { email_reset: this.state.email_reset, response: this.state.response}
-            }} />
-        )
+        // this.props.passState(this.state.user, this.state.logged_in);
+        // return (
+        //     <Redirect to={{
+        //         pathname: '/ResetPassword',
+        //         state: { email_reset: this.state.email_reset, response: this.state.response}
+        //     }} />
+        // )
     }
 
     //when the "login" button is clicked
