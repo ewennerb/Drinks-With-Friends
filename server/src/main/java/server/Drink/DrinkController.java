@@ -64,7 +64,8 @@ public class DrinkController {
         sm.addDeserializer(Drink.class, new DrinkDeserializer());
         om.registerModule(sm);
         Drink d = om.readValue(savedDrink, Drink.class);
-        System.out.println(d.toString());
+        DrinkSQL ds = new DrinkSQL();
+        ds.insertDrink(d);
         return true;
     }
 
@@ -78,7 +79,7 @@ public class DrinkController {
     public String drinkOfTheDay() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(DOTD);
     }
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "*/60 * * * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
@@ -86,6 +87,7 @@ public class DrinkController {
         ArrayList<Drink> drinks = ds.getAllDrinks();
 
         if (drinks.size() <= 0) {
+            oldDOTD = new ArrayList<>();
             return;
         }
         if (oldDOTD.size() > 35 || oldDOTD.size() == drinks.size()){   //35 drinks per month that can't be repeated or its the max amount in the database
@@ -97,9 +99,8 @@ public class DrinkController {
             drinks.remove(pos);
             pos = r.nextInt(drinks.size());
         }
-
         DOTD = drinks.get(pos);
-        System.out.println(DOTD.toString());
+        System.out.println(DOTD.name + " by "+ DOTD.publisher);
         
     }
 }
