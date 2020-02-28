@@ -66,46 +66,47 @@ public class UserSQL {
 	}
 
 
-	public String getUser(String name){
+	public User getUser(String name){
 		try{
 	
 			String query = "select * from test_schema.user where userName = \""+name+"\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
-			String returnUser = "User: "+name+"<br>";
+			//String returnUser = "User: "+name+"<br>";
+			User u = new User();
 
 			while (rs.next())
 			{
-				int userId=rs.getInt("userId");
-				String userName=rs.getString("userName");
-				String password = rs.getString("password");
-				String fullName = rs.getString("name");
-				String email = rs.getString("email");
-				String phoneNum = rs.getString("phoneNumber");
-				String profilePhoto=rs.getString("profilePhoto");
-				String bio=rs.getString("bio");
-				String likedDrinks = rs.getString("likedDrinks");
-				String dislikedDrinks = rs.getString("dislikedDrinks");
-				String favoriteDrink = rs.getString("favoriteDrink");
-				String publishedDrinks = rs.getString("publishedDrinks");
-				String postHistory = rs.getString("postHistory");
-				String friendsList = rs.getString("friendsList");
-				String dateCreated = rs.getString("dateCreated");
-				String lastLogin = rs.getString("lastLogin");
+				u.userId=rs.getInt("userId");
+				u.userName=rs.getString("userName");
+				u.password = rs.getString("password");
+				u.name = rs.getString("name");
+				u.email = rs.getString("email");
+				u.phoneNumber = rs.getString("phoneNumber");
+				u.photo = rs.getString("profilePhoto");
+				u.bio=rs.getString("bio");
+				u.likedDrinks = rs.getString("likedDrinks");
+				u.dislikedDrinks = rs.getString("dislikedDrinks");
+				u.favoriteDrink = rs.getString("favoriteDrink");
+				u.publishedDrinks = rs.getString("publishedDrinks");
+				u.postHistory = rs.getString("postHistory");
+				u.friendsList = rs.getString("friendsList");
+				u.dateCreated = rs.getString("dateCreated");
+				u.lastLogin = rs.getString("lastLogin");
 
 			
-				returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
-				returnUser+="<br>";
+				//returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
+				//returnUser+="<br>";
 			}
 
 			conn.close();
-			System.out.println(returnUser);
-			return returnUser;
+			//System.out.println(returnUser);
+			return u;
 
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "/user find Fail";
+			return null;
 		}
 	}
 
@@ -152,12 +153,12 @@ public class UserSQL {
 	}
 
 
-	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
+	public String insertUser(String userName, String password, String name, String email, String phoneNumber){
 		try{
 			//first need to checkUniqueUserName
 			if (!checkUniqueUserName(userName)) {
 				System.out.println("Username not unqiue. Cannot insert new user.");
-				return false;
+				return "{ \"status\" : \"Error: user already exists.\"}";
 			}
 			//if unique then can insert User
 			String query = "insert into test_schema.user "+ 
@@ -168,42 +169,48 @@ public class UserSQL {
 
 			int insertResult = smt.executeUpdate(query);
 
-			return true;
+			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error inserting new user to DB.");
-			return false;
+			return "{ \"status\" : \"Error: SQL insert failed.\"}";
 		}
 
 
 	}
 
 	//remove oldPass function
-	public boolean updatePassword(String userName, String oldPass, String newPass){
+	public boolean updatePassword(String userName, String newPass){
 		try{
 			//first check oldPass is what is in DB
-			String query = "select * from test_schema.user where userName = \""+userName+"\"";
+			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
 			rs = smt.executeQuery(query);
 
 			String p = " ";
 
-			while (rs.next()){
-				System.out.println("output: "+rs.getString("userName"));
-				p = rs.getString("password");
-			}
+			//while (rs.next()){
+			//	System.out.println("output: "+rs.getString("userName"));
+			//	p = rs.getString("password");
+			//}
 
 
 			//then check if queried password is equal to inputted old password
-			System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
+			/*System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
 			if (!p.equals(oldPass)){
 				System.out.println("Old password not correct.");
 				return false;
-			}
+			}*/
 			
 			//if it is, then update with new password
 			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
-			
+			if(updateResult == 1){
+				System.out.print("********* ITS !");
+
+			}else {
+				System.out.print("****** IS 0");
+
+			}
 			
 			return true;
 		}catch(Exception e){
