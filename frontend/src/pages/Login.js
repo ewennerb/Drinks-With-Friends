@@ -209,8 +209,8 @@ class Login extends React.Component {
                      'Accept': 'application/json',
                      'Content-Type': 'application/json',
                  },
-             }).then(res => res.json()).then((data) => { //If there is a user with the given email
-                 this.setState({response: data});
+             }).then(res => res.json()).then(async (data) => { //If there is a user with the given email
+                 await this.setState({response: data});
                  console.log(data);
              });
 
@@ -222,7 +222,7 @@ class Login extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userName: this.state.response,
+                        userName: this.state.response.username,
                         phoneNumber: '',
                         password: '',
                         name: '',
@@ -243,7 +243,7 @@ class Login extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userName: this.state.response,
+                    userName: this.state.response.username,
                     phoneNumber: '',
                     password: '',
                     name: '',
