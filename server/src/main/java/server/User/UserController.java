@@ -146,9 +146,10 @@ public class UserController {
 		//System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
-		System.out.print("email: "+u.email);
+		System.out.print("email: "+u.email+" username "+u.userName);
 
 		Email resetPass = new Email(u.email, u.userName);
+		System.out.print("************here: HERE: "+resetPass.userName);
 		return resetPass.sendEmail(1); // 1 = password, 0 = userName
 	}
 
@@ -167,6 +168,7 @@ public class UserController {
 		System.out.print("email: "+u.email);
 
 		Email resetPass = new Email(u.email, u.userName);
+		
 		return resetPass.sendEmail(0); // 1 = password, 0 = userName
 	}
 
