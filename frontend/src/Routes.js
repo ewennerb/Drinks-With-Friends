@@ -5,6 +5,7 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
+import ResetPassword from "./pages/ResetPassword"
 
 import {
     Menu,
