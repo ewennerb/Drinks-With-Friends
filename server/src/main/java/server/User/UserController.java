@@ -153,7 +153,7 @@ public class UserController {
 	}
 
 	@PostMapping("/forgotUsername")
-	public String sendResetEmail(@RequestBody String userEmail)
+	public String forgotUsername(@RequestBody String userEmail)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
