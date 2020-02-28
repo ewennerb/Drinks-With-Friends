@@ -41,6 +41,7 @@ export default class Routes extends React.Component {
             user: undefined,
             loggedIn: false,
         })
+        window.location.reload(false);
     }
 
     handlePageJump(e, { name }){
@@ -58,6 +59,14 @@ export default class Routes extends React.Component {
         this.setState({checked: !this.state.checked})
     }
 
+
+    passState(user, logged_in){
+        console.log("Doing Generate");
+        this.setState({
+            user: user,
+            logged_in: logged_in
+        });
+    }
 
     render(){
         let menuItem;
@@ -166,7 +175,7 @@ export default class Routes extends React.Component {
                                             {/*<Icon name="user"/>*/}
                                             {/*My Profile*/}
                                         </Menu.Item>
-                                        <Menu.Item as={Link} to={{pathname: '/', state: {user: "", is21: this.state.is21}}} onClick={this.handlePageJump} name={"Log Out"} >
+                                        <Menu.Item as={Link} to={{pathname: '/', state: {user: "", is21: this.state.is21}}} onClick={this.logOut} name={"Log Out"} >
                                             {/*<Icon name="log out" />Log Out*/}
                                         </Menu.Item>
                                         <Menu.Item content={<br/>}/>
@@ -181,7 +190,7 @@ export default class Routes extends React.Component {
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" component={Search}/>
-                                        <Route exact path="/login" component={Login} />
+                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
                                         <Route exact path="/feed" component={ActivityFeed}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/profile" component={Profile}/>

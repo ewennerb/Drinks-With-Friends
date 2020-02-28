@@ -10,8 +10,6 @@ import {
     Segment,
     Header,
     Grid,
-    Modal,
-    Button,
     Loader,
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
@@ -30,7 +28,8 @@ export default class Search extends React.Component{
             loaded: false,
             loggedIn: false,
             done: false,
-            is21: this.props.location.state.is21
+            is21: this.props.location.state.is21,
+            searchable: false,
         }
     }
 
@@ -41,7 +40,8 @@ export default class Search extends React.Component{
         this.setState({
             loaded: true,
             is21: this.props.location.state.is21,
-            done: true
+            done: true,
+            searchable: false
         })
     }
 
@@ -75,7 +75,13 @@ export default class Search extends React.Component{
     //Records Search Bar Input
     async handleInputChange(event){
         const value = event.target.value;
-        await this.setState({searchText: value});
+        let searchable;
+        if(value !== ' ' && value !== undefined && value !== ""){
+            searchable = false;
+        }else{
+            searchable = true;
+        }
+        await this.setState({searchText: value, searchable: searchable});
     };
 
 
@@ -148,7 +154,9 @@ export default class Search extends React.Component{
                         <Grid.Column width={4}/>
                     </Grid>
                     {/*Todo: Put a second grid below for rendering search results*/}
-                    <Grid></Grid>
+                    <Grid>
+
+                    </Grid>
                 </div>
             )
         }
