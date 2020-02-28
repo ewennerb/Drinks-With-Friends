@@ -15,7 +15,7 @@ public class Email{
 		this.userName = userName;
 	}
 
-	public String sendEmail()
+	public String sendEmail(int flag)
 	{
 		String to = this.recipientEmail;
 		String from = "nickleuer24@gmail.com";
@@ -37,10 +37,14 @@ public class Email{
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
 			//Fix message and subject
-			message.setSubject("This is the Subject Line");
-			message.setText("This is a test email");
-			//^^
-
+			if ( flag == 1 ) { //If 'forgot password'
+				message.setSubject("Forgot Username/Password");
+				message.setText("Username: " + userName);
+			} else { //If 'forgot password'
+				message.setSubject("Forgot Username/Password");
+				message.setText("Username: " + userName + "\n --link here--" );
+			}
+			//^
 			Transport.send(message, "nick@leuer.com", "**22Pokemonn");
 
 			System.out.println("Sent message successfully");
