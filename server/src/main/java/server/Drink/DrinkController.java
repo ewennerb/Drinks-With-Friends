@@ -94,7 +94,7 @@ public class DrinkController {
         if (drinks == null) {
             return "{\"results\": \"DNE\"";
         }
-        String out = "{ results: [";
+        String out = "{ \"results\": [";
         for (Drink drink : drinks) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
         }
