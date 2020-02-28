@@ -66,46 +66,47 @@ public class UserSQL {
 	}
 
 
-	public String getUser(String name){
+	public User getUser(String name){
 		try{
 	
 			String query = "select * from test_schema.user where userName = \""+name+"\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
-			String returnUser = "User: "+name+"<br>";
+			//String returnUser = "User: "+name+"<br>";
+			User u = new User();
 
 			while (rs.next())
 			{
-				int userId=rs.getInt("userId");
-				String userName=rs.getString("userName");
-				String password = rs.getString("password");
-				String fullName = rs.getString("name");
-				String email = rs.getString("email");
-				String phoneNum = rs.getString("phoneNumber");
-				String profilePhoto=rs.getString("profilePhoto");
-				String bio=rs.getString("bio");
-				String likedDrinks = rs.getString("likedDrinks");
-				String dislikedDrinks = rs.getString("dislikedDrinks");
-				String favoriteDrink = rs.getString("favoriteDrink");
-				String publishedDrinks = rs.getString("publishedDrinks");
-				String postHistory = rs.getString("postHistory");
-				String friendsList = rs.getString("friendsList");
-				String dateCreated = rs.getString("dateCreated");
-				String lastLogin = rs.getString("lastLogin");
+				u.userId=rs.getInt("userId");
+				u.userName=rs.getString("userName");
+				u.password = rs.getString("password");
+				u.name = rs.getString("name");
+				u.email = rs.getString("email");
+				u.phoneNumber = rs.getString("phoneNumber");
+				u.photo = rs.getString("profilePhoto");
+				u.bio=rs.getString("bio");
+				u.likedDrinks = rs.getString("likedDrinks");
+				u.dislikedDrinks = rs.getString("dislikedDrinks");
+				u.favoriteDrink = rs.getString("favoriteDrink");
+				u.publishedDrinks = rs.getString("publishedDrinks");
+				u.postHistory = rs.getString("postHistory");
+				u.friendsList = rs.getString("friendsList");
+				u.dateCreated = rs.getString("dateCreated");
+				u.lastLogin = rs.getString("lastLogin");
 
 			
-				returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
-				returnUser+="<br>";
+				//returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
+				//returnUser+="<br>";
 			}
 
 			conn.close();
-			System.out.println(returnUser);
-			return returnUser;
+			//System.out.println(returnUser);
+			return u;
 
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return "/user find Fail";
+			return null;
 		}
 	}
 
@@ -187,10 +188,10 @@ public class UserSQL {
 
 			String p = " ";
 
-			while (rs.next()){
-				System.out.println("output: "+rs.getString("userName"));
-				p = rs.getString("password");
-			}
+			//while (rs.next()){
+			//	System.out.println("output: "+rs.getString("userName"));
+			//	p = rs.getString("password");
+			//}
 
 
 			//then check if queried password is equal to inputted old password
@@ -203,7 +204,13 @@ public class UserSQL {
 			//if it is, then update with new password
 			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
-			
+			if(updateResult == 1){
+				System.out.print("********* ITS !");
+
+			}else {
+				System.out.print("****** IS 0");
+
+			}
 			
 			return true;
 		}catch(Exception e){
