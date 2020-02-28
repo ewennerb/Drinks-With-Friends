@@ -210,10 +210,29 @@ public class UserSQL {
 
 			if(updateResult == 1){
 				return "{ \"status\" : \"ok\" }";
-			}else if (updateResult == 0) {
+			} else if (updateResult == 0) {
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 			
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String updateBio(String userName, String bio){
+		try{
+			String query = "update test_schema.user set bio = \""+bio+"\" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+
+			if (updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
 			return "{ \"status\" : \"Error: SQL update failed.\" }";
 
 		}catch(Exception e){
