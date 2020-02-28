@@ -13,10 +13,15 @@ public class Email{
 	{
 		this.recipientEmail = recipientEmail;
 		this.userName = userName;
+		System.out.println("this: " + this.userName);
+		System.out.println("not this: " + userName);
+
 	}
 
 	public String sendEmail(int flag)
 	{
+
+		System.out.println("usermname: "+this.userName);
 		String to = this.recipientEmail;
 		String from = "nickleuer24@gmail.com";
 		
@@ -39,10 +44,13 @@ public class Email{
 			//Fix message and subject
 			if ( flag == 1 ) { //If 'forgot password'
 				message.setSubject("Forgot Username/Password");
-				message.setText("Username: " + userName);
-			} else { //If 'forgot password'
+				System.out.println(this.userName);
+				String messageBody = "Username: " + this.userName + "http://localhost:3000/resetPassword";
+				System.out.println("MESSAGE:"+messageBody);
+				message.setText(messageBody);
+			} else { //If 'forgot username'
 				message.setSubject("Forgot Username/Password");
-				message.setText("Username: " + userName + "\n --link here--" );
+				message.setText("Username: " + this.userName);
 			}
 			//^
 			Transport.send(message, "nick@leuer.com", "**22Pokemonn");

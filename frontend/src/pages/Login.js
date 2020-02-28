@@ -209,9 +209,9 @@ class Login extends React.Component {
                      'Accept': 'application/json',
                      'Content-Type': 'application/json',
                  },
-             }).then(res => res.json()).then((data) => { //If there is a user with the given email
+             }).then(res => res.json()).then(async (data) => { //If there is a user with the given email
+                 await this.setState({response: data});
                  console.log(data);
-                 this.setState({response: data});
              });
 
         if (this.state.fPass) { //Forgot Password
@@ -222,7 +222,7 @@ class Login extends React.Component {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userName: this.state.response,
+                        userName: this.state.response.username,
                         phoneNumber: '',
                         password: '',
                         name: '',
@@ -243,7 +243,7 @@ class Login extends React.Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userName: this.state.response,
+                    userName: this.state.response.username,
                     phoneNumber: '',
                     password: '',
                     name: '',
