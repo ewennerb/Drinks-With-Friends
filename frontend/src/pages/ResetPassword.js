@@ -1,4 +1,4 @@
-from 'react'
+import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import Redirect from "react-router-dom/es/Redirect";
@@ -35,20 +35,20 @@ class ResetPassword extends React.Component {
 
 
     //Handles changes that happen to the 'password' field
-    async handlePassChange(event){
+    async handlePassChange(event) {
         const value = event.target.value;
         await this.setState({password: value});
     };
 
-    async handleConfChange(event){
+    async handleConfChange(event) {
         const value = event.target.value;
-        if (this.state.password !== value){
+        if (this.state.password !== value) {
             await this.setState({
                 confPass: value,
                 msg: "Passwords do not match",
                 enabled: false
             })
-        }else{
+        } else {
             await this.setState({
                 confPass: value,
                 msg: "",
@@ -75,7 +75,7 @@ class ResetPassword extends React.Component {
                                 placeholder='Username'
                                 required='true'
                                 value={this.state.username}
-                                onChange={this.handleUserChange}
+                                onChange={this.handleUsernameChange}
                             />
 
                             <Form.Input
@@ -86,7 +86,7 @@ class ResetPassword extends React.Component {
                                 type='password'
                                 required='true'
                                 value={this.state.password}
-                                onChange={this.handlePasswordChange}
+                                onChange={this.handlePassChange}
                             />
 
                             <Form.Input
@@ -104,7 +104,7 @@ class ResetPassword extends React.Component {
                                 Login
                             </Button>
 
-                            <Message hidden={hidden} color='red'>
+                            <Message hidden={true} color='red'>
                                 {this.state.msg}
                             </Message>
                             <br/>
@@ -134,106 +134,28 @@ class ResetPassword extends React.Component {
         await this.setState({password: value});
     };
 
-    //If "Username" is clicked
-    handleOpenUser() {
-        this.setState({
-            modalOpen: true,
-            fUser: true
-        });
-    }
-
-    //If "Password" is clicked
-    handleOpenPass() {
-        this.setState({
-            modalOpen: true,
-            fPass: true
-        });
-    }
-
-    //Close window button / modal
-    handleClose() {
-        this.setState({
-            modalOpen: false,
-            fUser: false,
-            fPass: false,
-            username: '',
-            password: '',
-            email_reset: ''
-        });
-    }
-
-    //when the "send email button is clicked"
-    async sendEmail() {
-        console.log("email_reset: " + this.state.email_reset);
-
-        //GET INFO
-        await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then(res => res.json()).then((data) => { //If there is a user with the given email
-            console.log(data);
-            this.setState({response: data});
-        });
-
-        if (this.state.fPass) { //Forgot Password
-            await fetch('http://localhost:8080/user/resetPasswordEmail', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userName: this.state.response,
-                    phoneNumber: '',
-                    password: '',
-                    name: '',
-                    email: this.state.email_reset,
-                })
-            }).then(res => res.json()).then((data) => { //If there is a user with the given email
-                console.log(data);
-                this.setState({response: data});
-            }).catch(console.log);
-        }
-
-
-        else { //forgot username
-            await fetch('http://localhost:8080/user/forgotUsername', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userName: this.state.response,
-                    phoneNumber: '',
-                    password: '',
-                    name: '',
-                    email: this.state.email_reset,
-                })
-            }).then(res => res.json()).then((data) => { //If there is a user with the given email
-                console.log(data);
-                this.setState({response: data});
-            }).catch(console.log);
-        }
-
 
     //when the "login" button is clicked
     async handleSubmit() {
-        await fetch('http://localhost:8080/user/' + this.state.username, {
-            method: 'GET',
+        await fetch('http://localhost:8080/user/updatePassword', {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                userName: this.state.username,
+                password: this.state.password,
+                email: " ",
+                phoneNumber: " ",
+                name: " "
+            })
         }).then(res => res.json()).then((data) => {
             this.setState({response: data})
         }).catch(console.log);
 
         if (this.state.response.password !== this.state.password) {
-            this.setState({msg: "Username or Password is Incorrect" });
+            this.setState({msg: "Username or Password is Incorrect"});
             console.log("You're a shitty hacker")
         } else {
             this.setState({logged_in: true, user: this.state.response.userName});
@@ -243,4 +165,4 @@ class ResetPassword extends React.Component {
 
 }
 
-export default Login
+export default ResetPassword

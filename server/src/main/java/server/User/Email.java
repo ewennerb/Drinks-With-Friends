@@ -45,7 +45,7 @@ public class Email{
 			if ( flag == 1 ) { //If 'forgot password'
 				message.setSubject("Forgot Username/Password");
 				System.out.println(this.userName);
-				String messageBody = "Username: " + this.userName + "--Link--"; 
+				String messageBody = "Username: " + this.userName + "http://localhost:3000/resetPassword";
 				System.out.println("MESSAGE:"+messageBody);
 				message.setText(messageBody);
 			} else { //If 'forgot username'
