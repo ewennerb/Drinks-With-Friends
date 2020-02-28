@@ -152,12 +152,12 @@ public class UserSQL {
 	}
 
 
-	public boolean insertUser(String userName, String password, String name, String email, String phoneNumber){
+	public String insertUser(String userName, String password, String name, String email, String phoneNumber){
 		try{
 			//first need to checkUniqueUserName
 			if (!checkUniqueUserName(userName)) {
 				System.out.println("Username not unqiue. Cannot insert new user.");
-				return false;
+				return "{ \"status\" : \"Error: user already exists.\"}";
 			}
 			//if unique then can insert User
 			String query = "insert into test_schema.user "+ 
@@ -168,21 +168,21 @@ public class UserSQL {
 
 			int insertResult = smt.executeUpdate(query);
 
-			return true;
+			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Error inserting new user to DB.");
-			return false;
+			return "{ \"status\" : \"Error: SQL insert failed.\"}";
 		}
 
 
 	}
 
 	//remove oldPass function
-	public boolean updatePassword(String userName, String oldPass, String newPass){
+	public boolean updatePassword(String userName, String newPass){
 		try{
 			//first check oldPass is what is in DB
-			String query = "select * from test_schema.user where userName = \""+userName+"\"";
+			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
 			rs = smt.executeQuery(query);
 
 			String p = " ";
@@ -194,11 +194,11 @@ public class UserSQL {
 
 
 			//then check if queried password is equal to inputted old password
-			System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
+			/*System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
 			if (!p.equals(oldPass)){
 				System.out.println("Old password not correct.");
 				return false;
-			}
+			}*/
 			
 			//if it is, then update with new password
 			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
