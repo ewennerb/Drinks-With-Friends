@@ -10,7 +10,8 @@ import {
   Modal,
   Header,
   Segment,
-  
+  Form,
+
 } from "semantic-ui-react";
 import LikedDrinks from "./userpages/LikedDrinks.js"
 import DislikedDrinks from "./userpages/DislikedDrinks.js"
@@ -131,7 +132,7 @@ handleOpen() {
           </Grid.Row>
           
           <Grid.Column>
-          lists of shit
+        
           
           </Grid.Column>
           <Grid.Row>
@@ -153,12 +154,30 @@ handleOpen() {
           open={this.state.modalOpen}
           onClose={this.handleClose}
           size="large">
-          <Modal.Content image >
+          <Modal.Content image scrolling>
           {/*display current profile info with the option to change it */}
-          
+          <Container>
           <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
-          {/* need to add profile picture and how to store kind of confused */}
+          </Container>
+          <Container>
+          <Modal.Description>
+          <Form size='large'>
+          <Segment stacked>
+          <Form.Input
+          fluid icon='user'
+          iconPosition='left'
+          placeholder='Username'
+          required='true'
+          value={this.state.username}
+          onChange={this.handleUserChange}
+          />
           
+          </Segment>
+          </Form>
+          {/* need to add profile picture and how to store kind of confused */}
+          </Modal.Description>
+          </Container>
+
           </Modal.Content>
           </Modal>
           
