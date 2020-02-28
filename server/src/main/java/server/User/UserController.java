@@ -71,13 +71,6 @@ public class UserController {
 			throws JsonParseException, JsonMappingException, IOException {
 		System.out.print("testing" + email);
 
-
-/*		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-		sm.addDeserializer(User.class, new UserDeserializer());
-		om.registerModule(sm);
-		User u = om.readValue(email, User.class);
-*/
 		ObjectMapper om2 = new ObjectMapper();
 		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
 		sm2.addSerializer(User.class, new UserSerializer());
@@ -96,13 +89,50 @@ public class UserController {
 		sm.addDeserializer(User.class, new UserDeserializer());
 		om.registerModule(sm);
 		User u = om.readValue(username, User.class);
-		System.out.print(u.toString());
+		//System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
 		String insert  = users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
 
 	    return insert;
     }
+	
+	@PostMapping("/updatePassword")
+	public String updatePassword(@RequestBody String userPass)
+			throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userPass, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		String updatePassword = users.updatePassword(u.userName, u.password);
+
+		return updatePassword;
+	}
+
+	@PostMapping("/saveProfilePic")
+	public String saveProfilePic(@RequestBody String userPic)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userPic, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		System.out.print("photo: "+u.photo);
+
+		String savePhoto = users.insertProfilePhoto(u.userName, u.photo);
+
+		return savePhoto;
+
+	}
 
     @DeleteMapping("/delete")
     public String deleteUser() {
