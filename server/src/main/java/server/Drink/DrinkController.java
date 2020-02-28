@@ -27,6 +27,7 @@ public class DrinkController {
 
     DrinkController() {
         this.oldDOTD = new ArrayList<>();
+        randomDOTD();
     }
 
     @GetMapping("")
@@ -86,7 +87,23 @@ public class DrinkController {
         return new ObjectMapper().writeValueAsString(DOTD);
     }
 
-    @Scheduled(cron = "*/60 * * * * *")
+    @GetMapping("/search")
+    public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.searchDrink(request);
+        if (drinks == null) {
+            return "{\"results\": \"DNE\"";
+        }
+        String out = "{ results: [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        
+        return out;
+    }
+
+    @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
