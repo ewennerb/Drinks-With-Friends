@@ -149,7 +149,43 @@ public class UserController {
 		System.out.print("email: "+u.email);
 
 		Email resetPass = new Email(u.email, u.userName);
-		return resetPass.sendEmail();
+		return resetPass.sendEmail(1); // 1 = password, 0 = userName
+	}
+
+	@PostMapping("/forgotUsername")
+	public String sendResetEmail(@RequestBody String userEmail)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userEmail, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		System.out.print("email: "+u.email);
+
+		Email resetPass = new Email(u.email, u.userName);
+		return resetPass.sendEmail(0); // 1 = password, 0 = userName
+	}
+
+
+	@PostMapping("/saveBio")
+	public String saveBio(@RequestBody String userBio)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userBio, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		System.out.print("bio: "+u.bio);
+
+		return users.updateBio(u.userName, u.bio);
 	}
 
 
