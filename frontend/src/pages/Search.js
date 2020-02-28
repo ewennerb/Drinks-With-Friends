@@ -118,7 +118,7 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return(
                 <div>
-                    <Grid style={{ height: '100vh' }} columns={16} centered>
+                    <Grid style={{ height: '100vh', overflow:"scroll" }} columns={16} centered>
                         <Grid.Column width={4}/>
                         <Grid.Column width={8} textAlign="center">
                             <br/>
