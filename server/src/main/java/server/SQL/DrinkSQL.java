@@ -1,4 +1,5 @@
 package server.SQL;
+import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -56,10 +57,7 @@ public class DrinkSQL {
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
-					rs2.last();
-					ingreds = new Ingredient[rs2.getRow()];
-					rs2.first();
-					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+					
 					while (rs2.next()){
 						ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
 					}
@@ -132,6 +130,45 @@ public class DrinkSQL {
 			e.printStackTrace();
 			return null;
 		} 
+	}
+
+	public boolean insertDrink(Drink d){
+		System.out.println("inserting");
+		try {
+			//check if user already added dirnk
+			String query = "INSERT into test_schema.drink "+ 
+				"(name, stockphoto, description, likes, dislikes, publisher) "+
+				"VALUES "+ 
+				"(\""+d.name+"\", \""+d.photo+"\", \""+d.description+"\", "+0+", "+0+ ", \"" + d.publisher+"\")";
+			System.out.println(query);
+			int success = smt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+			if (success == 0) {
+				System.out.println("add drink fail");
+			}
+			ResultSet gk = smt.getGeneratedKeys();
+			long id = -1;
+			while (gk.next()) {
+				id = gk.getInt(1);
+			}
+			for (Ingredient i : d.ingredients) {
+				
+				query = "";
+				query += "INSERT INTO test_schema.drink_ingredient (username, drink_id, ingredient, measurement, quantity) "+
+				"VALUES "+ 
+				"(\""+d.name+"\", \""+id+"\", \""+i.ingredient+"\", \"" + i.measurement+"\", \""+ i.quantity+"\");";
+				Statement smt2 = conn.createStatement();
+				success = smt2.executeUpdate(query);
+				if (success == 0) {
+					System.out.println("add ingredients fail");
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println("fail");
+			e.printStackTrace();
+		}
+
+		return true;
 	}
 	   	  
 }
