@@ -28,7 +28,7 @@ class Login extends React.Component {
         };
     }
 
-    sendEmail = async e => { //WORK IN PROGRESS
+    /*sendEmail = async e => { //WORK IN PROGRESS
         e.preventDefault();
         if (this.state.email_reset == '') { //if nothing is enetered in the email box
             this.setState({
@@ -51,7 +51,7 @@ class Login extends React.Component {
             //     console.log;
             // });
         }
-    };
+    };*/
 
     render() {
 
@@ -199,8 +199,89 @@ class Login extends React.Component {
     }
 
     //when the "send email button is clicked"
-    sendEmail() {
-        console.log("email_reset: " + this.state.email_reset)
+    async sendEmail() {
+        console.log("email_reset: " + this.state.email_reset);
+        await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+                 method: 'GET',
+                 headers: {
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json',
+                 },
+             }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                 console.log(data);
+                 this.setState({response: data});
+             });
+        //         var nodemailer = require('nodemailer');
+
+        //         // create reusable transporter object using the default SMTP transport
+        //         var transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com');
+
+        //         // setup e-mail data with unicode symbols
+        //         var mailOptions = {
+        //             from: '"Paul Miller" <foreverything78096@gmail.com>', // sender address
+        //             to: this.state.email_reset, // list of receivers
+        //             subject: 'Hello ✔', // Subject line
+        //             text: 'Hello world ?', // plaintext body
+        //             html: '<b>Hello world ?</b>' // html body
+        //         };
+
+        //         // send mail with defined transport object
+        //         transporter.sendMail(mailOptions, function(error, info){
+        //             if(error){
+        //                 return console.log(error);
+        //             }
+        //             console.log('Message sent: ' + info.response);
+        //         });
+        //     }).catch(console.log)
+
+
+//         const mailgun = require("mailgun-js");
+// const DOMAIN = 'gmail.com';
+// const mg = mailgun({apiKey: '', domain: DOMAIN});
+// const data = {
+// 	from: 'Excited User <foreverything78096@gmail.com>',
+// 	to: 'nickleuer24@gmail.com',
+// 	subject: 'Hello',
+// 	text: 'Testing some Mailgun awesomness!'
+// };
+//         mg.messages().send(data, function (error, body) {
+//             console.log(body);
+//         });
+
+//         const nodemailer = require('nodemailer');
+//         const mailGun = require('nodemailer-mailgun-transport');
+
+//         const auth = {
+//             auth: {
+//                 api_key: '02780310f49299742f4d931618dba15d-9dda225e-082ca2f5',
+//                 domain: 'sandboxe03f61f8aa9d4a6f9ce5697267c306f7.mailgun.org'
+//             }
+//         };
+
+//         const transporter = nodemailer.createTransport(mailGun(auth));
+
+//         const mailOptions = {
+//             from: 'foreverything78096@gmail.com',
+//             to: 'nickleuer24@gmail.com',
+//             subject: 'hello from paul',
+//             text: 'sup dude'
+//         };
+
+//         transporter.sendMail(mailOptions, function(err, data) {
+//             if (err) {
+//                 console.log('Error Ocurrs');
+//             }
+//             else {
+//                 console.log('Message Sent')
+//             }
+// });
+        this.props.passState(this.state.user, this.state.logged_in);
+        return (
+            <Redirect to={{
+                pathname: '/ResetPassword',
+                state: { email_reset: this.state.email_reset, response: this.state.response}
+            }} />
+        )
     }
 
     //when the "login" button is clicked
