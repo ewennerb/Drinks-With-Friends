@@ -210,8 +210,8 @@ class Login extends React.Component {
                      'Content-Type': 'application/json',
                  },
              }).then(res => res.json()).then((data) => { //If there is a user with the given email
-                 console.log(data);
                  this.setState({response: data});
+                 console.log(data);
              });
 
         if (this.state.fPass) { //Forgot Password
