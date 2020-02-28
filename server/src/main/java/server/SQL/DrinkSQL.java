@@ -136,11 +136,12 @@ public class DrinkSQL {
 				"(name, stockphoto, description, likes, dislikes, publisher) "+
 				"VALUES "+ 
 				"(\""+d.name+"\", \""+d.photo+"\", \""+d.description+"\", "+0+", "+0+ ", \"" + d.publisher+"\")";
-				
+
 			System.out.println(query);
 			int success = smt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 			if (success == 0) {
 				System.out.println("add drink fail");
+				return false;
 			}
 			ResultSet gk = smt.getGeneratedKeys();
 			long id = -1;
@@ -157,6 +158,7 @@ public class DrinkSQL {
 				success = smt2.executeUpdate(query);
 				if (success == 0) {
 					System.out.println("add ingredients fail");
+					return false;
 				}
 			}
 
