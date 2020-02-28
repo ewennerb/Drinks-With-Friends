@@ -174,8 +174,6 @@ public class DrinkSQL {
 				
 			}
 			conn.close();
-			//ingreds = new Ingredient[ii.size()];
-			//ingreds = ii.toArray(ingreds);
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
 			return outDrink;
