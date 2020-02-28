@@ -47,12 +47,16 @@ public class DrinkController {
         return out;
     }
 
-    @GetMapping("/{name}")
-    public Drink findDrink(@PathVariable String name) {
+    @GetMapping("/{username}")
+    @ResponseBody
+    public String findDrink(@PathVariable String username, @RequestParam(name = "d") String dname) throws JsonProcessingException {
         // find a single drink
-        System.out.println("Drink: " + name);
-        DrinkSQL drink = new DrinkSQL();
-        return drink.getDrink(name);
+        DrinkSQL ds = new DrinkSQL();
+        Drink d = ds.getDrink(dname, username);
+        if (d == null) {
+            return "{ \"status\": \"DNE\"}";
+        }
+        return new ObjectMapper().writeValueAsString(d);
     }
 
     @PostMapping("/")
@@ -79,18 +83,25 @@ public class DrinkController {
     public String drinkOfTheDay() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(DOTD);
     }
+
     @Scheduled(cron = "*/60 * * * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
         
         ArrayList<Drink> drinks = ds.getAllDrinks();
-
+        System.out.println("all drinks size " + drinks.size() );
         if (drinks.size() <= 0) {
             oldDOTD = new ArrayList<>();
+            System.out.println("No drinks in db");
             return;
         }
-        if (oldDOTD.size() > 35 || oldDOTD.size() == drinks.size()){   //35 drinks per month that can't be repeated or its the max amount in the database
+        if (oldDOTD.size() > 31 || oldDOTD.size() == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
+            if (oldDOTD.size() == drinks.size()){
+                System.out.println("Maxed out drinks in db");
+            } else {
+                System.out.println("a month of drinks has passed drinks in db");
+            }
             oldDOTD = new ArrayList<>();
         }
         Random r = new Random(1);
@@ -98,9 +109,14 @@ public class DrinkController {
         while (oldDOTD.contains(drinks.get(pos).name)){
             drinks.remove(pos);
             pos = r.nextInt(drinks.size());
+
         }
         DOTD = drinks.get(pos);
+        if (DOTD != null){
+            oldDOTD.add(DOTD.name);
+        }
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
+        
         
     }
 }
