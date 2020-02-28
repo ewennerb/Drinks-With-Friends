@@ -5,7 +5,6 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
-import ResetPassword from "./pages/ResetPassword"
 import ActivityFeed from "./pages/ActivityFeed"
 
 import {
@@ -70,10 +69,11 @@ export default class Routes extends React.Component {
     }
 
     render(){
-        let menuItem;
+        let logOrProfile;
+        let logOrRegister;
         const { activeItem } = this.state;
         if (this.state.user !== undefined){
-            menuItem = <Menu.Item
+             logOrProfile = <Menu.Item
                 as={Link}
                 to={{pathname: '/profile', state: {user: this.state.user}}}
                 icon="user circle outline"
@@ -81,8 +81,16 @@ export default class Routes extends React.Component {
                 size="large"
                 content={this.state.user}
             />;
+             logOrRegister = <Menu.Item
+                 as={Link}
+                 to={{pathname: '/'}}
+                 onClick={this.logOut}
+                 name={"Log Out"}
+                 active={activeItem === 'Log Out'}
+                 borderless
+             />
         }else{
-            menuItem = <Menu.Item
+            logOrProfile = <Menu.Item
                 as={Link}
                 to={{pathname: '/login', }}
                 icon="log out"
@@ -90,7 +98,17 @@ export default class Routes extends React.Component {
                 size="large"
                 content="Log In"
             />;
+            logOrRegister = <Menu.Item
+                as={Link}
+                to={{pathname: '/register'}}
+                onClick={this.handlePageJump}
+                name={"Register"}
+                active={activeItem === 'Register'}
+                borderless
+            />
         }
+
+
 
 
         return (
@@ -125,7 +143,7 @@ export default class Routes extends React.Component {
                                 icon="beer"
                                 content="Drinks with Friends"
                             />
-                            {menuItem}
+                            {logOrProfile}
                             <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
                                 <Icon name="sidebar"/>Menu
                             </Menu.Item>
@@ -148,10 +166,8 @@ export default class Routes extends React.Component {
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
                                             borderless
-                                        >
-                                            {/*<Icon name="search"/>*/}
-                                            {/*Search*/}
-                                        </Menu.Item>
+                                        />
+
                                         <Menu.Item
                                             as={Link}
                                             to={{pathname: '/feed', state: {user: "", is21: this.state.is21}}}
@@ -159,10 +175,8 @@ export default class Routes extends React.Component {
                                             active={activeItem === 'Activity ActivityFeed'}
                                             onClick={this.handlePageJump}
                                             borderless
-                                        >
-                                            {/*<Icon name="beer"/>*/}
-                                            {/*My ActivityFeed*/}
-                                        </Menu.Item>
+                                        />
+
                                         <Menu.Item
                                             as={Link}
                                             replace={false}
@@ -172,13 +186,10 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             borderless
                                             position="right"
-                                        >
-                                            {/*<Icon name="user"/>*/}
-                                            {/*My Profile*/}
-                                        </Menu.Item>
-                                        <Menu.Item as={Link} to={{pathname: '/', state: {user: "", is21: this.state.is21}}} onClick={this.logOut} name={"Log Out"} >
-                                            {/*<Icon name="log out" />Log Out*/}
-                                        </Menu.Item>
+                                        />
+
+                                        {logOrRegister}
+
                                         <Menu.Item content={<br/>}/>
                                         <Menu.Item content="About Us"/>
                                         <Menu.Item content="Dark Mode"/>
@@ -190,11 +201,11 @@ export default class Routes extends React.Component {
                             <Sidebar.Pusher>
                                 <Segment basic placeholder>
                                     <Switch>
-                                        <Route exact path="/" component={Search}/>
+                                        <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
                                         <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
-                                        <Route exact path="/feed" component={ActivityFeed}/>
+                                        <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
-                                        <Route exact path="/profile" component={Profile}/>
+                                        <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                     </Switch>
                                 </Segment>
                             </Sidebar.Pusher>

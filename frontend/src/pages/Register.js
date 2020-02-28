@@ -91,7 +91,7 @@ export default class Register extends React.Component {
 
     async handleNameChange(event){
         this.setState({
-            drinkName: event.target.value
+            name: event.target.value
         })
     }
 

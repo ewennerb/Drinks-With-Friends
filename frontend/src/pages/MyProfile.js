@@ -10,7 +10,7 @@ import {
   Modal,
   Header,
   Segment,
-  Form,
+  Form, Message,
 
 } from "semantic-ui-react";
 import LikedDrinks from "./userpages/LikedDrinks.js"
@@ -32,6 +32,14 @@ class Profile extends Component{
       user: this.props.user
     };
 }
+
+  componentDidMount(){
+    this.setState({
+      modalOpen: false,
+      activeItem: "posts",
+      user: this.props.user
+    })
+  }
 
 handleClose() {
     this.setState(
@@ -58,9 +66,31 @@ handleOpen() {
   render(){
     const { activeItem } = this.state.activeItem
 
+
+    let notUser = <p/>;
+    if (this.props.user === "" || this.props.user === undefined){
+      notUser =
+          <Modal open={true}>
+            <Segment stacked>
+              <h1>Create an Free Account!</h1>
+              <p>
+                <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
+                <Message>
+                  <Icon name='help'/>
+                  Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
+                </Message>
+              </p>
+
+            </Segment>
+          </Modal>
+    }
+
+
+
     return(
       <Container>
         <BrowserRouter>
+          {notUser}
           <Grid className="grid" columns={3} container padded relaxed textAlign="center">
           <Grid.Row container>
           <Grid.Column  

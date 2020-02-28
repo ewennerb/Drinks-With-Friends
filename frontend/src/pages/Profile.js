@@ -3,31 +3,33 @@ import 'semantic-ui-css/semantic.min.css';
 import {
   Menu,
   Grid,
-  Icon,
-  
+  Icon, Modal, Segment, Message,
+
 
 } from "semantic-ui-react";
 
 
 import "../css/Profile.css"
+import {Link} from "react-router-dom";
 
 class Profile extends Component{
   constructor(props){
     super(props)
-    this.state = { activeItem: "posts"}
+    this.state = {
+      activeItem: "posts"
+    }
   }
 
   handleItemClick = (e, {name}) => {
-    this.setState({ activeItem: name })
+    this.setState({ activeItem: name });
     console.log(name)
-  }
+  };
 
   render(){
-    const { activeItem } = this.state.activeItem
+    const { activeItem } = this.state.activeItem;
 
     return(
       <div>
-        
         <Grid className="grid" columns={3} container centered padded relaxed>
           <Grid.Row >
             <Grid.Column color="blue">
