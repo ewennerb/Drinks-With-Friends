@@ -10,10 +10,9 @@ import {
     Segment,
     Header,
     Grid,
-    Loader,
+    Loader, Button,
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-const axios = require('axios');
 
 
 export default class Search extends React.Component{
@@ -21,14 +20,17 @@ export default class Search extends React.Component{
     constructor(props){
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
-        console.log(this.props.location.state);
+        this.getSearchResults = this.getSearchResults.bind(this);
+        this.getDOTD = this.getDOTD.bind(this);
         this.state = {
+            user: this.props.user,
             searchText: "",
+            dotd: undefined,
             response: undefined,
             loaded: false,
             loggedIn: false,
             done: false,
-            is21: this.props.location.state.is21,
+            // is21: this.props.location.state.is21,
             searchable: false,
         }
     }
@@ -39,7 +41,7 @@ export default class Search extends React.Component{
         await this.getDOTD();
         this.setState({
             loaded: true,
-            is21: this.props.location.state.is21,
+            user: this.props.user,
             done: true,
             searchable: false
         })
@@ -61,14 +63,23 @@ export default class Search extends React.Component{
             // })
         }).then(res => res.json()).then((data) => {
             console.log(data);
-            this.setState({response: data})
+            this.setState({dotd: data})
         }).catch(console.log);
     }
 
 
     //Todo: Send the query parameters to the server and fuck shit up
     async getSearchResults(){
-        return
+        await fetch('http://localhost:8080/drink/search?s=' + this.state.searchText, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data, modalOpen: false})
+        }).catch(console.log);
     }
 
 
@@ -114,14 +125,16 @@ export default class Search extends React.Component{
                                         src='https://react.semantic-ui.com/images/avatar/large/molly.png'
                                     />
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        {this.state.response.name}
+                                        {this.state.dotd.name}
                                     </Header>
-                                    <Card.Content header="A pretty good drink if I do say so myself"/>
+                                    {/*<Card.Content header={this.state.dotd.description}/>*/}
+                                    <Card.Content header={"Description Here"}/>
 
-                                    <Card.Meta>New User</Card.Meta>
+                                    {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
+                                    <Card.Meta>Publisher Here</Card.Meta>
 
                                     <Card.Content extra>
-                                        <Rating icon='star' defaultRating={5} maxRating={5} />
+                                        <Rating icon='star' defaultRating={5} maxRating={5}/>
                                     </Card.Content>
                                 </Segment>
                             </Card>
@@ -131,18 +144,24 @@ export default class Search extends React.Component{
                                 {/*Todo: Put a button and maybe some options here*/}
 
                                 <Input
-                                    action={{
-                                        color: 'yellow',
-                                        labelPosition: 'left',
-                                        icon: 'search',
-                                        content: 'Search',
-                                    }}
-                                    actionPosition='right'
+                                    // action={{
+                                    //     color: 'yellow',
+                                    //     labelPosition: 'left',
+                                    //     icon: 'search',
+                                    //     content: 'Search',
+                                    //     onClick: this.getSearchResults()
+                                    // }}
+                                    // actionPosition='right'
                                     size="huge"
                                     fluid
                                     placeholder='Search...'
                                     onChange={this.handleInputChange}
                                 />
+                                <br/>
+                                <Button color="yellow" onClick={this.getSearchResults} width={8}>
+                                    Search
+                                </Button>
+
                                 <br/>
                                 <p hidden={this.state.loggedIn}>
                                     <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
