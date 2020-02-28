@@ -42,21 +42,82 @@ public class UserDeserializer extends StdDeserializer<User> {
             node.get("name").asText(),
             node.get("email").asText(),
             node.get("phoneNumber").asText(),
-            node.get("photo").asText(),
-			node.get("bio").asText(),
-			node.get("likedDrinks").asText(),
-			node.get("dislikedDrinks").asText(),
-			node.get("favoritedDrink").asText(),
-			node.get("publishedDrinks").asText(),
-			node.get("postHistory").asText(),
-			node.get("friendsList").asText(),
-			node.get("dateCreated").asText(),
-			node.get("lastLogin").asText(),
+            variablePhoto(node),//node.get("photo").asText(),
+			"",//node.get("bio").asText(),
+			"",//node.get("likedDrinks").asText(),
+			"",//node.get("dislikedDrinks").asText(),
+			"",//node.get("favoritedDrink").asText(),
+			"",//node.get("publishedDrinks").asText(),
+			"",//node.get("postHistory").asText(),
+			"",//node.get("friendsList").asText(),
+			"",//node.get("dateCreated").asText(),
+			"",//node.get("lastLogin").asText(),
 			0);
 
         return u;
     }
 
+	public String variablePhoto(JsonNode n) {
+		if (n.get("photo") == null)
+			return "";
+		else
+			return n.get("photo").asText();
+	}
+
+	public String variableBio(JsonNode n) {
+		if (n.get("bio") == null)
+			return "";
+		else
+			return n.get("bio").asText();
+	}
+	public String variableLiked(JsonNode n) {
+		if (n.get("likedDrinks") == null)
+			return "";
+		else
+			return n.get("likedDrinks").asText();
+	}
+	public String variableDisliked(JsonNode n) {
+		if (n.get("dislikedDrinks") == null)
+			return "";
+		else
+			return n.get("dislikedDrinks").asText();
+	}
+	public String variableFav(JsonNode n) {
+		if (n.get("favoritedDrink") == null)
+			return "";
+		else
+			return n.get("favoritedDrink").asText();
+	}
+	public String variablePublish(JsonNode n) {
+		if (n.get("publishedDrinks") == null)
+			return "";
+		else
+			return n.get("publishedDrinks").asText();
+	}
+	public String variablePosts(JsonNode n) {
+		if (n.get("postHistory") == null)
+			return "";
+		else
+			return n.get("postHistory").asText();
+	}
+	public String variableFriends(JsonNode n) {
+		if (n.get("friendsList") == null)
+			return "";
+		else
+			return n.get("friendsList").asText();
+	}
+	public String variableDateCRT(JsonNode n) {
+		if (n.get("dateCreated") == null)
+			return "";
+		else
+			return n.get("dateCreated").asText();
+	}
+	public String variableLastLogin(JsonNode n) {
+		if (n.get("lastLogin") == null)
+			return "";
+		else
+			return n.get("lastLogin").asText();
+	}
     
 
 

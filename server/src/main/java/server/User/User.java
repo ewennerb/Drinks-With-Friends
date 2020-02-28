@@ -2,23 +2,23 @@ package server.User;
 
 public class User{
 
-	protected int userId;
-	protected String userName;
-	protected String password;
-	protected String name;
-	protected String email;
-	protected String phoneNumber;
-	protected String photo;
-	protected String bio;
-	protected String likedDrinks;
-	protected String dislikedDrinks;
-	protected String favoriteDrink;
-	protected String publishedDrinks;
-	protected String postHistory;
-	protected String friendsList;
-	protected String dateCreated;
-	protected String lastLogin;
-	protected int darkMode;
+	public int userId;
+	public String userName;
+	public String password;
+	public String name;
+	public String email;
+	public String phoneNumber;
+	public String photo;
+	public String bio;
+	public String likedDrinks;
+	public String dislikedDrinks;
+	public String favoriteDrink;
+	public String publishedDrinks;
+	public String postHistory;
+	public String friendsList;
+	public String dateCreated;
+	public String lastLogin;
+	public int darkMode;
 
 	public User(){
 		this.userId = 0;

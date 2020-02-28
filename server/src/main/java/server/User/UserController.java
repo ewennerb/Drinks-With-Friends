@@ -47,7 +47,8 @@ public class UserController {
     }
 
     @GetMapping("/{name}")
-    public String findUser(@PathVariable String name) {
+    public String findUser(@PathVariable String name) 
+			throws JsonParseException, JsonMappingException, IOException {
         //find a single user
 		System.out.println("User: "+ name);
 		UserSQL users = new UserSQL();
@@ -57,9 +58,12 @@ public class UserController {
 		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");
 		//testing uniqueUserName
 		//users.checkUniqueUserName(name);
+		ObjectMapper om2 = new ObjectMapper();
+		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+		sm2.addSerializer(User.class, new UserSerializer());
+		om2.registerModule(sm2);
 
-
-        return users.getUser(name);
+        return om2.writeValueAsString(users.getUser(name));
     }
 
 	@GetMapping("/find/{email}")
@@ -67,13 +71,6 @@ public class UserController {
 			throws JsonParseException, JsonMappingException, IOException {
 		System.out.print("testing" + email);
 
-
-/*		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-		sm.addDeserializer(User.class, new UserDeserializer());
-		om.registerModule(sm);
-		User u = om.readValue(email, User.class);
-*/
 		ObjectMapper om2 = new ObjectMapper();
 		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
 		sm2.addSerializer(User.class, new UserSerializer());
@@ -84,21 +81,58 @@ public class UserController {
 	}
 
     @PostMapping("/")
-    public boolean insertUser(@RequestBody String username) 
+    public String insertUser(@RequestBody String username) 
 			throws JsonParseException, JsonMappingException, IOException {
         //save a single user
 		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(User.class, new UserDeserializer());
 		om.registerModule(sm);
 		User u = om.readValue(username, User.class);
-		System.out.print(u.toString());
+		//System.out.print(u.toString());
 
 		UserSQL users = new UserSQL();
-		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");	
+		String insert  = users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
 
-        return true;
+	    return insert;
     }
+	
+	@PostMapping("/updatePassword")
+	public String updatePassword(@RequestBody String userPass)
+			throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userPass, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		String updatePassword = users.updatePassword(u.userName, u.password);
+
+		return updatePassword;
+	}
+
+	@PostMapping("/saveProfilePic")
+	public String saveProfilePic(@RequestBody String userPic)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userPic, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		System.out.print("photo: "+u.photo);
+
+		String savePhoto = users.insertProfilePhoto(u.userName, u.photo);
+
+		return savePhoto;
+
+	}
 
     @DeleteMapping("/delete")
     public String deleteUser() {
