@@ -127,6 +127,63 @@ public class DrinkSQL {
 			return null;
 		} 
 	}
+	public Drink[] searchDrink(String request) {
+		System.out.println("searching");
+		StringBuilder searchString = new StringBuilder("%" + request + "%");
+		for (int i = 0; i < request.length(); i++) {
+			if (searchString.charAt(i) == ' ') {
+				searchString.setCharAt(i, '%');
+			}
+		}
+		System.out.println(searchString);
+		try {
+			String query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+			ArrayList<Drink> drink = new ArrayList<Drink>();
+			
+			while (rs.next())
+			{
+				int drinkId=rs.getInt("drinkId");
+				String dName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
+				String publisher=rs.getString("publisher");
+
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM test_schema.drink_ingredient " + 
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				if (rs2 != null){
+					
+					while (rs2.next()){
+						ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+					}
+				
+				}
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
+				drink.add(d);
+
+				
+			}
+			conn.close();
+			//ingreds = new Ingredient[ii.size()];
+			//ingreds = ii.toArray(ingreds);
+			Drink[] outDrink = new Drink[drink.size()];
+			outDrink = drink.toArray(outDrink);
+			return outDrink;
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
 
 	public boolean insertDrink(Drink d){
 		System.out.println("inserting");
