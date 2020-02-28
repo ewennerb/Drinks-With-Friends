@@ -69,8 +69,10 @@ public class DrinkController {
         om.registerModule(sm);
         Drink d = om.readValue(savedDrink, Drink.class);
         DrinkSQL ds = new DrinkSQL();
-        ds.insertDrink(d);
-        return true;
+        if (ds.insertDrink(d)){
+            return true;
+        }
+        return false;
     }
 
     @DeleteMapping("/{name}")
@@ -90,7 +92,6 @@ public class DrinkController {
         DrinkSQL ds = new DrinkSQL();
         
         ArrayList<Drink> drinks = ds.getAllDrinks();
-        System.out.println("all drinks size " + drinks.size() );
         if (drinks.size() <= 0) {
             oldDOTD = new ArrayList<>();
             System.out.println("No drinks in db");
