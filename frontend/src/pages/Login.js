@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
+import Redirect from "react-router-dom/es/Redirect";
 
 class Login extends React.Component {
     constructor(props) {
@@ -11,7 +12,10 @@ class Login extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleOpenUser = this.handleOpenUser.bind(this);
         this.handleOpenPass = this.handleOpenPass.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        console.log(this.props.history);
         this.state = {
+
             modalOpen: false,
             username: '',
             password: '',
@@ -19,19 +23,19 @@ class Login extends React.Component {
             email_reset: '',
             fUser: false, //if forgot username is clicked
             fPass: false, //if forgot password is clicked
-            response: ''
+            response: '',
+            msg: ''
         };
     }
 
-    sendEmail = async e => { //WORK IN PROGRESS
+    /*sendEmail = async e => { //WORK IN PROGRESS
         e.preventDefault();
         if (this.state.email_reset == '') { //if nothing is enetered in the email box
             this.setState({
                 showEmailError: false,
                 messageFromServer: '',
             });
-        }
-        else { //If there is something in the email box
+        } else { //If there is something in the email box
             await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
                 method: 'GET',
                 headers: {
@@ -42,144 +46,315 @@ class Login extends React.Component {
                 console.log(data);
                 this.setState({response: data})
             }).catch(console.log)
-            
+
             // .catch(error => { //If there is no user with the given email
             //     console.log;
             // });
         }
-    };
+    };*/
 
-    render(){
-        return(
-            <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
-                <Grid.Column style={{ maxWidth: 450 }}>
+    render() {
+
+        let hidden = true;
+        if (this.state.msg !== ''){
+            hidden = false;
+        }
+
+        if (this.state.logged_in && this.state.user !== undefined){
+
+            //Todo: pass back logged_in back to the Routes
+            this.props.passState(this.state.user, this.state.logged_in);
+            return (
+                <Redirect to={{
+                    pathname: '/',
+                    state: { logged_in: this.state.logged_in, user: this.state.user}
+                }} />
+            )
+        }
+
+        return (
+            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+                <Grid.Column style={{maxWidth: 450}}>
 
                     <Header as='h2' color='grey' textAlign='center'>
                         Log-in to your account
                     </Header>
 
-                <Form size='large'>
-                    <Segment stacked>
-                    <Form.Input
-                        fluid icon='user'
-                        iconPosition='left'
-                        placeholder='Username'
-                        required='true'
-                        value={this.state.username}
-                        onChange={this.handleUserChange}
-                    />
+                    <Form size='large'>
+                        <Segment stacked>
+                            <Form.Input
+                                fluid icon='user'
+                                iconPosition='left'
+                                placeholder='Username'
+                                required='true'
+                                value={this.state.username}
+                                onChange={this.handleUserChange}
+                            />
 
-                    <Form.Input
-                        fluid
-                        icon='lock'
-                        iconPosition='left'
-                        placeholder='Password'
-                        type='password'
-                        required='true'
-                        value={this.state.password}
-                        onChange={this.handlePasswordChange}
-                    />
+                            <Form.Input
+                                fluid
+                                icon='lock'
+                                iconPosition='left'
+                                placeholder='Password'
+                                type='password'
+                                required='true'
+                                value={this.state.password}
+                                onChange={this.handlePasswordChange}
+                            />
 
-                    <Button onClick={() => this.loginClicked()} color='yellow' fluid size='large' >
-                        Login
-                    </Button>
+                            <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
+                                Login
+                            </Button>
 
-                        <Message>
-                            {/* Link to open Modal */}
-                            <Icon name='help'/>
-                            Forgot <a onClick={this.handleOpenUser}> Username </a> or <a onClick={this.handleOpenPass}> Password</a>?
-                        </Message>
+                            <Message hidden={hidden} color='red'>
+                                {this.state.msg}
+                            </Message>
+                            <br/>
+                            <Message>
+                                {/* Link to open Modal */}
+                                <Icon name='help'/>
+                                Forgot <a onClick={this.handleOpenUser}> Username </a> or <a
+                                onClick={this.handleOpenPass}> Password</a>?
+                            </Message>
 
-                    <Modal //Begin Modal
-                        open={this.state.modalOpen}
-                        onClose={this.handleClose}
-                        size='small'
-                    >
-                        <Modal.Content>
-                            {/* This is where the logic for username/password shoulr go -- Paul */}
-                            <Header as='h2' color='grey' textAlign='center'>
-                                Account Reset
-                            </Header>
+                            <Modal //Begin Modal
+                                open={this.state.modalOpen}
+                                onClose={this.handleClose}
+                                size='small'
+                            >
+                                <Modal.Content>
+                                    {/* This is where the logic for username/password shoulr go -- Paul */}
+                                    <Header as='h2' color='grey' textAlign='center'>
+                                        Account Reset
+                                    </Header>
 
-                            <Form size='large'>
-                                <Segment stacked>
-                                    <Form.Input fluid icon='user' iconPosition='left' placeholder='Email' onChange={this.handleEmailChange}/>
-                                    {/* Send Email button*/}
-                                    <Button onClick={() => this.sendEmail()} color='yellow' fluid size='large' >
-                                        Send Email
-                                    </Button>
-                                </Segment>
-                            </Form>
-                        </Modal.Content>
+                                    <Form size='large'>
+                                        <Segment stacked>
+                                            <Form.Input fluid icon='user' iconPosition='left' placeholder='Email'
+                                                        onChange={this.handleEmailChange}/>
+                                            {/* Send Email button*/}
+                                            <Button onClick={() => this.sendEmail()} color='yellow' fluid size='large'>
+                                                Send Email
+                                            </Button>
+                                        </Segment>
+                                    </Form>
+                                </Modal.Content>
 
-                        <Modal.Actions>
-                            <Button icon='check' content='Close Window' onClick={this.handleClose.bind(this)} />
-                        </Modal.Actions>
-                    </Modal>
-                    </Segment>
-                 </Form>
+                                <Modal.Actions>
+                                    <Button icon='check' content='Close Window' onClick={this.handleClose.bind(this)}/>
+                                </Modal.Actions>
+                            </Modal>
+                        </Segment>
+                    </Form>
                 </Grid.Column>
             </Grid>
         ) //End Return
     } //End Render
 
 
-    
     //When the user types in stuff in the username box, the username variable is updated
-    async handleUserChange(event){
+    async handleUserChange(event) {
         const value = event.target.value;
         await this.setState({username: value});
     };
 
     //When the user types in stuff in the username box, the username variable is updated
-    async handleEmailChange(event){
+    async handleEmailChange(event) {
         const value = event.target.value;
         await this.setState({email_reset: value});
     };
 
     //When the user types in stuff in the password box, the password variable is updated
-    async handlePasswordChange(event){
+    async handlePasswordChange(event) {
         const value = event.target.value;
         await this.setState({password: value});
     };
 
     //If "Username" is clicked
     handleOpenUser() {
-        this.setState({modalOpen: true})
-        this.setState({fUser: true})
+        this.setState({
+            modalOpen: true,
+            fUser: true
+        });
     }
 
     //If "Password" is clicked
     handleOpenPass() {
-        this.setState({modalOpen: true})
-        this.setState({fPass: true})
+        this.setState({
+            modalOpen: true,
+            fPass: true
+        });
     }
 
     //Close window button / modal
     handleClose() {
-        this.setState({modalOpen: false})
-        //when the window is closed, all variables should be reset
-        this.setState({fUser: false})
-        this.setState({fPass: false})
-        this.setState({username: ''})
-        this.setState({password: ''})
-        this.setState({email_reset: ''})
+        this.setState({
+            modalOpen: false,
+            fUser: false,
+            fPass: false,
+            username: '',
+            password: '',
+            email_reset: ''
+        });
     }
-    
+
     //when the "send email button is clicked"
-    sendEmail(){
-        console.log("email_reset: " + this.state.email_reset)
+    async sendEmail() {
+        console.log("email_reset: " + this.state.email_reset);
+
+        //GET INFO
+        await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+                 method: 'GET',
+                 headers: {
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json',
+                 },
+             }).then(res => res.json()).then(async (data) => { //If there is a user with the given email
+                 await this.setState({response: data});
+                 console.log(data);
+             });
+
+        if (this.state.fPass) { //Forgot Password
+            await fetch('http://localhost:8080/user/resetPasswordEmail', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userName: this.state.response.username,
+                        phoneNumber: '',
+                        password: '',
+                        name: '',
+                        email: this.state.email_reset,
+                    })
+                }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                    console.log(data);
+                    this.setState({response: data});
+                }).catch(console.log);
+        }
+
+
+        else { //forgot username
+            await fetch('http://localhost:8080/user/forgotUsername', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userName: this.state.response.username,
+                    phoneNumber: '',
+                    password: '',
+                    name: '',
+                    email: this.state.email_reset,
+                })
+            }).then(res => res.json()).then((data) => { //If there is a user with the given email
+                console.log(data);
+                this.setState({response: data});
+            }).catch(console.log);
+        }
+
+
+
+
+
+
+
+             
+        //         var nodemailer = require('nodemailer');
+
+        //         // create reusable transporter object using the default SMTP transport
+        //         var transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com');
+
+        //         // setup e-mail data with unicode symbols
+        //         var mailOptions = {
+        //             from: '"Paul Miller" <foreverything78096@gmail.com>', // sender address
+        //             to: this.state.email_reset, // list of receivers
+        //             subject: 'Hello ✔', // Subject line
+        //             text: 'Hello world ?', // plaintext body
+        //             html: '<b>Hello world ?</b>' // html body
+        //         };
+
+        //         // send mail with defined transport object
+        //         transporter.sendMail(mailOptions, function(error, info){
+        //             if(error){
+        //                 return console.log(error);
+        //             }
+        //             console.log('Message sent: ' + info.response);
+        //         });
+        //     }).catch(console.log)
+
+
+//         const mailgun = require("mailgun-js");
+// const DOMAIN = 'gmail.com';
+// const mg = mailgun({apiKey: '', domain: DOMAIN});
+// const data = {
+// 	from: 'Excited User <foreverything78096@gmail.com>',
+// 	to: 'nickleuer24@gmail.com',
+// 	subject: 'Hello',
+// 	text: 'Testing some Mailgun awesomness!'
+// };
+//         mg.messages().send(data, function (error, body) {
+//             console.log(body);
+//         });
+
+//         const nodemailer = require('nodemailer');
+//         const mailGun = require('nodemailer-mailgun-transport');
+
+//         const auth = {
+//             auth: {
+//                 api_key: '02780310f49299742f4d931618dba15d-9dda225e-082ca2f5',
+//                 domain: 'sandboxe03f61f8aa9d4a6f9ce5697267c306f7.mailgun.org'
+//             }
+//         };
+
+//         const transporter = nodemailer.createTransport(mailGun(auth));
+
+//         const mailOptions = {
+//             from: 'foreverything78096@gmail.com',
+//             to: 'nickleuer24@gmail.com',
+//             subject: 'hello from paul',
+//             text: 'sup dude'
+//         };
+
+//         transporter.sendMail(mailOptions, function(err, data) {
+//             if (err) {
+//                 console.log('Error Ocurrs');
+//             }
+//             else {
+//                 console.log('Message Sent')
+//             }
+// });
+        // this.props.passState(this.state.user, this.state.logged_in);
+        // return (
+        //     <Redirect to={{
+        //         pathname: '/ResetPassword',
+        //         state: { email_reset: this.state.email_reset, response: this.state.response}
+        //     }} />
+        // )
     }
 
     //when the "login" button is clicked
-    loginClicked(event){
-        console.log('Username and password saved')
-        console.log(this.state.username) //Prints username
-        console.log(this.state.password) //Prints password
-        console.log('User: ' + this.state.fUser) //Prints fUser
-        console.log('Pass: ' + this.state.fPass) //Prints fPass
-        //TODO: Put logic here to send data to server or whatever
-    }
+    async handleSubmit() {
+        await fetch('http://localhost:8080/user/' + this.state.username, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json()).then((data) => {
+            this.setState({response: data})
+        }).catch(console.log);
+
+        if (this.state.response.password !== this.state.password) {
+            this.setState({msg: "Username or Password is Incorrect" });
+            console.log("You're a shitty hacker")
+        } else {
+            this.setState({logged_in: true, user: this.state.response.userName});
+            console.log("Password is correct");
+        }
+    };
 
 }
 

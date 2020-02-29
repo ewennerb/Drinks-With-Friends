@@ -180,43 +180,64 @@ public class UserSQL {
 	}
 
 	//remove oldPass function
-	public boolean updatePassword(String userName, String newPass){
+	public String updatePassword(String userName, String newPass){
 		try{
-			//first check oldPass is what is in DB
-			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
-			rs = smt.executeQuery(query);
 
-			String p = " ";
-
-			//while (rs.next()){
-			//	System.out.println("output: "+rs.getString("userName"));
-			//	p = rs.getString("password");
-			//}
-
-
-			//then check if queried password is equal to inputted old password
-			/*System.out.println("OldPass: \""+oldPass+"\", Queried Pass: \""+p+"\"");
-			if (!p.equals(oldPass)){
-				System.out.println("Old password not correct.");
-				return false;
-			}*/
-			
-			//if it is, then update with new password
-			query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
+			String query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
 			if(updateResult == 1){
-				System.out.print("********* ITS !");
-
-			}else {
-				System.out.print("****** IS 0");
-
+				//System.out.print("********* ITS !");
+				return "{ \"status\" : \"ok\" }";
+			}else if (updateResult == 0) {
+				//System.out.print("****** IS 0");
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 			
-			return true;
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed updating password.");
-			return false;
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String insertProfilePhoto(String userName, String profilePhotoPath){
+		try{
+		
+			String query = "update test_schema.user set profilePhoto = \""+profilePhotoPath+"\" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1){
+				return "{ \"status\" : \"ok\" }";
+			} else if (updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+			
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String updateBio(String userName, String bio){
+		try{
+			String query = "update test_schema.user set bio = \""+bio+"\" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+
+			if (updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
 	}
 

@@ -27,6 +27,7 @@ public class DrinkController {
 
     DrinkController() {
         this.oldDOTD = new ArrayList<>();
+        randomDOTD();
     }
 
     @GetMapping("")
@@ -47,12 +48,16 @@ public class DrinkController {
         return out;
     }
 
-    @GetMapping("/{name}")
-    public Drink findDrink(@PathVariable String name) {
+    @GetMapping("/{username}")
+    @ResponseBody
+    public String findDrink(@PathVariable String username, @RequestParam(name = "d") String dname) throws JsonProcessingException {
         // find a single drink
-        System.out.println("Drink: " + name);
-        DrinkSQL drink = new DrinkSQL();
-        return drink.getDrink(name);
+        DrinkSQL ds = new DrinkSQL();
+        Drink d = ds.getDrink(dname, username);
+        if (d == null) {
+            return "{ \"status\": \"DNE\"}";
+        }
+        return new ObjectMapper().writeValueAsString(d);
     }
 
     @PostMapping("/")
@@ -65,8 +70,10 @@ public class DrinkController {
         om.registerModule(sm);
         Drink d = om.readValue(savedDrink, Drink.class);
         DrinkSQL ds = new DrinkSQL();
-        ds.insertDrink(d);
-        return true;
+        if (ds.insertDrink(d)){
+            return true;
+        }
+        return false;
     }
 
     @DeleteMapping("/{name}")
@@ -79,18 +86,40 @@ public class DrinkController {
     public String drinkOfTheDay() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(DOTD);
     }
-    @Scheduled(cron = "*/60 * * * * *")
+
+    @GetMapping("/search")
+    public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.searchDrink(request);
+        if (drinks == null) {
+            return "{\"results\": \"DNE\"";
+        }
+        String out = "{ \"results\": [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        
+        return out;
+    }
+
+    @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
         DrinkSQL ds = new DrinkSQL();
         
         ArrayList<Drink> drinks = ds.getAllDrinks();
-
         if (drinks.size() <= 0) {
             oldDOTD = new ArrayList<>();
+            System.out.println("No drinks in db");
             return;
         }
-        if (oldDOTD.size() > 35 || oldDOTD.size() == drinks.size()){   //35 drinks per month that can't be repeated or its the max amount in the database
+        if (oldDOTD.size() > 31 || oldDOTD.size() == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
+            if (oldDOTD.size() == drinks.size()){
+                System.out.println("Maxed out drinks in db");
+            } else {
+                System.out.println("a month of drinks has passed drinks in db");
+            }
             oldDOTD = new ArrayList<>();
         }
         Random r = new Random(1);
@@ -98,9 +127,14 @@ public class DrinkController {
         while (oldDOTD.contains(drinks.get(pos).name)){
             drinks.remove(pos);
             pos = r.nextInt(drinks.size());
+
         }
         DOTD = drinks.get(pos);
+        if (DOTD != null){
+            oldDOTD.add(DOTD.name);
+        }
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
+        
         
     }
 }
