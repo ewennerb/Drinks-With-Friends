@@ -10,7 +10,8 @@ import {
     Segment,
     Header,
     Grid,
-    Loader, Button, List
+    Loader, Button, List,
+    Form
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 
@@ -161,6 +162,27 @@ export default class Search extends React.Component{
                             <br/>
                             <Grid.Row centered>
                                 {/*Todo: Put a button and maybe some options here*/}
+                                <Form.Group inline>
+                                    <label>Size</label>
+                                    <Form.Radio
+                                        label='Drinks'
+                                        value='d'
+                                        checked={value === 'd'}
+                                        // onChange={this.handleChange}
+                                    />
+                                    <Form.Radio
+                                        label='Ingredients'
+                                        value='i'
+                                        checked={value === 'i'}
+                                        // onChange={this.handleChange}
+                                    />
+                                    <Form.Radio
+                                        label='Users'
+                                        value='u'
+                                        checked={value === 'd'}
+                                        // onChange={this.handleChange}
+                                    />
+                                </Form.Group>
 
                                 <Input
                                     // action={{
