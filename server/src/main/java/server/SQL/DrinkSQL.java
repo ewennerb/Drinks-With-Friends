@@ -51,7 +51,7 @@ public class DrinkSQL {
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM test_schema.drink_ingredient " + 
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\""; //to get only official drinks set publisher to DrinksWithFriends or Null
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
 				ArrayList<Ingredient> ii = new ArrayList<>();
