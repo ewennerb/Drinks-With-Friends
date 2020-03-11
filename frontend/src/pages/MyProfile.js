@@ -91,7 +91,7 @@ handleOpen() {
       <Container>
         <BrowserRouter>
           {notUser}
-          <Grid className="grid" columns={3} container padded relaxed textAlign="center">
+          <Grid className="grid" columns={3} padded relaxed textAlign="center">
           <Grid.Row container>
           <Grid.Column  
             as={Link}
@@ -214,6 +214,32 @@ handleOpen() {
         </BrowserRouter>
       </Container>  
     )
+  }//end render
+  
+   
+
+  async handleItemClick (e, {name}) {
+      this.setState({ activeItem: name })
+      console.log(name)
+      
+      await fetch('http://localhost:8080/user/'+name+'', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            // help
+            //userName: this.state.response.username,
+            // phoneNumber: '',
+            // password: '',
+            // name: '',
+            // email: this.state.email_reset,
+        })
+    }).then(res => res.json()).then((data) => { //dk tbh
+        console.log(data);
+        this.setState({response: data});
+    }).catch(console.log);
   }
 }
 

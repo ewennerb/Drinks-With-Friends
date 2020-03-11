@@ -88,7 +88,7 @@ export default class Routes extends React.Component {
                  onClick={this.logOut}
                  name={"Log Out"}
                  active={activeItem === 'Log Out'}
-                 borderless
+
              />
         }else{
             logOrProfile = <Menu.Item
@@ -105,10 +105,9 @@ export default class Routes extends React.Component {
                 onClick={this.handlePageJump}
                 name={"Register"}
                 active={activeItem === 'Register'}
-                borderless
+                
             />
         }
-
 
 
 
@@ -125,7 +124,7 @@ export default class Routes extends React.Component {
                                 <Checkbox
                                     fitted
                                     label={"I confirm that I am 21 years old or over"}
-                                    value={this.state.checked}
+                                    // value={this.state.checked}
                                     onClick={this.handleCheck}
                                 />
                                 <br/>
@@ -166,7 +165,7 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
-                                            borderless
+                                          
                                         />
 
                                         <Menu.Item
@@ -175,17 +174,17 @@ export default class Routes extends React.Component {
                                             name={"Activity ActivityFeed"}
                                             active={activeItem === 'Activity ActivityFeed'}
                                             onClick={this.handlePageJump}
-                                            borderless
+                                           
                                         />
 
                                         <Menu.Item
                                             as={Link}
                                             replace={false}
-                                            to={{pathname: '/profile', state: {user: "", is21: this.state.is21}}}
+                                            to={{pathname: `/${this.state.user}`, state: {user: this.state.user, is21: this.state.is21}}}
                                             name={"My Profile"}
                                             active={activeItem === 'My Profile'}
                                             onClick={this.handlePageJump}
-                                            borderless
+                                      
                                             position="right"
                                         />
 
@@ -207,7 +206,7 @@ export default class Routes extends React.Component {
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
-                                        <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
+                                        <Route exact path="/:user" render={() => <Profile user={this.state.user}/>}/>
                                     </Switch>
                                 </Segment>
                             </Sidebar.Pusher>
