@@ -83,10 +83,10 @@ public class UserDeserializer extends StdDeserializer<User> {
 			return n.get("dislikedDrinks").asText();
 	}
 	public String variableFav(JsonNode n) {
-		if (n.get("favoritedDrink") == null)
+		if (n.get("favoriteDrink") == null)
 			return "";
 		else
-			return n.get("favoritedDrink").asText();
+			return n.get("favoriteDrink").asText();
 	}
 	public String variablePublish(JsonNode n) {
 		if (n.get("publishedDrinks") == null)

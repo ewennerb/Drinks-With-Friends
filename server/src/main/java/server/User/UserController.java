@@ -190,6 +190,23 @@ public class UserController {
 		return users.updateBio(u.userName, u.bio);
 	}
 
+	@PostMapping("/saveFavoriteDrink")
+	public String saveFavoriteDrink(@RequestBody String userFavDrink)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userFavDrink, User.class);
+		//System.out.print(u.toString());
+
+		UserSQL users = new UserSQL();
+		System.out.print("favoriteDrink: "+u.favoriteDrink);
+
+		return users.updateFavoriteDrink(u.userName, u.favoriteDrink);
+	}
+
 
     @DeleteMapping("/delete")
     public String deleteUser() {

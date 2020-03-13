@@ -241,4 +241,23 @@ public class UserSQL {
 		}
 	}
 
+	public String updateFavoriteDrink(String userName, String favDrink){
+		try{
+			String query = "update test_schema.user set favoriteDrink = \""+favDrink+"\" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
 }
