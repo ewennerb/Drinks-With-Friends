@@ -76,7 +76,7 @@ export default class Routes extends React.Component {
         if (this.state.user !== undefined){
              logOrProfile = <Menu.Item
                 as={Link}
-                to={{pathname: '/profile', state: {user: this.state.user}}}
+                to={{pathname: `/${this.state.user}`, state: {user: this.state.user}}}
                 icon="user circle outline"
                 position="right"
                 size="large"
@@ -108,8 +108,6 @@ export default class Routes extends React.Component {
                 
             />
         }
-
-
 
         return (
             <div className="Routes">
@@ -202,7 +200,8 @@ export default class Routes extends React.Component {
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
-                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
+                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>  
+                                        {/* it doenst like this^ stackoverflow says componentdidmount for sideeffects */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>

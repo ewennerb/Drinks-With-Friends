@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import 'semantic-ui-css/semantic.min.css';
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link, useParams} from "react-router-dom";
 import {
   Menu,
   Grid,
@@ -26,18 +26,38 @@ class Profile extends Component{
     
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.handleBioChange = this.handleBioChange.bind(this);    
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+
     this.state = {
       modalOpen: false, 
       activeItem: "posts",
-      user: this.props.user
+      user: this.props.user,
+      password: '',
+      bio:''
     };
 }
 
   componentDidMount(){
+    // getting user
+    console.log(this.props)
+    console.log(window.location.pathname)
+    let currentUser = window.location.pathname.substring(1);
+    let User = this.getUser(currentUser);
+    console.log(User)
+
     this.setState({
       modalOpen: false,
       activeItem: "posts",
-      user: this.props.user
+      user: this.props.user,
+      bio:  User.bio,
+      password: User.password,
+      email: User.email,
+      phoneNumber: User.phoneNumber,
+      friendsList: User.friendsList,
+      darkMode: User.darkMode
     })
   }
 
@@ -85,6 +105,26 @@ handleOpen() {
           </Modal>
     }
 
+    let currentUser = window.location.pathname.substring(1);
+
+    let editprofile = <p/>;
+
+    if (this.props.user === currentUser) {
+        //allow the option to edit profile
+        editprofile = 
+        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+          <Button animated="fade" onClick={this.handleOpen}  >
+          <Button.Content visible>Edit Profile</Button.Content>
+          <Button.Content hidden>
+          <Icon name="edit"/>
+          </Button.Content>
+          </Button>
+        </Grid.Column>
+     
+
+
+    }
+
 
 
     return(
@@ -92,7 +132,7 @@ handleOpen() {
         <BrowserRouter>
           {notUser}
           <Grid className="grid" columns={3} padded relaxed textAlign="center">
-          <Grid.Row container>
+          <Grid.Row>
           <Grid.Column  
             as={Link}
             to={{pathname: `/${this.state.user}/posts`}}
@@ -100,19 +140,13 @@ handleOpen() {
           <Icon name="user circle outline" size="massive"/>
           </Grid.Column>
           
-          <Grid.Column container textAlign="left">
+          <Grid.Column textAlign="left">
             <h2>Bio:</h2>
             
           </Grid.Column> 
           
-          <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-            <Button animated="fade" onClick={this.handleOpen}  >
-            <Button.Content visible>Edit Profile</Button.Content>
-            <Button.Content hidden>
-            <Icon name="edit"/>
-            </Button.Content>
-            </Button>
-          </Grid.Column>
+          {editprofile}
+
           </Grid.Row>
           
           <Grid.Row centered columns={1} textAlign="right">          
@@ -180,6 +214,8 @@ handleOpen() {
           
 
           {/* profile edit modal */}
+
+          <Grid>
           <Modal
           open={this.state.modalOpen}
           onClose={this.handleClose}
@@ -188,35 +224,63 @@ handleOpen() {
           {/*display current profile info with the option to change it */}
           <Container>
           <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
-          </Container>
-          <Container>
-          <Modal.Description>
+          <br/>
+          
           <Form size='large'>
           <Segment stacked>
-          <Form.Input
+          {/* <Form.Input
           fluid icon='user'
           iconPosition='left'
           placeholder='Username'
           required='true'
           value={this.state.username}
           onChange={this.handleUserChange}
+          /> */}
+          <Form.Input
+          fluid icon='lock'
+          iconPosition='left'
+          placeholder='Password'
+          value={this.state.password}
+          onChange={this.handlePasswordChange}
           />
+
+          <Header as='h2' color='grey' textAlign='center'>Bio</Header>
+          <Form.Input
+          fluid
+          placeholder={this.state.bio}
+          value={this.state.bio}
+          onChange={this.handleBioChange}
+          />
+          
+          <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
+          Update
+          </Button>
+          
           
           </Segment>
           </Form>
           {/* need to add profile picture and how to store kind of confused */}
-          </Modal.Description>
+          
           </Container>
-
+          
           </Modal.Content>
           </Modal>
+          </Grid>
           
         </BrowserRouter>
       </Container>  
     )
   }//end render
-  
    
+  async handlePasswordChange(event) {
+    const value = event.target.value;
+    await this.setState({password: value});
+  };
+  async handleBioChange(event) {
+    const value = event.target.value;
+    await this.setState({bio: value});
+  };
+
 
   async handleItemClick (e, {name}) {
       this.setState({ activeItem: name })
@@ -241,6 +305,49 @@ handleOpen() {
         this.setState({response: data});
     }).catch(console.log);
   }
+
+
+  async handleSubmit() {
+
+    await fetch('http://localhost:8080/user/updatePassword', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.user,
+          password: this.state.password,
+          phoneNumber: '',
+          name: '',
+          email: '',
+  
+      })
+    }).then(res => res.json()).then((data) => {
+      console.log("UPDATE PASSWORD");
+      console.log(data);
+      this.setState({response: data});
+    }).catch(console.log);
+
+  };
+  async getUser(name) {
+    let user = {}
+    await fetch('http://localhost:8080/user/'+name, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { //dk tbh
+          console.log(data);
+          user = data;
+          // this.setState({response: data});
+      }).catch(console.log);
+      return user
+  }
+
+  
+
 }
 
 export default Profile
