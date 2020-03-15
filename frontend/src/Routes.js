@@ -6,6 +6,7 @@ import Register from "./pages/Register"
 import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
+import All from "./pages/All"
 
 import {
     Menu,
@@ -187,7 +188,15 @@ export default class Routes extends React.Component {
                                             borderless
                                             position="right"
                                         />
-
+                                        <Menu.Item
+                                            as={Link}
+                                            to={{pathname: '/all', state: {user: "", is21: this.state.is21}}}
+                                            name={"All"}
+                                            active={activeItem === 'My Profile'}
+                                            onClick={this.handlePageJump}
+                                            borderless
+                                            position="right"
+                                        />
                                         {logOrRegister}
 
                                         <Menu.Item content={<br/>}/>
@@ -206,6 +215,7 @@ export default class Routes extends React.Component {
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
+                                        <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
                                     </Switch>
                                 </Segment>
                             </Sidebar.Pusher>
