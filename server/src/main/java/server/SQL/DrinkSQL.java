@@ -224,5 +224,28 @@ public class DrinkSQL {
 
 		return true;
 	}
-	   	  
+			 
+	public String[] getDrinkNamesStartingWith(char let){
+		System.out.println("Getting drinks starting with " + let);
+		ArrayList<String> dnames = new ArrayList<>();
+		
+		try {
+			String query = "SELECT DISTINCT d.name, d.publisher " + 
+			"FROM test_schema.drink d "+
+			"WHERE d.name like \""+let+"%\"";
+
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				dnames.add(rs.getString("name"));
+				dnames.add(rs.getString("publisher"));
+			}
+		} catch (Exception e) {
+			
+			
+		}
+		String[] outDrink = new String[dnames.size()];
+		outDrink = dnames.toArray(outDrink);
+
+		return outDrink;
+	}
 }

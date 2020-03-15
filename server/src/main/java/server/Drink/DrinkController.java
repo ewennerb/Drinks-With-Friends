@@ -103,6 +103,24 @@ public class DrinkController {
         return out;
     }
 
+    @GetMapping("/all/{letter}") 
+    public String requestAll(@PathVariable String letter) {
+        DrinkSQL ds = new DrinkSQL();
+        String[] names = ds.getDrinkNamesStartingWith(letter.charAt(0));
+       
+        String out = "{ \"results\": [";
+        if (names.length == 0) {
+            return out + "]}";
+        }
+
+        for (int i = 0; i < names.length; i+=2) {
+            out += "{ \"name\": \"" + names[i] + "\", \"publisher\": \"" + names[i+1]+ "\"},"; 
+        }
+        
+        out = out.substring(0, out.length()-1) + "] }";
+        return out;
+    }
+
     @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
@@ -112,6 +130,8 @@ public class DrinkController {
         if (drinks.size() <= 0) {
             oldDOTD = new ArrayList<>();
             System.out.println("No drinks in db");
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("Whats in it?","","")}, "", 0,0,"Could be you!");
+            //public Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher){
             return;
         }
         if (oldDOTD.size() > 31 || oldDOTD.size() == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            

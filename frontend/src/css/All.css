@@ -1,0 +1,23 @@
+
+
+ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+li {
+    display: inline;
+    cursor: pointer;
+    margin: 1px;
+    padding: 2px;
+}
+
+a {
+    text-decoration: underline;    
+}
+
+.listItem {
+    text-decoration: underline;
+    color: cornflowerblue;
+    cursor: pointer;
+}
