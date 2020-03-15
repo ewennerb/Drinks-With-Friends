@@ -202,6 +202,30 @@ public class UserSQL {
 		}
 	}
 
+
+	public String updateUsername(String userName, String newUsername){
+		try{
+
+			String query = "update test_schema.user set username = \""+newUsername+"\""+" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+			if(updateResult == 1){
+				//System.out.print("********* ITS !");
+				return "{ \"status\" : \"ok\" }";
+			}else if (updateResult == 0) {
+				//System.out.print("****** IS 0");
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+			
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed updating password.");
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+
 	public String insertProfilePhoto(String userName, String profilePhotoPath){
 		try{
 		
