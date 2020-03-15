@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import {
   Feed,
-  Grid,
+  //Grid,
   Container,
   Icon,
 

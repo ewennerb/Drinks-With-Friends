@@ -1,12 +1,12 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
-import {Redirect} from 'react-router-dom';
+//import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {
     Card,
     Input,
     Rating,
-    Image,
+    //Image,
     Segment,
     Header,
     Grid,
@@ -39,6 +39,7 @@ export default class Search extends React.Component{
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
+        /*
         await this.getDOTD();
         this.setState({
             loaded: false,
@@ -47,6 +48,7 @@ export default class Search extends React.Component{
             results: [],
             searchable: false
         })
+        */
     }
 
 

@@ -78,7 +78,7 @@ export default class Routes extends React.Component {
         if (this.state.user !== undefined){
              logOrProfile = <Menu.Item
                 as={Link}
-                to={{pathname: '/profile', state: {user: this.state.user}}}
+                to={{pathname: `/${this.state.user}`, state: {user: this.state.user}}}
                 icon="user circle outline"
                 position="right"
                 size="large"
@@ -90,7 +90,7 @@ export default class Routes extends React.Component {
                  onClick={this.logOut}
                  name={"Log Out"}
                  active={activeItem === 'Log Out'}
-                 borderless
+
              />
         }else{
             logOrProfile = <Menu.Item
@@ -107,12 +107,9 @@ export default class Routes extends React.Component {
                 onClick={this.handlePageJump}
                 name={"Register"}
                 active={activeItem === 'Register'}
-                borderless
+                
             />
         }
-
-
-
 
         return (
             <div className="Routes">
@@ -127,7 +124,7 @@ export default class Routes extends React.Component {
                                 <Checkbox
                                     fitted
                                     label={"I confirm that I am 21 years old or over"}
-                                    value={this.state.checked}
+                                    // value={this.state.checked}
                                     onClick={this.handleCheck}
                                 />
                                 <br/>
@@ -168,7 +165,7 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
-                                            borderless
+                                          
                                         />
 
                                         <Menu.Item
@@ -177,17 +174,17 @@ export default class Routes extends React.Component {
                                             name={"Activity ActivityFeed"}
                                             active={activeItem === 'Activity ActivityFeed'}
                                             onClick={this.handlePageJump}
-                                            borderless
+                                           
                                         />
 
                                         <Menu.Item
                                             as={Link}
                                             replace={false}
-                                            to={{pathname: '/profile', state: {user: "", is21: this.state.is21}}}
+                                            to={{pathname: `/${this.state.user}`, state: {user: this.state.user, is21: this.state.is21}}}
                                             name={"My Profile"}
                                             active={activeItem === 'My Profile'}
                                             onClick={this.handlePageJump}
-                                            borderless
+                                      
                                             position="right"
                                         />
                                         <Menu.Item
@@ -213,12 +210,15 @@ export default class Routes extends React.Component {
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
-                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
+                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>  
+                                        {/* it doenst like this^ stackoverflow says componentdidmount for sideeffects */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
+                                        <Route exact path="/:user" render={() => <Profile user={this.state.user}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
+
                                     </Switch>
                                 </Segment>
                             </Sidebar.Pusher>

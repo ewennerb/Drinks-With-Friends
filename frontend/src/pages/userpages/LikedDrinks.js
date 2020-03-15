@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 
 import {
   Feed,
-  Grid,
   Container,
-  Icon,
+  // Grid,
+
+  // Icon,
 
 } from 'semantic-ui-react'
 
