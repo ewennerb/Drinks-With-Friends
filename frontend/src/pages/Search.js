@@ -22,6 +22,7 @@ export default class Search extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getDOTD = this.getDOTD.bind(this);
+        this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
         this.state = {
             user: this.props.user,
             searchText: "",
@@ -33,6 +34,7 @@ export default class Search extends React.Component{
             results: [],
             // is21: this.props.location.state.is21,
             searchable: false,
+            openRandomModal: false,
         }
     }
 
@@ -101,6 +103,11 @@ export default class Search extends React.Component{
         await this.setState({searchText: value, searchable: searchable});
     };
 
+    handleRandomModalOpen() { //Paul Added
+        this.setState({openRandomModal: true})
+        console.log("random clicked!");
+    }
+
 
     render(){
 
@@ -112,6 +119,10 @@ export default class Search extends React.Component{
                             <Loader content='Loading' />
                         </Dimmer>
                     </Segment>
+
+                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}>
+                        Search
+                    </Button>
                 </div>
             )
         }else{
