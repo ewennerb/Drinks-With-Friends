@@ -107,7 +107,7 @@ export default class Search extends React.Component{
         if (!this.state.done){
             return(
                 <div>
-                    <Segment style={{ height: '40vh' }} textAlign={"center"}>
+                    <Segment style={{ height: '40vh', overflow:"auto"  }} textAlign={"center"}>
                         <Dimmer active>
                             <Loader content='Loading' />
                         </Dimmer>
@@ -120,7 +120,8 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return(
                 <div>
-                    <Grid style={{ height: '100vh', overflow:"scroll" }} columns={16} centered>
+                    
+                    <Grid style={{ height: '100vh'}} columns={16} centered>
                         <Grid.Column width={4}/>
                         <Grid.Column width={8} textAlign="center">
                             <br/>

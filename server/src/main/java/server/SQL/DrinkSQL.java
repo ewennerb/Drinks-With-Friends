@@ -51,7 +51,7 @@ public class DrinkSQL {
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM test_schema.drink_ingredient " + 
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\""; // to get only official drinks set publisher to DrinksWithFriends or Null
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
 				ArrayList<Ingredient> ii = new ArrayList<>();
@@ -224,5 +224,28 @@ public class DrinkSQL {
 
 		return true;
 	}
-	   	  
+			 
+	public String[] getDrinkNamesStartingWith(char let){
+		System.out.println("Getting drinks starting with " + let);
+		ArrayList<String> dnames = new ArrayList<>();
+		
+		try {
+			String query = "SELECT DISTINCT d.name, d.publisher " + 
+			"FROM test_schema.drink d "+
+			"WHERE d.name like \""+let+"%\"";
+
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				dnames.add(rs.getString("name"));
+				dnames.add(rs.getString("publisher"));
+			}
+		} catch (Exception e) {
+			
+			
+		}
+		String[] outDrink = new String[dnames.size()];
+		outDrink = dnames.toArray(outDrink);
+
+		return outDrink;
+	}
 }
