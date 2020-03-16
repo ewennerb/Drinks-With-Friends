@@ -106,13 +106,36 @@ public class UserController {
 		sm.addDeserializer(User.class, new UserDeserializer());
 		om.registerModule(sm);
 		User u = om.readValue(userPass, User.class);
-		//System.out.print(u.toString());
+		System.out.print(u.toString());
+		System.out.println(u.name.toString());
 
 		UserSQL users = new UserSQL();
 		String updatePassword = users.updatePassword(u.userName, u.password);
 
 		return updatePassword;
 	}
+
+
+	@PostMapping("/updateUsername")
+	public String updateUsername(@RequestBody String username)
+			throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(username, User.class);
+		System.out.print(u.toString());
+		System.out.println(u.name.toString());
+		System.out.println(u.bio.toString());
+
+
+		UserSQL users = new UserSQL();
+		String updateUsername = users.updateUsername(u.userName, u.bio);
+
+		return updateUsername;
+	}
+
 
 	@PostMapping("/saveProfilePic")
 	public String saveProfilePic(@RequestBody String userPic)

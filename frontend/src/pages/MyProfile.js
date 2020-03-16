@@ -26,15 +26,22 @@ class Profile extends Component{
     
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
+    this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit2 = this.handleSubmit2.bind(this);
+
 
     this.handleBioChange = this.handleBioChange.bind(this);    
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleUsernameChange = this.handleUsernameChange.bind(this);
+
 
     this.state = {
       modalOpen: false, 
+      modalOpen2: false,
       activeItem: "posts",
       user: this.props.user,
+      newUsername: '',
       password: '',
       bio:''
     };
@@ -50,6 +57,7 @@ class Profile extends Component{
 
     this.setState({
       modalOpen: false,
+      modalOpen2: false,
       activeItem: "posts",
       user: this.props.user,
       bio:  User.bio,
@@ -64,7 +72,8 @@ class Profile extends Component{
 handleClose() {
     this.setState(
         {
-            modalOpen: false
+            modalOpen: false,
+            modalOpen2: false
         }
     )
 }
@@ -75,6 +84,9 @@ handleOpen() {
             modalOpen: true
         }
     )
+}
+handleOpen2() { //Paul Add
+  this.setState({modalOpen2: true})
 }
   
 
@@ -109,6 +121,8 @@ handleOpen() {
 
     let editprofile = <p/>;
 
+    let editUsername = <p/>;
+
     if (this.props.user === currentUser) {
         //allow the option to edit profile
         editprofile = 
@@ -120,9 +134,17 @@ handleOpen() {
           </Button.Content>
           </Button>
         </Grid.Column>
+
+        editUsername = 
+        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+          <Button animated="fade" onClick={this.handleOpen2}  >
+          <Button.Content visible>Change Username</Button.Content>
+          <Button.Content hidden>
+          <Icon name="edit"/>
+          </Button.Content>
+          </Button>
+        </Grid.Column>
      
-
-
     }
 
 
@@ -146,6 +168,7 @@ handleOpen() {
           </Grid.Column> 
           
           {editprofile}
+          {editUsername}
 
           </Grid.Row>
           
@@ -266,9 +289,60 @@ handleOpen() {
           </Modal.Content>
           </Modal>
           </Grid>
+      
+      
+
+        {/* PAUL ADDED */}
+        <Grid>
+          <Modal
+          open={this.state.modalOpen2}
+          onClose={this.handleClose}
+          size="large">
+          <Modal.Content image scrolling>
+          {/*display current profile info with the option to change it */}
+          <Container>
+          <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
+          <br/>
+          
+          <Form size='large'>
+          <Segment stacked>
+          
+          {/* old username is autofilled */}
+          <Form.Input 
+            fluid icon='lock'
+            iconPosition='left'
+            placeholder='Old Username'
+            value={this.state.user}
+          />
+
+          {/* new username needs to be inputted */}
+          <Form.Input
+            fluid icon='lock'
+            iconPosition='left'
+            placeholder='New Username'
+            onChange={this.handleUsernameChange}
+          />
+
+          
+          <Button onClick={this.handleSubmit2} color='yellow' fluid size='large'>
+          Update
+          </Button>
+          
+          
+          </Segment>
+          </Form>
+          
+          </Container>
+          
+          </Modal.Content>
+          </Modal>
+          </Grid>
           
         </BrowserRouter>
-      </Container>  
+      </Container>
+
+
+
     )
   }//end render
    
@@ -276,6 +350,12 @@ handleOpen() {
     const value = event.target.value;
     await this.setState({password: value});
   };
+
+  async handleUsernameChange(event) {
+    const value = event.target.value;
+    await this.setState({newUsername: value});
+  }
+
   async handleBioChange(event) {
     const value = event.target.value;
     await this.setState({bio: value});
@@ -330,6 +410,35 @@ handleOpen() {
     }).catch(console.log);
 
   };
+
+
+
+  async handleSubmit2() { //Paul Added for submitting new username
+    await fetch('http://localhost:8080/user/updateUsername', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.username,
+          password: this.state.password,
+          phoneNumber: '',
+          name: this.newUsername,
+          email: '',
+          
+      })
+    }).then(res => res.json()).then((data) => {
+      console.log("UPDATE USERNAME");
+      console.log(data);
+      this.setState({response: data});
+    }).catch(console.log);
+
+  };
+
+
+
+
   async getUser(name) {
     let user = {}
     await fetch('http://localhost:8080/user/'+name, {
