@@ -7,6 +7,8 @@ import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
+import ResetPassword from "./pages/ResetPassword";
+
 
 import {
     Menu,
@@ -216,6 +218,7 @@ export default class Routes extends React.Component {
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route path="/profile/:username/drink/:name" component={Drink}/>
+                                        <Route exact path="/resetPassword" component={ResetPassword}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
                                         
