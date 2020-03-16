@@ -1,17 +1,15 @@
 import React, { Component } from "react";
 import 'semantic-ui-css/semantic.min.css';
 import {
-  Menu,
   Grid,
   List,
   GridColumn, 
   GridRow,
-
-
 } from "semantic-ui-react";
 
 
 import "../css/All.css"
+import { NavLink } from "react-router-dom/esm/react-router-dom";
 
 
 
@@ -20,8 +18,9 @@ import "../css/All.css"
 class All extends Component{
   constructor(props){
     super(props)
+    this.initData()
+    this.handleSearch = this.handleSearch.bind(this)
     this.state = {
-        currentLetter: 0,
         resultsCol1: [],
         resultsCol2: [],
         resultsCol3: []
@@ -68,9 +67,15 @@ class All extends Component{
           })
   }
 
-  handleDrinkSearch(drinkName, publisher){
-    //TODO ADD ROUTE TO DRINK
+  initData(){
+    let pos = window.location.hash
+    if (pos.length <= 1) {
+      return;
+    }
+    this.handleSearch(pos[1])
   }
+
+  
 
   render(){
 
@@ -114,10 +119,9 @@ class All extends Component{
             <GridRow>
                 <GridColumn width={4}>
                 {this.state.resultsCol1.map(result => {
-                  var test = <List.Item className="listItem" onClick={ () => this.handleDrinkSearch(result.name, result.publisher)}>
-                      
-                      {result.name} by {result.publisher}
-                    </List.Item>
+                  var test = <NavLink class="drinklink" to={(`/profile/${result.publisher}/drink/${result.name}`)}>
+                    {result.name} by {result.publisher}
+                    </NavLink>
                   return(
                     test
                   )

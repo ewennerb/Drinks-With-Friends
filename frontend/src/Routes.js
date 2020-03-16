@@ -17,6 +17,7 @@ import {
     Button,
     Header, Checkbox
 } from "semantic-ui-react"
+import Drink from "./pages/Drink";
 
 
 export default class Routes extends React.Component {
@@ -214,8 +215,10 @@ export default class Routes extends React.Component {
                                         <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
+                                        <Route path="/profile/:username/drink/:name" component={Drink}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
+                                        
                                     </Switch>
                                 </Segment>
                             </Sidebar.Pusher>

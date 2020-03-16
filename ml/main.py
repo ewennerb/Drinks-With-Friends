@@ -1,5 +1,12 @@
 import mysql.connector
 from mysql.connector import Error
+from kmeans import km
+
+
+t = km("", 3)
+t.editDistance("test", "pattern")
+
+"""
 try:
     connection = mysql.connector.connect(host='localhost',
         database='test_schema',
@@ -10,15 +17,7 @@ try:
         print("Connected to MySQL Server version ", db_Info)
         
         cursor = connection.cursor(named_tuple=True)
-        cursor.execute("SELECT * FROM drink")
-        record = cursor.fetchall()
-        for x in record:
-            print(x.name)
-            
-        cursor.execute("SELECT * FROM user")
-        record = cursor.fetchall()
-        for x in record:
-            print(x.name)
+        
 
 except Error as e:
     print("Error while connecting to MySQL", e)
@@ -27,3 +26,4 @@ finally:
         cursor.close()
         connection.close()
         print("MySQL connection is closed")
+"""
