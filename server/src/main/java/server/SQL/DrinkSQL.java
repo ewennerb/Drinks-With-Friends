@@ -103,14 +103,9 @@ public class DrinkSQL {
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
-				rs2.last();
-				System.out.println(rs2.getRow());
-				rs2.first();
 				while (rs2.next()){
-					System.out.println(rs2.getString("quantity"));
 					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
 				}
-				
 				
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);

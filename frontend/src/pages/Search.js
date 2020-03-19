@@ -13,6 +13,8 @@ import {
     Loader, Button, List
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
+import { NavLink } from "react-router-dom/esm/react-router-dom";
+import "../css/Search.css"
 
 
 export default class Search extends React.Component{
@@ -146,7 +148,9 @@ export default class Search extends React.Component{
                                     {/*    src='https://react.semantic-ui.com/images/avatar/large/molly.png'*/}
                                     {/*/>*/}
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        {this.state.dotd.name}
+                                        <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
+                                            {this.state.dotd.name}
+                                        </NavLink>
                                     </Header>
                                     {/*<Card.Content header={this.state.dotd.description}/>*/}
                                     <Card.Description content={this.state.dotd.description}/>

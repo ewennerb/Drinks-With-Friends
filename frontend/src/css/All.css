@@ -5,6 +5,8 @@ ul {
     text-align: center;
 }
 
+
+
 li {
     display: inline;
     cursor: pointer;
@@ -16,8 +18,7 @@ a {
     text-decoration: underline;    
 }
 
-.listItem {
-    text-decoration: underline;
-    color: cornflowerblue;
-    cursor: pointer;
+
+.drinklink {
+    display: block;
 }
