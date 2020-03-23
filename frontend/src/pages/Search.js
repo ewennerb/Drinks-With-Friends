@@ -6,11 +6,12 @@ import {
     Card,
     Input,
     Rating,
-    //Image,
+    Image,
     Segment,
     Header,
     Grid,
-    Loader, Button, List
+    Loader, Button, List,
+    Form
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import { NavLink } from "react-router-dom/esm/react-router-dom";
@@ -43,18 +44,22 @@ export default class Search extends React.Component{
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
-        /*
         await this.getDOTD();
         this.setState({
             loaded: false,
             user: this.props.user,
             done: true,
             results: [],
-            searchable: false
+            searchable: false,
+            searchVal: "d",
         })
-        */
     }
 
+    handleSettingsChange = (e, { value }) => {
+        console.log(value);
+        this.setState({ searchVal: value });
+        console.log(this.state.value);
+    };
 
     //Fetches the Drink of the Day
     async getDOTD(){
@@ -79,7 +84,17 @@ export default class Search extends React.Component{
 
     //Todo: Send the query parameters to the server and fuck shit up
     async getSearchResults(){
-        await fetch('http://localhost:8080/drink/search?s=' + this.state.searchText, {
+
+        let url;
+        if (this.state.searchVal === 'u'){
+            url = "http://localhost:8080/user/" + this.state.searchText;
+        }else if(this.state.searchVal === "d"){
+            url = "http://localhost:8080/drink/search?s=" + this.state.searchText;
+        }else if(this.state.searcVal === "i"){
+            url = "http://localhost:8080/ingredients/search?s=" + this.state.searchText;
+        }
+        console.log(url);
+        await fetch(url, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -88,7 +103,7 @@ export default class Search extends React.Component{
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
             this.setState({results: data.results})
-        }).catch(console.log);
+        }).catch(this.setState({results: []}));
         this.setState({loaded: true})
     }
 
@@ -111,14 +126,16 @@ export default class Search extends React.Component{
     }
 
 
-    render(){
+    render() {
 
-        if (!this.state.done){
-            return(
+        const value = this.state.searchVal;
+
+        if (!this.state.done) {
+            return (
                 <div>
-                    <Segment style={{ height: '40vh', overflow:"auto"  }} textAlign={"center"}>
+                    <Segment style={{height: '40vh', overflow:"auto"  }} textAlign={"center"}>
                         <Dimmer active>
-                            <Loader content='Loading' />
+                            <Loader content='Loading'/>
                         </Dimmer>
                     </Segment>
 
@@ -127,14 +144,11 @@ export default class Search extends React.Component{
                     </Button>
                 </div>
             )
-        }else{
-
-        }
+        } else {
             //IF dotd not ready return loader
-            return(
+            return (
                 <div>
-                    
-                    <Grid style={{ height: '100vh'}} columns={16} centered>
+                    <Grid style={{height: '100vh'}} columns={16} centered>
                         <Grid.Column width={4}/>
                         <Grid.Column width={8} textAlign="center">
                             <br/>
@@ -142,23 +156,17 @@ export default class Search extends React.Component{
                             <Card style={{width: "500px"}} centered>
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    {/*<Image*/}
-                                    {/*    floated='left'*/}
-                                    {/*    size='small'*/}
-                                    {/*    src='https://react.semantic-ui.com/images/avatar/large/molly.png'*/}
-                                    {/*/>*/}
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
                                         <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
                                             {this.state.dotd.name}
                                         </NavLink>
                                     </Header>
-                                    {/*<Card.Content header={this.state.dotd.description}/>*/}
                                     <Card.Description content={this.state.dotd.description}/>
                                     <br/>
                                     <Card.Content>
                                         <List bulleted>
                                             {this.state.dotd.ingredients.map(ingr => {
-                                                return(
+                                                return (
                                                     <List.Item>
                                                         {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                                     </List.Item>
@@ -166,10 +174,7 @@ export default class Search extends React.Component{
                                             })}
                                         </List>
                                     </Card.Content>
-
-                                    {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
                                     <Card.Meta>{this.state.dotd.publisher}</Card.Meta>
-
                                     <Card.Content extra>
                                         <Rating icon='star' defaultRating={5} maxRating={5}/>
                                     </Card.Content>
@@ -179,16 +184,31 @@ export default class Search extends React.Component{
                             <br/>
                             <Grid.Row centered>
                                 {/*Todo: Put a button and maybe some options here*/}
+                                <Form>
+                                    <Form.Group inline>
+                                        <label>Search Options</label>
+                                        <Form.Radio
+                                            label='Drinks'
+                                            value='d'
+                                            checked={value === 'd'}
+                                            onClick={this.handleSettingsChange}
+                                        />
+                                        <Form.Radio
+                                            label='Ingredients'
+                                            value='i'
+                                            checked={value === 'i'}
+                                            onClick={this.handleSettingsChange}
+                                        />
+                                        <Form.Radio
+                                            label='Users'
+                                            value='u'
+                                            checked={value === 'u'}
+                                            onClick={this.handleSettingsChange}
+                                        />
+                                    </Form.Group>
+                                </Form>
 
                                 <Input
-                                    // action={{
-                                    //     color: 'yellow',
-                                    //     labelPosition: 'left',
-                                    //     icon: 'search',
-                                    //     content: 'Search',
-                                    //     onClick: this.getSearchResults()
-                                    // }}
-                                    // actionPosition='right'
                                     size="huge"
                                     fluid
                                     placeholder='Search...'
@@ -217,7 +237,7 @@ export default class Search extends React.Component{
                                                 <Card.Content>
                                                     <List bulleted>
                                                         {result.ingredients.map(ingr => {
-                                                            return(
+                                                            return (
                                                                 <List.Item>
                                                                     {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                                                 </List.Item>
@@ -246,15 +266,5 @@ export default class Search extends React.Component{
                 </div>
             )
         }
-
-
-
-
-        // if (this.state.loaded){
-        //
-        // }else{
-        //     return(
-        //         <div/>
-        //     )
-        // }
+    }
 }
