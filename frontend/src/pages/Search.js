@@ -1,6 +1,6 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
-import {Redirect} from 'react-router-dom';
+//import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {
     Card,
@@ -14,6 +14,8 @@ import {
     Form
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
+import { NavLink } from "react-router-dom/esm/react-router-dom";
+import "../css/Search.css"
 
 
 export default class Search extends React.Component{
@@ -23,6 +25,7 @@ export default class Search extends React.Component{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getDOTD = this.getDOTD.bind(this);
+        this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
         this.state = {
             user: this.props.user,
             searchText: "",
@@ -32,7 +35,9 @@ export default class Search extends React.Component{
             loggedIn: false,
             done: false,
             results: [],
+            // is21: this.props.location.state.is21,
             searchable: false,
+            openRandomModal: false,
         }
     }
 
@@ -115,6 +120,11 @@ export default class Search extends React.Component{
         await this.setState({searchText: value, searchable: searchable});
     };
 
+    handleRandomModalOpen() { //Paul Added
+        this.setState({openRandomModal: true})
+        console.log("random clicked!");
+    }
+
 
     render() {
 
@@ -123,18 +133,22 @@ export default class Search extends React.Component{
         if (!this.state.done) {
             return (
                 <div>
-                    <Segment style={{height: '40vh'}} textAlign={"center"}>
+                    <Segment style={{height: '40vh', overflow:"auto"  }} textAlign={"center"}>
                         <Dimmer active>
                             <Loader content='Loading'/>
                         </Dimmer>
                     </Segment>
+
+                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}>
+                        Search
+                    </Button>
                 </div>
             )
         } else {
             //IF dotd not ready return loader
             return (
                 <div>
-                    <Grid style={{height: '100vh', overflow: "scroll"}} columns={16} centered>
+                    <Grid style={{height: '100vh'}} columns={16} centered>
                         <Grid.Column width={4}/>
                         <Grid.Column width={8} textAlign="center">
                             <br/>
@@ -143,7 +157,9 @@ export default class Search extends React.Component{
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        {this.state.dotd.name}
+                                        <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
+                                            {this.state.dotd.name}
+                                        </NavLink>
                                     </Header>
                                     <Card.Description content={this.state.dotd.description}/>
                                     <br/>
@@ -210,7 +226,6 @@ export default class Search extends React.Component{
                                 <br/>
                                 <br/>
                                 {this.state.results.map(result => {
-                                    //Todo: Add logic here to figure out what type of results to render
                                     return (
                                         <Card style={{width: "500px"}} centered>
                                             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>

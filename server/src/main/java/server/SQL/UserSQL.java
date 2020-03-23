@@ -3,7 +3,7 @@ package server.SQL;
 import java.sql.*;
 import java.util.ArrayList;
 import server.User.User;
-
+import server.Drink.Drink;
 
 public class UserSQL {
 
@@ -202,6 +202,30 @@ public class UserSQL {
 		}
 	}
 
+
+	public String updateUsername(String userName, String newUsername){
+		try{
+
+			String query = "update test_schema.user set username = \""+newUsername+"\""+" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+			if(updateResult == 1){
+				//System.out.print("********* ITS !");
+				return "{ \"status\" : \"ok\" }";
+			}else if (updateResult == 0) {
+				//System.out.print("****** IS 0");
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+			
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed updating password.");
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+
 	public String insertProfilePhoto(String userName, String profilePhotoPath){
 		try{
 		
@@ -235,6 +259,87 @@ public class UserSQL {
 
 			return "{ \"status\" : \"Error: SQL update failed.\" }";
 
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String updateFavoriteDrink(String userName, String favDrink){
+		try{
+			String query = "update test_schema.user set favoriteDrink = \""+favDrink+"\" where userName = \""+userName+"\"";
+			int updateResult = smt.executeUpdate(query);
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String likeDrink(String userName, String drinkName, String owner, int likeAction){
+		try{
+			String query = "";
+
+			DrinkSQL test = new DrinkSQL();
+			Drink d = test.getDrink(drinkName, owner);
+			int drinkId = d.id;
+
+
+			if (likeAction == 1) { //liking drink
+				query = "update test_schema.drink_likes set likes = likes + 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else if (likeAction == -1) { //disliking drink
+				query = "update test_schema.drink_likes set dislikes = dislikes + \""+1+"\" where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			}
+			System.out.print("QUERY"+query);
+
+			int updateResult = smt.executeUpdate(query);
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String removeLikeDrink(String userName, String drinkName, String owner, int likeAction){
+		try{
+			String query = "";
+
+			DrinkSQL test = new DrinkSQL();
+			Drink d = test.getDrink(drinkName, owner);
+			int drinkId = d.id;
+
+
+			if (likeAction == 1) { //liking drink
+				query = "update test_schema.drink_likes set likes = likes - 1 where likes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else if (likeAction == -1) { //disliking drink
+				query = "update test_schema.drink_likes set dislikes = dislikes - 1 where dislikes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			}
+			System.out.print("QUERY"+query);
+
+			int updateResult = smt.executeUpdate(query);
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";

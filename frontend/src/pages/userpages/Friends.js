@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import {
-  Feed,
-  Grid,
-  Container,
-  Icon,
+// import {
+//   Feed,
+//   Grid,
+//   Container,
+//   Icon,
 
-} from 'semantic-ui-react'
+// } from 'semantic-ui-react'
 
 import 'semantic-ui-css/semantic.min.css';
 

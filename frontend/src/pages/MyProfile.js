@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import 'semantic-ui-css/semantic.min.css';
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link, useParams} from "react-router-dom";
 import {
   Menu,
   Grid,
@@ -26,25 +26,54 @@ class Profile extends Component{
     
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
+    this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmit2 = this.handleSubmit2.bind(this);
+
+
+    this.handleBioChange = this.handleBioChange.bind(this);    
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleUsernameChange = this.handleUsernameChange.bind(this);
+
+
     this.state = {
       modalOpen: false, 
+      modalOpen2: false,
       activeItem: "posts",
-      user: this.props.user
+      user: this.props.user,
+      newUsername: '',
+      password: '',
+      bio:''
     };
 }
 
   componentDidMount(){
+    // getting user
+    console.log(this.props)
+    console.log(window.location.pathname)
+    let currentUser = window.location.pathname.substring(1);
+    let User = this.getUser(currentUser);
+    console.log(User)
+
     this.setState({
       modalOpen: false,
+      modalOpen2: false,
       activeItem: "posts",
-      user: this.props.user
+      user: this.props.user,
+      bio:  User.bio,
+      password: User.password,
+      email: User.email,
+      phoneNumber: User.phoneNumber,
+      friendsList: User.friendsList,
+      darkMode: User.darkMode
     })
   }
 
 handleClose() {
     this.setState(
         {
-            modalOpen: false
+            modalOpen: false,
+            modalOpen2: false
         }
     )
 }
@@ -55,6 +84,9 @@ handleOpen() {
             modalOpen: true
         }
     )
+}
+handleOpen2() { //Paul Add
+  this.setState({modalOpen2: true})
 }
   
 
@@ -85,14 +117,44 @@ handleOpen() {
           </Modal>
     }
 
+    let currentUser = window.location.pathname.substring(1);
+
+    let editprofile = <p/>;
+
+    let editUsername = <p/>;
+
+    if (this.props.user === currentUser) {
+        //allow the option to edit profile
+        editprofile = 
+        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+          <Button animated="fade" onClick={this.handleOpen}  >
+          <Button.Content visible>Edit Profile</Button.Content>
+          <Button.Content hidden>
+          <Icon name="edit"/>
+          </Button.Content>
+          </Button>
+        </Grid.Column>
+
+        editUsername = 
+        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+          <Button animated="fade" onClick={this.handleOpen2}  >
+          <Button.Content visible>Change Username</Button.Content>
+          <Button.Content hidden>
+          <Icon name="edit"/>
+          </Button.Content>
+          </Button>
+        </Grid.Column>
+     
+    }
+
 
 
     return(
       <Container>
         <BrowserRouter>
           {notUser}
-          <Grid className="grid" columns={3} container padded relaxed textAlign="center">
-          <Grid.Row container>
+          <Grid className="grid" columns={3} padded relaxed textAlign="center">
+          <Grid.Row>
           <Grid.Column  
             as={Link}
             to={{pathname: `/${this.state.user}/posts`}}
@@ -100,19 +162,14 @@ handleOpen() {
           <Icon name="user circle outline" size="massive"/>
           </Grid.Column>
           
-          <Grid.Column container textAlign="left">
+          <Grid.Column textAlign="left">
             <h2>Bio:</h2>
             
           </Grid.Column> 
           
-          <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-            <Button animated="fade" onClick={this.handleOpen}  >
-            <Button.Content visible>Edit Profile</Button.Content>
-            <Button.Content hidden>
-            <Icon name="edit"/>
-            </Button.Content>
-            </Button>
-          </Grid.Column>
+          {editprofile}
+          {editUsername}
+
           </Grid.Row>
           
           <Grid.Row centered columns={1} textAlign="right">          
@@ -180,6 +237,8 @@ handleOpen() {
           
 
           {/* profile edit modal */}
+
+          <Grid>
           <Modal
           open={this.state.modalOpen}
           onClose={this.handleClose}
@@ -188,33 +247,216 @@ handleOpen() {
           {/*display current profile info with the option to change it */}
           <Container>
           <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
-          </Container>
-          <Container>
-          <Modal.Description>
+          <br/>
+          
           <Form size='large'>
           <Segment stacked>
-          <Form.Input
+          {/* <Form.Input
           fluid icon='user'
           iconPosition='left'
           placeholder='Username'
           required='true'
           value={this.state.username}
           onChange={this.handleUserChange}
+          /> */}
+          <Form.Input
+          fluid icon='lock'
+          iconPosition='left'
+          placeholder='Password'
+          value={this.state.password}
+          onChange={this.handlePasswordChange}
           />
+
+          <Header as='h2' color='grey' textAlign='center'>Bio</Header>
+          <Form.Input
+          fluid
+          placeholder={this.state.bio}
+          value={this.state.bio}
+          onChange={this.handleBioChange}
+          />
+          
+          <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
+          Update
+          </Button>
+          
           
           </Segment>
           </Form>
           {/* need to add profile picture and how to store kind of confused */}
-          </Modal.Description>
+          
           </Container>
-
+          
           </Modal.Content>
           </Modal>
+          </Grid>
+      
+      
+
+        {/* PAUL ADDED */}
+        <Grid>
+          <Modal
+          open={this.state.modalOpen2}
+          onClose={this.handleClose}
+          size="large">
+          <Modal.Content image scrolling>
+          {/*display current profile info with the option to change it */}
+          <Container>
+          <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
+          <br/>
+          
+          <Form size='large'>
+          <Segment stacked>
+          
+          {/* old username is autofilled */}
+          <Form.Input 
+            fluid icon='lock'
+            iconPosition='left'
+            placeholder='Old Username'
+            value={this.state.user}
+          />
+
+          {/* new username needs to be inputted */}
+          <Form.Input
+            fluid icon='lock'
+            iconPosition='left'
+            placeholder='New Username'
+            onChange={this.handleUsernameChange}
+          />
+
+          
+          <Button onClick={this.handleSubmit2} color='yellow' fluid size='large'>
+          Update
+          </Button>
+          
+          
+          </Segment>
+          </Form>
+          
+          </Container>
+          
+          </Modal.Content>
+          </Modal>
+          </Grid>
           
         </BrowserRouter>
-      </Container>  
+      </Container>
+
+
+
     )
+  }//end render
+   
+  async handlePasswordChange(event) {
+    const value = event.target.value;
+    await this.setState({password: value});
+  };
+
+  async handleUsernameChange(event) {
+    const value = event.target.value;
+    await this.setState({newUsername: value});
   }
+
+  async handleBioChange(event) {
+    const value = event.target.value;
+    await this.setState({bio: value});
+  };
+
+
+  async handleItemClick (e, {name}) {
+      this.setState({ activeItem: name })
+      console.log(name)
+      
+      await fetch('http://localhost:8080/user/'+name+'', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            // help
+            //userName: this.state.response.username,
+            // phoneNumber: '',
+            // password: '',
+            // name: '',
+            // email: this.state.email_reset,
+        })
+    }).then(res => res.json()).then((data) => { //dk tbh
+        console.log(data);
+        this.setState({response: data});
+    }).catch(console.log);
+  }
+
+
+  async handleSubmit() {
+
+    await fetch('http://localhost:8080/user/updatePassword', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.user,
+          password: this.state.password,
+          phoneNumber: '',
+          name: '',
+          email: '',
+  
+      })
+    }).then(res => res.json()).then((data) => {
+      console.log("UPDATE PASSWORD");
+      console.log(data);
+      this.setState({response: data});
+    }).catch(console.log);
+
+  };
+
+
+
+  async handleSubmit2() { //Paul Added for submitting new username
+    await fetch('http://localhost:8080/user/updateUsername', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.username,
+          password: this.state.password,
+          phoneNumber: '',
+          name: this.newUsername,
+          email: '',
+          
+      })
+    }).then(res => res.json()).then((data) => {
+      console.log("UPDATE USERNAME");
+      console.log(data);
+      this.setState({response: data});
+    }).catch(console.log);
+
+  };
+
+
+
+
+  async getUser(name) {
+    let user = {}
+    await fetch('http://localhost:8080/user/'+name, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { //dk tbh
+          console.log(data);
+          user = data;
+          // this.setState({response: data});
+      }).catch(console.log);
+      return user
+  }
+
+  
+
 }
 
 export default Profile
