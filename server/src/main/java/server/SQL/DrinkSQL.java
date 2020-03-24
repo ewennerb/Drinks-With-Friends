@@ -285,4 +285,30 @@ public class DrinkSQL {
 		
 
 	}
+
+	public String removeLikeDrink(String name, String publisher, int flag){
+		try{
+			String query = "";
+	
+			if (flag==1)
+				query = "update test_schema.drink set likes = likes - 1 where likes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+			else if (flag==-1)
+				query = "update test_schema.drink set dislikes = dislikes - 1 where dislikes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+		
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
+	}
 }

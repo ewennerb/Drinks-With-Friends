@@ -157,7 +157,7 @@ public class DrinkController {
         
         
     }
-
+	//TODO merge like drink with user liking drink
 	@PostMapping("/like")
 	public String likeDrink(@RequestBody String drinkName)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -190,6 +190,42 @@ public class DrinkController {
 		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
 
 		return ds.dislikeDrink(d.name, d.publisher);
+
+
+	}
+
+	@PostMapping("/removeLike")
+	public String removeLikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.removeLikeDrink(d.name, d.publisher, 1);
+
+
+	}
+
+	@PostMapping("/removeDislike")
+	public String removeDislikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.removeLikeDrink(d.name, d.publisher, -1);
 
 
 	}
