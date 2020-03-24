@@ -137,7 +137,7 @@ public class DrinkSQL {
 			if ( flag == 0 )
 				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
 			else if ( flag == 1 )
-				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\" and publisher = \"DWF\"";
+				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\" and publisher = \"iba\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
