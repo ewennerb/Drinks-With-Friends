@@ -1,22 +1,22 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
-//import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import {
     Card,
     Input,
     Rating,
-    Image,
     Segment,
     Header,
     Grid,
-    Loader, Button, List,
+    Loader,
+    Button,
+    List,
     Form
 } from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import { NavLink } from "react-router-dom/esm/react-router-dom";
 import "../css/Search.css"
-import {drinkCard, userCard} from "./utils";
+import {dotdCard, drinkCard, userCard} from "./utils";
 
 
 export default class Search extends React.Component{
@@ -36,7 +36,6 @@ export default class Search extends React.Component{
             loggedIn: false,
             done: false,
             results: [],
-            // is21: this.props.location.state.is21,
             searchable: false,
             openRandomModal: false,
         }
@@ -70,11 +69,6 @@ export default class Search extends React.Component{
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            // body: JSON.stringify({
-            //     username: this.state.username,
-            //     password: this.state.password,
-            //     confirm_password: this.state.conf_pass,
-            // })
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
             await this.setState({dotd: data})
@@ -126,7 +120,7 @@ export default class Search extends React.Component{
     };
 
     handleRandomModalOpen() { //Paul Added
-        this.setState({openRandomModal: true})
+        this.setState({openRandomModal: true});
         console.log("random clicked!");
     }
 
@@ -158,37 +152,11 @@ export default class Search extends React.Component{
                         <Grid.Column width={8} textAlign="center">
                             <br/>
                             <br/>
-                            <Card style={{width: "500px"}} centered>
-                                <Card.Header>Today's Drink of the Day</Card.Header>
-                                <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
-                                            {this.state.dotd.name}
-                                        </NavLink>
-                                    </Header>
-                                    <Card.Description content={this.state.dotd.description}/>
-                                    <br/>
-                                    <Card.Content>
-                                        <List bulleted>
-                                            {this.state.dotd.ingredients.map(ingr => {
-                                                return (
-                                                    <List.Item>
-                                                        {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                                    </List.Item>
-                                                )
-                                            })}
-                                        </List>
-                                    </Card.Content>
-                                    <Card.Meta>{this.state.dotd.publisher}</Card.Meta>
-                                    <Card.Content extra>
-                                        <Rating icon='star' defaultRating={5} maxRating={5}/>
-                                    </Card.Content>
-                                </Segment>
-                            </Card>
+                            {/*This is a method from utils.js that renders drink of the day now*/}
+                            {dotdCard(this.state.dotd)}
                             <br/>
                             <br/>
                             <Grid.Row centered>
-                                {/*Todo: Put a button and maybe some options here*/}
                                 <Form>
                                     <Form.Group inline>
                                         <label>Search Options</label>
