@@ -16,6 +16,7 @@ import {
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import { NavLink } from "react-router-dom/esm/react-router-dom";
 import "../css/Search.css"
+import {drinkCard, userCard} from "./utils";
 
 
 export default class Search extends React.Component{
@@ -102,7 +103,11 @@ export default class Search extends React.Component{
             },
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
-            this.setState({results: data.results})
+            if (this.state.searchVal === 'u'){
+                this.setState({results: [data]})
+            }else{
+                this.setState({results: data.results})
+            }
         }).catch(this.setState({results: []}));
         this.setState({loaded: true})
     }
@@ -207,7 +212,6 @@ export default class Search extends React.Component{
                                         />
                                     </Form.Group>
                                 </Form>
-
                                 <Input
                                     size="huge"
                                     fluid
@@ -226,36 +230,12 @@ export default class Search extends React.Component{
                                 <br/>
                                 <br/>
                                 {this.state.results.map(result => {
-                                    return (
-                                        <Card style={{width: "500px"}} centered>
-                                            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                                <Header textAlign="center" style={{marginTop: "0px"}}>
-                                                    {result.name}
-                                                </Header>
-                                                <Card.Description header={result.description}/>
-                                                <br/>
-                                                <Card.Content>
-                                                    <List bulleted>
-                                                        {result.ingredients.map(ingr => {
-                                                            return (
-                                                                <List.Item>
-                                                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                                                </List.Item>
-                                                            )
-                                                        })}
-                                                    </List>
-                                                </Card.Content>
-
-
-                                                {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
-                                                <Card.Meta>{result.publisher}</Card.Meta>
-
-                                                <Card.Content extra>
-                                                    <Rating icon='star' defaultRating={5} maxRating={5}/>
-                                                </Card.Content>
-                                            </Segment>
-                                        </Card>
-                                    )
+                                    if(this.state.searchVal === 'd'){
+                                        return (drinkCard(result.name, result.description, result.ingredients, result.publisher))
+                                    }else if(this.state.searchVal === 'u') {
+                                        console.log(result.userName);
+                                        return (userCard(result.userName, result.photo))
+                                    }
                                 })}
                             </Grid.Row>
 
