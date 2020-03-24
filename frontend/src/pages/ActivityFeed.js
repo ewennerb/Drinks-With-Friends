@@ -11,9 +11,11 @@ import {
 import {Link} from "react-router-dom";
 
 
+
 export default class ActivityFeed extends React.Component {
     constructor(props){
         super(props);
+        this.canPost = this.canPost.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
@@ -28,6 +30,7 @@ export default class ActivityFeed extends React.Component {
         this.state = {
             user: this.props.user,
             modalOpen: false,
+            postDisabled: true,
             drinkName: "",
             description: "",
             ingredients: [
@@ -56,6 +59,19 @@ export default class ActivityFeed extends React.Component {
         })
     }
 
+    canPost(){
+        let blankIngr = {ingredient: "", quantity: "", measurement: ""};
+        let disabled;
+        console.log(this.state.ingredients);
+        disabled = !(this.state.ingredients.every(val => val.ingredient !== "") &&
+            this.state.ingredients.length >= 1 &&
+            this.state.drinkName !== "" &&
+            this.state.drinkName !== " ");
+        this.setState({
+            postDisabled: disabled
+        })
+    }
+
     handleClose() {
         this.setState({modalOpen: false})
     }
@@ -67,7 +83,8 @@ export default class ActivityFeed extends React.Component {
 
     async createIngredient(){
         await this.state.ingredients.push({quantity: "", measurement: "", ingredient: ""});
-        this.forceUpdate()
+        this.forceUpdate();
+        this.canPost();
     }
 
 
@@ -87,23 +104,28 @@ export default class ActivityFeed extends React.Component {
         let fakeIngredients = this.state.ingredients;
         fakeIngredients[index].ingredient = event.target.value;
         await this.setState({ingredients: fakeIngredients});
+        this.canPost();
     }
 
     async removeIngredient(event){
+        console.log(parseInt(event.target.className));
+        console.log(event.target.className);
         this.state.ingredients.splice(parseInt(event.target.className), 1);
+        this.canPost();
         this.forceUpdate();
     }
 
     async handleNameChange(event){
-        this.setState({
+        await this.setState({
             drinkName: event.target.value
-        })
+        });
+        this.canPost();
     }
 
     async handleDescriptionChange(event){
         this.setState({
             description: event.target.value
-        })
+        });
     }
 
 
@@ -135,7 +157,7 @@ export default class ActivityFeed extends React.Component {
         let notUser = <p/>;
         if (this.props.user === "" || this.props.user === undefined){
             notUser =
-                <Modal open={true}>
+                <Modal open={true} closeOnDimmerClick={false} closeOnEscape={false}>
                     <Segment stacked>
                         <h1>Create an Free Account!</h1>
                         <p>
@@ -154,7 +176,8 @@ export default class ActivityFeed extends React.Component {
 
             <div>
                 {notUser}
-                <Modal open={this.state.modalOpen} onClose={this.handleClose}>
+                <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
+                    <Modal.Header>Create a Drink</Modal.Header>
                     <Form size='large'>
                         <Segment stacked>
                             <Form>
@@ -162,6 +185,7 @@ export default class ActivityFeed extends React.Component {
                                     placeholder='Drink Name'
                                     content={this.state.drinkName}
                                     onChange={this.handleNameChange}
+                                    required={true}
                                 />
                                 <Form.Input
                                     placeholder='Description'
@@ -206,9 +230,14 @@ export default class ActivityFeed extends React.Component {
                                     )
                                 })}
                                 <br/>
-                                <Button onClick={() => this.postDrink()} color='yellow' fluid size='large'>
-                                    Post!
-                                </Button>
+                                <div className='ui two buttons'>
+                                    <Button color='grey' onClick={this.handleClose}>
+                                        Cancel
+                                    </Button>
+                                    <Button color='yellow' disabled={this.state.postDisabled} onClick={() => this.postDrink()}>
+                                        Post!
+                                    </Button>
+                                </div>
                             </Form>
 
                         </Segment>

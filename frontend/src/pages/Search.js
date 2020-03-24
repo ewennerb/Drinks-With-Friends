@@ -45,7 +45,7 @@ export default class Search extends React.Component{
 
 
     handleSettingsChange = (e, { value }) => {
-        this.setState({ searchVal: value });;
+        this.setState({ searchVal: value, results: this.state.results });
     };
 
 
