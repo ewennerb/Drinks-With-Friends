@@ -31,10 +31,11 @@ public class DrinkController {
     }
 
     @GetMapping("")
-    public String findAll() {
+    public String findAll() 
+			throws JsonParseException, JsonMappingException, IOException {
         // find a single drink
-        DrinkSQL test = new DrinkSQL();
-        ArrayList<Drink> list = test.getAllDrinks();
+        DrinkSQL drinks = new DrinkSQL();
+        /*ArrayList<Drink> list = test.getAllDrinks();
         String out = "";
         for (Drink drink : list) {
             out += drink.id + "\t";
@@ -44,8 +45,15 @@ public class DrinkController {
             out += drink.likes + "\t";
             out += drink.dislikes + "\t";
             out += drink.publisher + "<br>";
-        }
-        return out;
+        }*/
+
+
+		ObjectMapper om2 = new ObjectMapper();
+		SimpleModule sm2 = new SimpleModule("DrinkSerializer", new Version(1, 0, 0, null, null, null));
+		sm2.addSerializer(Drink.class, new DrinkSerializer());
+		om2.registerModule(sm2);
+
+        return om2.writeValueAsString(drinks.getAllDrinks());
     }
 
     @GetMapping("/{username}")
@@ -90,7 +98,23 @@ public class DrinkController {
     @GetMapping("/search")
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
-        Drink[] drinks = ds.searchDrink(request);
+        Drink[] drinks = ds.searchDrink(request, 0);
+        if (drinks == null) {
+            return "{\"results\": \"DNE\"";
+        }
+        String out = "{ \"results\": [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        
+        return out;
+    }
+
+	@GetMapping("/searchOfficialDrink")
+    public String searchOfficialDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.searchDrink(request, 1);
         if (drinks == null) {
             return "{\"results\": \"DNE\"";
         }

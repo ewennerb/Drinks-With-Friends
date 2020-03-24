@@ -122,7 +122,7 @@ public class DrinkSQL {
 			return null;
 		} 
 	}
-	public Drink[] searchDrink(String request) {
+	public Drink[] searchDrink(String request, int flag) {
 		System.out.println("searching");
 		StringBuilder searchString = new StringBuilder("%" + request + "%");
 		for (int i = 0; i < request.length(); i++) {
@@ -132,7 +132,12 @@ public class DrinkSQL {
 		}
 		System.out.println(searchString);
 		try {
-			String query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+
+			String query = "";
+			if ( flag == 0 )
+				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+			else if ( flag == 1 )
+				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\" and publisher = \"DWF\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
