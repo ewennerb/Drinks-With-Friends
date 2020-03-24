@@ -129,7 +129,6 @@ public class UserController {
 		System.out.println(u.name.toString());
 		System.out.println(u.bio.toString());
 
-
 		UserSQL users = new UserSQL();
 		String updateUsername = users.updateUsername(u.userName, u.bio);
 

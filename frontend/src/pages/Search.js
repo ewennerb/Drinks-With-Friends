@@ -41,7 +41,6 @@ export default class Search extends React.Component{
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
-        /*
         await this.getDOTD();
         this.setState({
             loaded: false,
@@ -50,7 +49,6 @@ export default class Search extends React.Component{
             results: [],
             searchable: false
         })
-        */
     }
 
 
