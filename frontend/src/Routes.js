@@ -215,7 +215,7 @@ export default class Routes extends React.Component {
                                         {/* it doenst like this^ stackoverflow says componentdidmount for sideeffects */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
-                                        <Route path="/profile/:username/drink/:name" component={Drink}/>
+                                        <Route path="/:username/drink/:name" component={Drink}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
                                         <Route exact path="/:user" render={() => <Profile user={this.state.user}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>

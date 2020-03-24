@@ -157,4 +157,40 @@ public class DrinkController {
         
         
     }
+
+	@PostMapping("/like")
+	public String likeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.likeDrink(d.name, d.publisher);
+
+
+	}
+
+	@PostMapping("/dislike")
+	public String dislikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.dislikeDrink(d.name, d.publisher);
+
+
+	}
 }

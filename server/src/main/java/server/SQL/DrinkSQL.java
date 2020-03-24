@@ -243,4 +243,46 @@ public class DrinkSQL {
 
 		return outDrink;
 	}
+
+	public String likeDrink(String name, String publisher){
+		try{
+			String query = "update test_schema.drink set likes = likes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
+	}
+
+	public String dislikeDrink(String name, String publisher){
+		try{
+			String query = "update test_schema.drink set dislikes = dislikes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
+	}
 }
