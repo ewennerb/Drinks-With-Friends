@@ -9,6 +9,7 @@ import {
     FormGroup, Icon, Message
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
+var base64 = require('base-64');
 
 
 
@@ -19,6 +20,7 @@ export default class ActivityFeed extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+        this.handleFileRead = this.handleFileRead.bind(this);
 
         this.changeIngredient = this.changeIngredient.bind(this);
         this.createIngredient = this.createIngredient.bind(this);
@@ -27,10 +29,16 @@ export default class ActivityFeed extends React.Component {
         this.removeIngredient = this.removeIngredient.bind(this);
         this.postDrink = this.postDrink.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
+        this.fileChange = this.fileChange.bind(this);
+        this.fileReader = new FileReader();
         this.state = {
             user: this.props.user,
             modalOpen: false,
             postDisabled: true,
+            file: {},
+            fileString: "",
+            filename: "",
+            selected: false,
             drinkName: "",
             description: "",
             ingredients: [
@@ -40,7 +48,8 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
-        }
+        };
+        this.fileInputRef = React.createRef();
     }
 
     componentDidMount(){
@@ -58,6 +67,26 @@ export default class ActivityFeed extends React.Component {
             ],
         })
     }
+
+    handleFileRead = (e) => {
+        this.setState({fileString: this.fileReader.result});
+    };
+
+    async fileChange(event) {
+        const file = event.target.files[0];
+        const fileName = event.target.files[0].name;
+        this.fileReader = new FileReader();
+
+        this.fileReader.onload = this.handleFileRead;
+
+        await this.fileReader.readAsBinaryString(file);
+
+        await this.setState({
+            file: file,
+            selected: true,
+            filename: fileName,
+        });
+    };
 
     canPost(){
         let blankIngr = {ingredient: "", quantity: "", measurement: ""};
@@ -130,6 +159,10 @@ export default class ActivityFeed extends React.Component {
 
 
     async postDrink(){
+        let photoString = "";
+        if(this.state.selected){
+            photoString = await base64.encode(this.state.fileString);
+        }
 
         await fetch('http://localhost:8080/drink/', {
             method: 'POST',
@@ -142,7 +175,7 @@ export default class ActivityFeed extends React.Component {
                 name: this.state.drinkName,
                 description: this.state.description,
                 ingredients: this.state.ingredients,
-                photo: ""
+                photo: photoString
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);
@@ -181,6 +214,19 @@ export default class ActivityFeed extends React.Component {
                     <Form size='large'>
                         <Segment stacked>
                             <Form>
+                                <Button
+                                    content="Choose File"
+                                    labelPosition="left"
+                                    icon="file"
+                                    onClick={() => this.fileInputRef.current.click()}
+                                />
+                                <input
+                                    ref={this.fileInputRef}
+                                    type="file"
+                                    hidden
+                                    onChange={this.fileChange}
+                                />
+                                <Message hidden={!this.state.selected} >{this.state.filename}</Message>
                                 <Form.Input
                                     placeholder='Drink Name'
                                     content={this.state.drinkName}
