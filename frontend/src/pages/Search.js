@@ -1,20 +1,8 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
 import {Link} from 'react-router-dom';
-import {
-    Card,
-    Input,
-    Rating,
-    Segment,
-    Header,
-    Grid,
-    Loader,
-    Button,
-    List,
-    Form
-} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form} from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import { NavLink } from "react-router-dom/esm/react-router-dom";
 import "../css/Search.css"
 import {dotdCard, drinkCard, userCard} from "./utils";
 
@@ -55,11 +43,11 @@ export default class Search extends React.Component{
         })
     }
 
+
     handleSettingsChange = (e, { value }) => {
-        console.log(value);
-        this.setState({ searchVal: value });
-        console.log(this.state.value);
+        this.setState({ searchVal: value });;
     };
+
 
     //Fetches the Drink of the Day
     async getDOTD(){
@@ -77,9 +65,7 @@ export default class Search extends React.Component{
     }
 
 
-    //Todo: Send the query parameters to the server and fuck shit up
     async getSearchResults(){
-
         let url;
         if (this.state.searchVal === 'u'){
             url = "http://localhost:8080/user/" + this.state.searchText;
@@ -96,7 +82,6 @@ export default class Search extends React.Component{
                 'Content-Type': 'application/json',
             },
         }).then(res => res.json()).then(async (data) => {
-            console.log(data);
             if (this.state.searchVal === 'u'){
                 this.setState({results: [data]})
             }else{
@@ -119,6 +104,7 @@ export default class Search extends React.Component{
         await this.setState({searchText: value, searchable: searchable});
     };
 
+
     handleRandomModalOpen() { //Paul Added
         this.setState({openRandomModal: true});
         console.log("random clicked!");
@@ -126,9 +112,7 @@ export default class Search extends React.Component{
 
 
     render() {
-
         const value = this.state.searchVal;
-
         if (!this.state.done) {
             return (
                 <div>
