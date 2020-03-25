@@ -2,33 +2,49 @@ import {Card, Header, List, Rating, Segment, Image, Button} from "semantic-ui-re
 import React from "react";
 import {NavLink} from "react-router-dom";
 
-export const drinkCard = (name, description, ingredients, publisher) => {
-    return(
-        <Card style={{width: "500px"}} centered>
-            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                <Header textAlign="center" style={{marginTop: "0px"}}>
-                    {name}
-                </Header>
-                <Card.Description header={description}/>
-                <br/>
-                <Card.Content>
-                    <List bulleted>
-                        {ingredients.map(ingr => {
-                            return (
-                                <List.Item>
-                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                </List.Item>
-                            )
-                        })}
-                    </List>
-                </Card.Content>
+export const drinkCard = (name, description, photo, ingredients, publisher) => {
+    let drinkPic;
+    if(photo !== ""){
+        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} />
+    }else{
+        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"}/>
+    }
 
-                <Card.Meta>{publisher}</Card.Meta>
+    return(
+        <Card centered style={{width: "450px"}}>
+            {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
+                <Card.Content>
+                    <Card.Header textAlign="left">{name}</Card.Header>
+                    <Card.Meta textAlign="left">{publisher}</Card.Meta>
+                </Card.Content>
+                <Card.Content textAlign="left">
+                    {drinkPic}
+                    <div>
+                        <p><strong>Description: </strong></p>
+                        <Card.Description>{description}</Card.Description>
+
+                    </div>
+
+                    <div>
+                        <br/>
+                        <p><strong>Ingredients: </strong></p>
+                        <Card.Content>
+                            <List bulleted>
+                                {ingredients.map(ingr => {
+                                    return (
+                                        <p>
+                                            {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                        </p>
+                                    )
+                                })}
+                            </List>
+                        </Card.Content>
+                    </div>
+                </Card.Content>
 
                 <Card.Content extra>
                     <Rating icon='star' defaultRating={5} maxRating={5}/>
                 </Card.Content>
-            </Segment>
         </Card>
     )
 };

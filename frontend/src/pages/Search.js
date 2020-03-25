@@ -183,7 +183,8 @@ export default class Search extends React.Component{
                                 <br/>
                                 {this.state.results.map(result => {
                                     if(this.state.searchVal === 'd'){
-                                        return (drinkCard(result.name, result.description, result.ingredients, result.publisher))
+                                        console.log(result);
+                                        return (drinkCard(result.name, result.description, result.photo, result.ingredients, result.publisher))
                                     }else if(this.state.searchVal === 'u') {
                                         console.log(result.userName);
                                         return (userCard(result.userName, result.photo))
