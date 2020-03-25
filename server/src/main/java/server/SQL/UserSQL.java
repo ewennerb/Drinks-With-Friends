@@ -284,13 +284,13 @@ public class UserSQL {
 		}
 	}
 
-	public String likeDrink(String userName, String drinkName, String owner, int likeAction){
+	public String likeDrink(String userName, int drinkId, int likeAction){
 		try{
 			String query = "";
 
 			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
+			//Drink d = test.getDrink(drinkName, owner);
+			//int drinkId = d.id;
 
 
 			if (likeAction == 1) { //liking drink
@@ -315,13 +315,13 @@ public class UserSQL {
 		}
 	}
 
-	public String removeLikeDrink(String userName, String drinkName, String owner, int likeAction){
+	public String removeLikeDrink(String userName, int drinkId, int likeAction){
 		try{
 			String query = "";
 
 			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
+			//Drink d = test.getDrink(drinkName, owner);
+			//int drinkId = d.id;
 
 
 			if (likeAction == 1) { //liking drink

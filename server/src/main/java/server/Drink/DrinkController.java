@@ -182,7 +182,7 @@ public class DrinkController {
         
     }
 	//TODO merge like drink with user liking drink
-	@PostMapping("/like")
+/*	@PostMapping("/like")
 	public String likeDrink(@RequestBody String drinkName)
 			throws JsonParseException, JsonMappingException, IOException {
 
@@ -252,5 +252,5 @@ public class DrinkController {
 		return ds.removeLikeDrink(d.name, d.publisher, -1);
 
 
-	}
+	}*/
 }

@@ -249,9 +249,9 @@ public class DrinkSQL {
 		return outDrink;
 	}
 
-	public String likeDrink(String name, String publisher){
+	public String likeDrink(int drinkId){
 		try{
-			String query = "update test_schema.drink set likes = likes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+			String query = "update test_schema.drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
 
 			int updateResult = smt.executeUpdate(query);
 
@@ -270,9 +270,9 @@ public class DrinkSQL {
 
 	}
 
-	public String dislikeDrink(String name, String publisher){
+	public String dislikeDrink(int drinkId){
 		try{
-			String query = "update test_schema.drink set dislikes = dislikes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+			String query = "update test_schema.drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
 
 			int updateResult = smt.executeUpdate(query);
 
@@ -291,14 +291,14 @@ public class DrinkSQL {
 
 	}
 
-	public String removeLikeDrink(String name, String publisher, int flag){
+	public String removeLikeDrink(int drinkId, int flag){
 		try{
 			String query = "";
 	
 			if (flag==1)
-				query = "update test_schema.drink set likes = likes - 1 where likes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+				query = "update test_schema.drink set likes = likes - 1 where likes > 0 and drinkId = \""+drinkId+"\"";
 			else if (flag==-1)
-				query = "update test_schema.drink set dislikes = dislikes - 1 where dislikes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+				query = "update test_schema.drink set dislikes = dislikes - 1 where dislikes > 0 and drinkId = \""+drinkId+"\"";
 		
 			int updateResult = smt.executeUpdate(query);
 
