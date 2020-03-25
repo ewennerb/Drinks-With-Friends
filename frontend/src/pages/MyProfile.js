@@ -35,38 +35,45 @@ class Profile extends Component{
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
 
-
+    //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
     this.state = {
       modalOpen: false, 
       modalOpen2: false,
       activeItem: "posts",
       user: this.props.user,
       newUsername: '',
-      password: '',
-      bio:''
+      User: {},
     };
 }
 
-  componentDidMount(){
+  async componentDidMount(){
     // getting user
     console.log(this.props)
     console.log(window.location.pathname)
-    let currentUser = window.location.pathname.substring(1);
-    let User = this.getUser(currentUser);
-    console.log(User)
+    let currentUser = this.props.user;
+    
+    if (currentUser != undefined){
+    await this.getUser(currentUser);
+    
+    console.log(this.state.User);
+    let User = this.state.User;
 
     this.setState({
       modalOpen: false,
       modalOpen2: false,
       activeItem: "posts",
-      user: this.props.user,
-      bio:  User.bio,
       password: User.password,
+      bio: User.bio,
       email: User.email,
-      phoneNumber: User.phoneNumber,
+      name: User.name,
+      photo: User.photo,
+      favoriteDrink: User.favoriteDrink,
+      publishedDrinks: User.publishedDrinks,
+      postHistory: User.postHistory,
       friendsList: User.friendsList,
-      darkMode: User.darkMode
+      darkMode: User.darkMode,
     })
+    }
   }
 
 handleClose() {
@@ -389,6 +396,9 @@ handleOpen2() { //Paul Add
 
   async handleSubmit() {
 
+    //submitting everything from the modal
+    //password
+    if (this.state.password != this.User.password ){
     await fetch('http://localhost:8080/user/updatePassword', {
       method: 'POST',
       headers: {
@@ -408,6 +418,36 @@ handleOpen2() { //Paul Add
       console.log(data);
       this.setState({response: data});
     }).catch(console.log);
+
+    //updating password for the remaining fields
+
+    }
+
+    //bio
+    if (this.state.bio != this.User.bio) {
+      await fetch('http://localhost:8080/user/saveBio', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.user,
+          password: this.state.password,
+          phoneNumber: '',
+          name: '',
+          email: '',
+          bio: this.state.bio,
+  
+      })
+    }).then(res => res.json()).then((data) => {
+      console.log("UPDATE BIO");
+      console.log(data);
+      this.setState({response: data});
+    }).catch(console.log);
+
+    }
+
 
   };
 
@@ -440,7 +480,7 @@ handleOpen2() { //Paul Add
 
 
   async getUser(name) {
-    let user = {}
+    
     await fetch('http://localhost:8080/user/'+name, {
       method: 'GET',
       headers: {
@@ -449,10 +489,10 @@ handleOpen2() { //Paul Add
       },
       }).then(res => res.json()).then((data) => { //dk tbh
           console.log(data);
-          user = data;
-          // this.setState({response: data});
+          
+          this.setState({User: data});
       }).catch(console.log);
-      return user
+      
   }
 
   
