@@ -1,21 +1,10 @@
 import React from "react";
 import 'semantic-ui-css/semantic.min.css';
-//import {Redirect} from 'react-router-dom';
 import {Link} from 'react-router-dom';
-import {
-    Card,
-    Input,
-    Rating,
-    Image,
-    Segment,
-    Header,
-    Grid,
-    Loader, Button, List,
-    Form
-} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form} from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import { NavLink } from "react-router-dom/esm/react-router-dom";
 import "../css/Search.css"
+import {dotdCard, drinkCard, userCard} from "./utils";
 
 
 export default class Search extends React.Component{
@@ -35,7 +24,6 @@ export default class Search extends React.Component{
             loggedIn: false,
             done: false,
             results: [],
-            // is21: this.props.location.state.is21,
             searchable: false,
             openRandomModal: false,
         }
@@ -55,11 +43,11 @@ export default class Search extends React.Component{
         })
     }
 
+
     handleSettingsChange = (e, { value }) => {
-        console.log(value);
-        this.setState({ searchVal: value });
-        console.log(this.state.value);
+        this.setState({ searchVal: value, results: this.state.results });
     };
+
 
     //Fetches the Drink of the Day
     async getDOTD(){
@@ -69,11 +57,6 @@ export default class Search extends React.Component{
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            // body: JSON.stringify({
-            //     username: this.state.username,
-            //     password: this.state.password,
-            //     confirm_password: this.state.conf_pass,
-            // })
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
             await this.setState({dotd: data})
@@ -82,9 +65,7 @@ export default class Search extends React.Component{
     }
 
 
-    //Todo: Send the query parameters to the server and fuck shit up
     async getSearchResults(){
-
         let url;
         if (this.state.searchVal === 'u'){
             url = "http://localhost:8080/user/" + this.state.searchText;
@@ -101,8 +82,11 @@ export default class Search extends React.Component{
                 'Content-Type': 'application/json',
             },
         }).then(res => res.json()).then(async (data) => {
-            console.log(data);
-            this.setState({results: data.results})
+            if (this.state.searchVal === 'u'){
+                this.setState({results: [data]})
+            }else{
+                this.setState({results: data.results})
+            }
         }).catch(this.setState({results: []}));
         this.setState({loaded: true})
     }
@@ -120,16 +104,15 @@ export default class Search extends React.Component{
         await this.setState({searchText: value, searchable: searchable});
     };
 
+
     handleRandomModalOpen() { //Paul Added
-        this.setState({openRandomModal: true})
+        this.setState({openRandomModal: true});
         console.log("random clicked!");
     }
 
 
     render() {
-
         const value = this.state.searchVal;
-
         if (!this.state.done) {
             return (
                 <div>
@@ -153,37 +136,11 @@ export default class Search extends React.Component{
                         <Grid.Column width={8} textAlign="center">
                             <br/>
                             <br/>
-                            <Card style={{width: "500px"}} centered>
-                                <Card.Header>Today's Drink of the Day</Card.Header>
-                                <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                    <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
-                                            {this.state.dotd.name}
-                                        </NavLink>
-                                    </Header>
-                                    <Card.Description content={this.state.dotd.description}/>
-                                    <br/>
-                                    <Card.Content>
-                                        <List bulleted>
-                                            {this.state.dotd.ingredients.map(ingr => {
-                                                return (
-                                                    <List.Item>
-                                                        {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                                    </List.Item>
-                                                )
-                                            })}
-                                        </List>
-                                    </Card.Content>
-                                    <Card.Meta>{this.state.dotd.publisher}</Card.Meta>
-                                    <Card.Content extra>
-                                        <Rating icon='star' defaultRating={5} maxRating={5}/>
-                                    </Card.Content>
-                                </Segment>
-                            </Card>
+                            {/*This is a method from utils.js that renders drink of the day now*/}
+                            {dotdCard(this.state.dotd)}
                             <br/>
                             <br/>
                             <Grid.Row centered>
-                                {/*Todo: Put a button and maybe some options here*/}
                                 <Form>
                                     <Form.Group inline>
                                         <label>Search Options</label>
@@ -207,7 +164,6 @@ export default class Search extends React.Component{
                                         />
                                     </Form.Group>
                                 </Form>
-
                                 <Input
                                     size="huge"
                                     fluid
@@ -226,36 +182,13 @@ export default class Search extends React.Component{
                                 <br/>
                                 <br/>
                                 {this.state.results.map(result => {
-                                    return (
-                                        <Card style={{width: "500px"}} centered>
-                                            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                                                <Header textAlign="center" style={{marginTop: "0px"}}>
-                                                    {result.name}
-                                                </Header>
-                                                <Card.Description header={result.description}/>
-                                                <br/>
-                                                <Card.Content>
-                                                    <List bulleted>
-                                                        {result.ingredients.map(ingr => {
-                                                            return (
-                                                                <List.Item>
-                                                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                                                </List.Item>
-                                                            )
-                                                        })}
-                                                    </List>
-                                                </Card.Content>
-
-
-                                                {/*<Card.Meta>{this.state.dotd.publisher}</Card.Meta>*/}
-                                                <Card.Meta>{result.publisher}</Card.Meta>
-
-                                                <Card.Content extra>
-                                                    <Rating icon='star' defaultRating={5} maxRating={5}/>
-                                                </Card.Content>
-                                            </Segment>
-                                        </Card>
-                                    )
+                                    if(this.state.searchVal === 'd'){
+                                        console.log(result);
+                                        return (drinkCard(result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                    }else if(this.state.searchVal === 'u') {
+                                        console.log(result.userName);
+                                        return (userCard(result.userName, result.photo))
+                                    }
                                 })}
                             </Grid.Row>
 
