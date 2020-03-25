@@ -229,7 +229,7 @@ public class UserController {
 
 		return users.updateFavoriteDrink(u.userName, u.favoriteDrink);
 	}
-
+	//TODO merge user liking drink with adding like to drink
 	@PostMapping("/likeDrink/{drinkName}/{owner}")
 	public String likeDrink(@PathVariable String drinkName, @PathVariable String owner, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {

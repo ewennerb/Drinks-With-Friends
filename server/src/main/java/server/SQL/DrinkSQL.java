@@ -122,7 +122,7 @@ public class DrinkSQL {
 			return null;
 		} 
 	}
-	public Drink[] searchDrink(String request) {
+	public Drink[] searchDrink(String request, int flag) {
 		System.out.println("searching");
 		StringBuilder searchString = new StringBuilder("%" + request + "%");
 		for (int i = 0; i < request.length(); i++) {
@@ -132,7 +132,12 @@ public class DrinkSQL {
 		}
 		System.out.println(searchString);
 		try {
-			String query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+
+			String query = "";
+			if ( flag == 0 )
+				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+			else if ( flag == 1 )
+				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\" and publisher = \"iba\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
@@ -242,5 +247,73 @@ public class DrinkSQL {
 		outDrink = dnames.toArray(outDrink);
 
 		return outDrink;
+	}
+
+	public String likeDrink(String name, String publisher){
+		try{
+			String query = "update test_schema.drink set likes = likes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
+	}
+
+	public String dislikeDrink(String name, String publisher){
+		try{
+			String query = "update test_schema.drink set dislikes = dislikes + 1 where name = \""+name+"\" and publisher = \""+publisher+"\"";
+
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
+	}
+
+	public String removeLikeDrink(String name, String publisher, int flag){
+		try{
+			String query = "";
+	
+			if (flag==1)
+				query = "update test_schema.drink set likes = likes - 1 where likes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+			else if (flag==-1)
+				query = "update test_schema.drink set dislikes = dislikes - 1 where dislikes > 0 and name = \""+name+"\" and publisher = \""+publisher+"\"";
+		
+			int updateResult = smt.executeUpdate(query);
+
+			if(updateResult == 1) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		
+
 	}
 }
