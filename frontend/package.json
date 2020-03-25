@@ -6,14 +6,16 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.19.2",
+    "base-64": "^0.1.0",
     "nodemailer": "^5.1.1",
     "nodemailer-mailgun-transport": "^1.4.0",
-    "axios": "^0.19.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-phone-input-2": "^2.12.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.1",
+    "save-file": "^2.3.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2"
   },
@@ -23,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy":  "http://localhost:8080",
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": "react-app"
   },
