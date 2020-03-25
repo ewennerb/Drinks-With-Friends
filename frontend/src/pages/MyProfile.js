@@ -26,9 +26,11 @@ class Profile extends Component{
     
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
-    this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
+    
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSubmit2 = this.handleSubmit2.bind(this);
+
+    // this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
+    // this.handleSubmit2 = this.handleSubmit2.bind(this);
 
 
     this.handleBioChange = this.handleBioChange.bind(this);    
@@ -40,7 +42,7 @@ class Profile extends Component{
       modalOpen: false, 
       modalOpen2: false,
       activeItem: "posts",
-      user: this.props.user,
+    
       newUsername: '',
       User: {},
     };
@@ -48,11 +50,11 @@ class Profile extends Component{
 
   async componentDidMount(){
     // getting user
-    console.log(this.props)
-    console.log(window.location.pathname)
+    //console.log(this.props)
+
     let currentUser = this.props.user;
     
-    if (currentUser != undefined){
+    if (currentUser !== undefined){
     await this.getUser(currentUser);
     
     console.log(this.state.User);
@@ -62,6 +64,7 @@ class Profile extends Component{
       modalOpen: false,
       modalOpen2: false,
       activeItem: "posts",
+      userName: User.userName,
       password: User.password,
       bio: User.bio,
       email: User.email,
@@ -124,15 +127,15 @@ handleOpen2() { //Paul Add
           </Modal>
     }
 
-    let currentUser = window.location.pathname.substring(1);
+    let currentUser = this.state.userName;
 
-    let editprofile = <p/>;
 
-    let editUsername = <p/>;
+    let editProfile = <p/>;
+    let favoriteDrink = <p/>;
 
     if (this.props.user === currentUser) {
         //allow the option to edit profile
-        editprofile = 
+        editProfile = 
         <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
           <Button animated="fade" onClick={this.handleOpen}  >
           <Button.Content visible>Edit Profile</Button.Content>
@@ -142,16 +145,11 @@ handleOpen2() { //Paul Add
           </Button>
         </Grid.Column>
 
-        editUsername = 
-        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-          <Button animated="fade" onClick={this.handleOpen2}  >
-          <Button.Content visible>Change Username</Button.Content>
-          <Button.Content hidden>
-          <Icon name="edit"/>
-          </Button.Content>
-          </Button>
-        </Grid.Column>
-     
+    }
+    //check if fav drink is undefined or empty
+    if (this.isValidInput(this.state.favoriteDrink)){
+      favoriteDrink = 
+      <p>My favorite drink is {this.state.favoriteDrink}</p>
     }
 
 
@@ -171,11 +169,15 @@ handleOpen2() { //Paul Add
           
           <Grid.Column textAlign="left">
             <h2>Bio:</h2>
-            
+            {/* bio */}
+            <p>{this.state.bio}</p>
+            {/* favorite drink */}
+            {favoriteDrink}
+
           </Grid.Column> 
           
-          {editprofile}
-          {editUsername}
+          {editProfile}
+          {/* {editUsername} */}
 
           </Grid.Row>
           
@@ -258,14 +260,14 @@ handleOpen2() { //Paul Add
           
           <Form size='large'>
           <Segment stacked>
-          {/* <Form.Input
-          fluid icon='user'
-          iconPosition='left'
-          placeholder='Username'
-          required='true'
-          value={this.state.username}
-          onChange={this.handleUserChange}
-          /> */}
+         
+          <Form.Input
+            fluid icon='user'
+            iconPosition='left'
+            placeholder={this.state.userName}
+            onChange={this.handleUsernameChange}
+          />
+
           <Form.Input
           fluid icon='lock'
           iconPosition='left'
@@ -297,77 +299,30 @@ handleOpen2() { //Paul Add
           </Modal>
           </Grid>
       
-      
-
-        {/* PAUL ADDED */}
-        <Grid>
-          <Modal
-          open={this.state.modalOpen2}
-          onClose={this.handleClose}
-          size="large">
-          <Modal.Content image scrolling>
-          {/*display current profile info with the option to change it */}
-          <Container>
-          <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
-          <br/>
+    
           
-          <Form size='large'>
-          <Segment stacked>
-          
-          {/* old username is autofilled */}
-          <Form.Input 
-            fluid icon='lock'
-            iconPosition='left'
-            placeholder='Old Username'
-            value={this.state.user}
-          />
-
-          {/* new username needs to be inputted */}
-          <Form.Input
-            fluid icon='lock'
-            iconPosition='left'
-            placeholder='New Username'
-            onChange={this.handleUsernameChange}
-          />
-
-          
-          <Button onClick={this.handleSubmit2} color='yellow' fluid size='large'>
-          Update
-          </Button>
-          
-          
-          </Segment>
-          </Form>
-          
-          </Container>
-          
-          </Modal.Content>
-          </Modal>
-          </Grid>
-          
-        </BrowserRouter>
-      </Container>
-
-
-
+        </BrowserRouter> 
+      </Container> //end container
     )
   }//end render
-   
+
+  //form input on change functions
+  async handleUsernameChange(event) {
+    const value = event.target.value;
+    await this.setState({userName: value});
+  }
+
   async handlePasswordChange(event) {
     const value = event.target.value;
     await this.setState({password: value});
   };
 
-  async handleUsernameChange(event) {
-    const value = event.target.value;
-    await this.setState({newUsername: value});
-  }
-
+  
   async handleBioChange(event) {
     const value = event.target.value;
     await this.setState({bio: value});
   };
-
+  //end of forminput on change functions
 
   async handleItemClick (e, {name}) {
       this.setState({ activeItem: name })
@@ -397,8 +352,34 @@ handleOpen2() { //Paul Add
   async handleSubmit() {
 
     //submitting everything from the modal
+    let User = this.state.User;
+
+
+    //username
+    if (this.state.userName !== User.userName)
+    await fetch('http://localhost:8080/user/updateUsername', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            userName: this.state.username,
+            password: this.state.password,
+            phoneNumber: '',
+            name: this.newUsername,
+            email: '',
+            
+        })
+        }).then(res => res.json()).then((data) => {
+        console.log("UPDATE USERNAME");
+        console.log(data);
+        this.setState({response: data});
+        }).catch(console.log);
+
+
     //password
-    if (this.state.password != this.User.password ){
+    if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
     await fetch('http://localhost:8080/user/updatePassword', {
       method: 'POST',
       headers: {
@@ -424,7 +405,7 @@ handleOpen2() { //Paul Add
     }
 
     //bio
-    if (this.state.bio != this.User.bio) {
+    if (this.state.bio !== User.bio && this.isValidInput(this.state.bio)) {
       await fetch('http://localhost:8080/user/saveBio', {
       method: 'POST',
       headers: {
@@ -433,7 +414,7 @@ handleOpen2() { //Paul Add
       },
       body: JSON.stringify({
           userName: this.state.user,
-          password: this.state.password,
+          password: '',
           phoneNumber: '',
           name: '',
           email: '',
@@ -449,32 +430,11 @@ handleOpen2() { //Paul Add
     }
 
 
-  };
+  }; //end of handle submit
 
 
 
-  async handleSubmit2() { //Paul Added for submitting new username
-    await fetch('http://localhost:8080/user/updateUsername', {
-      method: 'POST',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          userName: this.state.username,
-          password: this.state.password,
-          phoneNumber: '',
-          name: this.newUsername,
-          email: '',
-          
-      })
-    }).then(res => res.json()).then((data) => {
-      console.log("UPDATE USERNAME");
-      console.log(data);
-      this.setState({response: data});
-    }).catch(console.log);
 
-  };
 
 
 
@@ -495,8 +455,93 @@ handleOpen2() { //Paul Add
       
   }
 
+  isValidInput(input) {
+    return !(input == undefined || input === '' || input == null);
+  }
   
 
 }
 
 export default Profile
+
+//pauls code for the modal :^) not using it but i felt bad deleting it
+
+    // editUsername = 
+    // <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+    // <Button animated="fade" onClick={this.handleOpen2}  >
+    // <Button.Content visible>Change Username</Button.Content>
+    // <Button.Content hidden>
+    // <Icon name="edit"/>
+    // </Button.Content>
+    // </Button>
+    // </Grid.Column>
+
+
+        // {/* PAUL ADDED */}
+        //   <Grid>
+        //   <Modal
+        //   open={this.state.modalOpen2}
+        //   onClose={this.handleClose}
+        //   size="large">
+        //   <Modal.Content image scrolling>
+        //   {/*display current profile info with the option to change it */}
+        //   <Container>
+        //   <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
+        //   <br/>
+          
+        //   <Form size='large'>
+        //   <Segment stacked>
+          
+        //   {/* old username is autofilled */}
+        //   <Form.Input 
+        //     fluid icon='lock'
+        //     iconPosition='left'
+        //     placeholder='Old Username'
+        //     value={this.state.user}
+        //   />
+
+        //   {/* new username needs to be inputted */}
+        //   <Form.Input
+        //     fluid icon='lock'
+        //     iconPosition='left'
+        //     placeholder='New Username'
+        //     onChange={this.handleUsernameChange}
+        //   />
+
+          
+        //   <Button onClick={this.handleSubmit2} color='yellow' fluid size='large'>
+        //   Update
+        //   </Button>
+          
+          
+        //   </Segment>
+        //   </Form>
+          
+        //   </Container>
+          
+        //   </Modal.Content>
+        //   </Modal>
+        //   </Grid>
+        // //pauls code for the submit
+        // async handleSubmit2() { //Paul Added for submitting new username
+        //   await fetch('http://localhost:8080/user/updateUsername', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         userName: this.state.username,
+        //         password: this.state.password,
+        //         phoneNumber: '',
+        //         name: this.newUsername,
+        //         email: '',
+                
+        //     })
+        //   }).then(res => res.json()).then((data) => {
+        //     console.log("UPDATE USERNAME");
+        //     console.log(data);
+        //     this.setState({response: data});
+        //   }).catch(console.log);
+      
+        // };
