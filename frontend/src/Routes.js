@@ -140,7 +140,7 @@ export default class Routes extends React.Component {
                         <Menu attached="top" size="huge">
                             <Menu.Item
                                 as={Link}
-                                to={{pathname: '/', state: {user: ""}}}
+                                to={{pathname: '/', state: {user: this.state.user}}}
                                 icon="beer"
                                 content="Drinks with Friends"
                             />
@@ -162,7 +162,7 @@ export default class Routes extends React.Component {
                                     <Menu.Menu>
                                         <Menu.Item
                                             as={Link}
-                                            to={{pathname: '/', state: {user: "", is21: this.state.is21}}}
+                                            to={{pathname: '/', state: {user: this.state.user, is21: this.state.is21}}}
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
@@ -171,9 +171,9 @@ export default class Routes extends React.Component {
 
                                         <Menu.Item
                                             as={Link}
-                                            to={{pathname: '/feed', state: {user: "", is21: this.state.is21}}}
-                                            name={"Activity ActivityFeed"}
-                                            active={activeItem === 'Activity ActivityFeed'}
+                                            to={{pathname: '/feed', state: {user: this.state.user, is21: this.state.is21}}}
+                                            name={"Activity Feed"}
+                                            active={activeItem === 'Activity Feed'}
                                             onClick={this.handlePageJump}
                                            
                                         />
@@ -190,7 +190,7 @@ export default class Routes extends React.Component {
                                         />
                                         <Menu.Item
                                             as={Link}
-                                            to={{pathname: '/all', state: {user: "", is21: this.state.is21}}}
+                                            to={{pathname: '/all', state: {user: this.state.user, is21: this.state.is21}}}
                                             name={"All"}
                                             active={activeItem === 'My Profile'}
                                             onClick={this.handlePageJump}
