@@ -144,8 +144,10 @@ export default class Search extends React.Component{
                         <Grid.Column width={8} textAlign="center">
                             <br/>
                             <br/>
+
                             {/*This is a method from utils.js that renders drink of the day now*/}
                             {dotdCard(this.state.dotd)}
+
                             <br/>
                             <br/>
                             <Grid.Row centered>

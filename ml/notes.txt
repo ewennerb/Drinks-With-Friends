@@ -1,0 +1,7 @@
+using python 3.8
+need pip
+pip install mysql-connection-python
+pip install pandas
+
+outputs groups on cmd
+doesn't save them yet
