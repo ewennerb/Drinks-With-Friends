@@ -284,19 +284,19 @@ public class UserSQL {
 		}
 	}
 
-	public String likeDrink(String userName, String drinkName, String owner, int likeAction){
+	public String likeDrink(String userName, int drinkId, int likeAction){
 		try{
 			String query = "";
 
 			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
+			//Drink d = test.getDrink(drinkName, owner);
+			//int drinkId = d.id;
 
 
 			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = likes + 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = dislikes + \""+1+"\" where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "update test_schema.drink_likes set dislikes = 1, likes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			}
 			System.out.print("QUERY"+query);
 
@@ -315,19 +315,19 @@ public class UserSQL {
 		}
 	}
 
-	public String removeLikeDrink(String userName, String drinkName, String owner, int likeAction){
+	public String removeLikeDrink(String userName, int drinkId, int likeAction){
 		try{
 			String query = "";
 
 			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
+			//Drink d = test.getDrink(drinkName, owner);
+			//int drinkId = d.id;
 
 
 			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = likes - 1 where likes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "update test_schema.drink_likes set likes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = dislikes - 1 where dislikes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "update test_schema.drink_likes set dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			}
 			System.out.print("QUERY"+query);
 

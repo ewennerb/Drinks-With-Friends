@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import server.SQL.UserSQL;
 import java.util.ArrayList;
+import server.SQL.DrinkSQL;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -229,9 +230,9 @@ public class UserController {
 
 		return users.updateFavoriteDrink(u.userName, u.favoriteDrink);
 	}
-
-	@PostMapping("/likeDrink/{drinkName}/{owner}")
-	public String likeDrink(@PathVariable String drinkName, @PathVariable String owner, @RequestBody String userName)
+	//TODO need to add check for when user didnt like/dislike the drink db shouldnt be updated
+	@PostMapping("/likeDrink/{drinkId}")
+	public String likeDrink(@PathVariable int drinkId, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -241,13 +242,16 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkName: "+drinkName+" --- Owner: "+owner);
+		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
 		
-		return users.likeDrink(u.userName, drinkName, owner, 1);
+		DrinkSQL ds = new DrinkSQL();
+		ds.likeDrink(drinkId);
+
+		return users.likeDrink(u.userName, drinkId, 1);
 	}
 
-	@PostMapping("/dislikeDrink/{drinkName}/{owner}")
-	public String dislikeDrink(@PathVariable String drinkName, @PathVariable String owner, @RequestBody String userName)
+	@PostMapping("/dislikeDrink/{drinkId}")
+	public String dislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -257,13 +261,15 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkName: "+drinkName+" --- Owner: "+owner);
+		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
+		DrinkSQL ds = new DrinkSQL();
+		ds.dislikeDrink(drinkId);
 		
-		return users.likeDrink(u.userName, drinkName, owner, -1);
+		return users.likeDrink(u.userName, drinkId, -1);
 	}
 
-	@PostMapping("/removeLikeDrink/{drinkName}/{owner}")
-	public String removeLikeDrink(@PathVariable String drinkName, @PathVariable String owner, @RequestBody String userName)
+	@PostMapping("/removeLikeDrink/{drinkId}")
+	public String removeLikeDrink(@PathVariable int drinkId, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -273,13 +279,15 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkName: "+drinkName+" --- Owner: "+owner);
-		
-		return users.removeLikeDrink(u.userName, drinkName, owner, 1);
+		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
+		DrinkSQL ds = new DrinkSQL();
+		ds.removeLikeDrink(drinkId, 1);
+
+		return users.removeLikeDrink(u.userName, drinkId, 1);
 	}
 
-	@PostMapping("/removeDislikeDrink/{drinkName}/{owner}")
-	public String removeDislikeDrink(@PathVariable String drinkName, @PathVariable String owner, @RequestBody String userName)
+	@PostMapping("/removeDislikeDrink/{drinkId}")
+	public String removeDislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -289,9 +297,12 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkName: "+drinkName+" --- Owner: "+owner);
+		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
 		
-		return users.removeLikeDrink(u.userName, drinkName, owner, -1);
+		DrinkSQL ds = new DrinkSQL();
+		ds.removeLikeDrink(drinkId, -1);
+
+		return users.removeLikeDrink(u.userName, drinkId, -1);
 	}
 
 
