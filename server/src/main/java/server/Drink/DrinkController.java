@@ -31,10 +31,11 @@ public class DrinkController {
     }
 
     @GetMapping("")
-    public String findAll() {
+    public String findAll() 
+			throws JsonParseException, JsonMappingException, IOException {
         // find a single drink
-        DrinkSQL test = new DrinkSQL();
-        ArrayList<Drink> list = test.getAllDrinks();
+        DrinkSQL drinks = new DrinkSQL();
+        /*ArrayList<Drink> list = test.getAllDrinks();
         String out = "";
         for (Drink drink : list) {
             out += drink.id + "\t";
@@ -44,8 +45,15 @@ public class DrinkController {
             out += drink.likes + "\t";
             out += drink.dislikes + "\t";
             out += drink.publisher + "<br>";
-        }
-        return out;
+        }*/
+
+
+		ObjectMapper om2 = new ObjectMapper();
+		SimpleModule sm2 = new SimpleModule("DrinkSerializer", new Version(1, 0, 0, null, null, null));
+		sm2.addSerializer(Drink.class, new DrinkSerializer());
+		om2.registerModule(sm2);
+
+        return om2.writeValueAsString(drinks.getAllDrinks());
     }
 
     @GetMapping("/{username}")
@@ -90,7 +98,23 @@ public class DrinkController {
     @GetMapping("/search")
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
-        Drink[] drinks = ds.searchDrink(request);
+        Drink[] drinks = ds.searchDrink(request, 0);
+        if (drinks == null) {
+            return "{\"results\": \"DNE\"";
+        }
+        String out = "{ \"results\": [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        
+        return out;
+    }
+
+	@GetMapping("/searchOfficialDrink")
+    public String searchOfficialDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.searchDrink(request, 1);
         if (drinks == null) {
             return "{\"results\": \"DNE\"";
         }
@@ -157,4 +181,76 @@ public class DrinkController {
         
         
     }
+	//TODO merge like drink with user liking drink
+/*	@PostMapping("/like")
+	public String likeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.likeDrink(d.name, d.publisher);
+
+
+	}
+
+	@PostMapping("/dislike")
+	public String dislikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.dislikeDrink(d.name, d.publisher);
+
+
+	}
+
+	@PostMapping("/removeLike")
+	public String removeLikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.removeLikeDrink(d.name, d.publisher, 1);
+
+
+	}
+
+	@PostMapping("/removeDislike")
+	public String removeDislikeDrink(@RequestBody String drinkName)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+		Drink d = om.readValue(drinkName, Drink.class);
+
+		DrinkSQL ds = new DrinkSQL();
+		System.out.println("DrinkName: "+d.name+", Owner: "+d.publisher);
+
+		return ds.removeLikeDrink(d.name, d.publisher, -1);
+
+
+	}*/
 }
