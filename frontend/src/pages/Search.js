@@ -157,7 +157,7 @@ export default class Search extends React.Component{
                                 <Card.Header>Today's Drink of the Day</Card.Header>
                                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                                     <Header textAlign="center" style={{marginTop: "0px"}}>
-                                        <NavLink class="drinklink" to={(`/profile/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
+                                        <NavLink class="drinklink" to={(`/${this.state.dotd.publisher}/drink/${this.state.dotd.name}`)}>
                                             {this.state.dotd.name}
                                         </NavLink>
                                     </Header>
