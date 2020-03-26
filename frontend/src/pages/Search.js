@@ -1,9 +1,7 @@
 import React from "react";
-import 'semantic-ui-css/semantic.min.css';
 import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, Checkbox, FormCheckbox} from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import "../css/Search.css"
 import {dotdCard, drinkCard, userCard} from "./utils";
 
 
@@ -47,7 +45,7 @@ export default class Search extends React.Component{
     }
 
 
-    handleSettingsChange = (e, { value }) => {
+    handleSettingsChange(event, value) {
         this.setState({ searchVal: value, results: this.state.results });
     };
 
@@ -158,24 +156,28 @@ export default class Search extends React.Component{
                                             label='Drinks'
                                             value='d'
                                             checked={value === 'd'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'d')}
+                                            data-testid="search-form-drinks"
                                         />
                                         <Form.Radio
                                             label='Ingredients'
                                             value='i'
                                             checked={value === 'i'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'i')}
+                                            data-testid="search-form-ingredients"
                                         />
                                         <Form.Radio
                                             label='Users'
                                             value='u'
                                             checked={value === 'u'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'u')}
+                                            data-testid="search-form-users"
                                         />
                                         <FormCheckbox
                                             label='Display Official Drinks Only'
                                             checked={officialOnly}
                                             onClick={this.handleOfficialChange}
+                                            data-testid="search-form-official"
                                         />
                                     </Form.Group>
                                 </Form>
@@ -184,6 +186,8 @@ export default class Search extends React.Component{
                                     fluid
                                     placeholder='Search...'
                                     onChange={this.handleInputChange}
+                                    data-testid="search-form-bar"
+                                    value={this.state.searchText}
                                 />
                                 <br/>
                                 <Button color="yellow" onClick={this.getSearchResults} width={8}>
@@ -196,13 +200,13 @@ export default class Search extends React.Component{
                                 </p>
                                 <br/>
                                 <br/>
-                                {this.state.results.map(result => {
+                                {this.state.results.map((result, index) => {
                                     if(this.state.searchVal === 'd'){
                                         console.log(result);
-                                        return (drinkCard(result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                        return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                                     }else if(this.state.searchVal === 'u') {
                                         console.log(result.userName);
-                                        return (userCard(result.userName, result.photo))
+                                        return (userCard(index, result.userName, result.photo))
                                     }
                                 })}
                             </Grid.Row>
