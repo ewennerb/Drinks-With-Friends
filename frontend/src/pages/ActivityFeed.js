@@ -37,7 +37,7 @@ export default class ActivityFeed extends React.Component {
             postDisabled: true,
             file: {},
             fileString: "",
-            filename: "",
+            fileName: "",
             selected: false,
             drinkName: "",
             description: "",
@@ -84,7 +84,7 @@ export default class ActivityFeed extends React.Component {
         await this.setState({
             file: file,
             selected: true,
-            filename: fileName,
+            fileName: fileName,
         });
     };
 
@@ -102,7 +102,23 @@ export default class ActivityFeed extends React.Component {
     }
 
     handleClose() {
-        this.setState({modalOpen: false})
+        //Resets everything back to default values if closed or if posted.
+        this.setState({
+            modalOpen: false,
+            drinkName: "",
+            description: "",
+            ingredients: [
+                {
+                    ingredient: "",
+                    quantity: "",
+                    measurement: ""
+                }
+            ],
+            file: undefined,
+            selected: false,
+            fileString: "",
+            fileName: ""
+        });
     }
 
     handleOpen() {
@@ -226,7 +242,7 @@ export default class ActivityFeed extends React.Component {
                                     hidden
                                     onChange={this.fileChange}
                                 />
-                                <Message hidden={!this.state.selected} >{this.state.filename}</Message>
+                                <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
                                 <Form.Input
                                     placeholder='Drink Name'
                                     content={this.state.drinkName}
