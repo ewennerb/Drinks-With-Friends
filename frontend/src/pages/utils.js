@@ -5,23 +5,23 @@ import {NavLink} from "react-router-dom";
 export const drinkCard = (index, name, description, photo, ingredients, publisher) => {
     let drinkPic;
     if(photo !== ""){
-        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} data-testid="drink-b64-img"/>
+        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} data-testid={"drink-b64-img-" + index.toString()}/>
     }else{
-        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid="placeholder-img"/>
+        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
     }
 
     return(
         <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
             {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
                 <Card.Content>
-                    <Card.Header textAlign="left" data-testid="drink-name">{name}</Card.Header>
-                    <Card.Meta textAlign="left" data-testid="drink-publisher">{publisher}</Card.Meta>
+                    <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>{name}</Card.Header>
+                    <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}>{publisher}</Card.Meta>
                 </Card.Content>
                 <Card.Content textAlign="left">
                     {drinkPic}
                     <div>
                         <p><strong>Description: </strong></p>
-                        <Card.Description data-testid="drink-description">{description}</Card.Description>
+                        <Card.Description data-testid={"drink-description-" + index.toString()}>{description}</Card.Description>
 
                     </div>
 
@@ -30,9 +30,9 @@ export const drinkCard = (index, name, description, photo, ingredients, publishe
                         <p><strong>Ingredients: </strong></p>
                         <Card.Content>
                             <List bulleted>
-                                {ingredients.map((ingr, index) => {
+                                {ingredients.map((ingr, idx) => {
                                     return (
-                                        <p data-testid={"drink-ingredient-" + index.toString()}>
+                                        <p data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
                                             {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                         </p>
                                     )
@@ -52,10 +52,10 @@ export const drinkCard = (index, name, description, photo, ingredients, publishe
 
 export const userCard = (index, username, photo) => {
     let pfp;
-    if (photo === null){
-        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid="user-b64-img"/>
+    if (photo === null || photo === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
     }else{
-        pfp = <Image floated="right" size="tiny" src={photo} data-testid="user-placeholder-img"/>
+        pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
     }
     //Todo: Add photo functionality
     return(
@@ -63,7 +63,7 @@ export const userCard = (index, username, photo) => {
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Card.Content>
                     {pfp}
-                    <Card.Header data-testid="user-name">{username}</Card.Header>
+                    <Card.Header data-testid={"user-name-" + index.toString()}>{username}</Card.Header>
                     <Card.Meta>*Add Date Joined*</Card.Meta>
                 </Card.Content>
                 <Card.Content extra>
