@@ -2,26 +2,26 @@ import {Card, Header, List, Rating, Segment, Image, Button} from "semantic-ui-re
 import React from "react";
 import {NavLink} from "react-router-dom";
 
-export const drinkCard = (name, description, photo, ingredients, publisher) => {
+export const drinkCard = (index, name, description, photo, ingredients, publisher) => {
     let drinkPic;
     if(photo !== ""){
-        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} />
+        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} data-testid={"drink-b64-img-" + index.toString()}/>
     }else{
-        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"}/>
+        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
     }
 
     return(
-        <Card centered style={{width: "450px"}}>
+        <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
             {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
                 <Card.Content>
-                    <Card.Header textAlign="left">{name}</Card.Header>
-                    <Card.Meta textAlign="left">{publisher}</Card.Meta>
+                    <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>{name}</Card.Header>
+                    <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}>{publisher}</Card.Meta>
                 </Card.Content>
                 <Card.Content textAlign="left">
                     {drinkPic}
                     <div>
                         <p><strong>Description: </strong></p>
-                        <Card.Description>{description}</Card.Description>
+                        <Card.Description data-testid={"drink-description-" + index.toString()}>{description}</Card.Description>
 
                     </div>
 
@@ -30,9 +30,9 @@ export const drinkCard = (name, description, photo, ingredients, publisher) => {
                         <p><strong>Ingredients: </strong></p>
                         <Card.Content>
                             <List bulleted>
-                                {ingredients.map(ingr => {
+                                {ingredients.map((ingr, idx) => {
                                     return (
-                                        <p>
+                                        <p data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
                                             {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                         </p>
                                     )
@@ -50,20 +50,20 @@ export const drinkCard = (name, description, photo, ingredients, publisher) => {
 };
 
 
-export const userCard = (username, photo) => {
+export const userCard = (index, username, photo) => {
     let pfp;
-    if (photo === null){
-        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"}/>
+    if (photo === null || photo === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
     }else{
-        pfp = <Image floated="right" size="tiny" src={photo}/>
+        pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
     }
     //Todo: Add photo functionality
     return(
-        <Card centered>
+        <Card centered data-testid={"user-card-" + index.toString()}>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Card.Content>
                     {pfp}
-                    <Card.Header>{username}</Card.Header>
+                    <Card.Header data-testid={"user-name-" + index.toString()}>{username}</Card.Header>
                     <Card.Meta>*Add Date Joined*</Card.Meta>
                 </Card.Content>
                 <Card.Content extra>
@@ -84,28 +84,28 @@ export const userCard = (username, photo) => {
 
 export const dotdCard = (dotd) => {
     return(
-        <Card style={{width: "500px"}} centered>
+        <Card style={{width: "500px"}} centered data-testid="dotd-card">
             <Card.Header>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Header textAlign="center" style={{marginTop: "0px"}}>
-                    <NavLink class="drinklink" to={(`/profile/${dotd.publisher}/drink/${dotd.name}`)}>
+                    <NavLink class="drinklink" to={(`/profile/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
                         {dotd.name}
                     </NavLink>
                 </Header>
-                <Card.Description content={dotd.description}/>
+                <Card.Description content={dotd.description} data-testid="dotd-description"/>
                 <br/>
                 <Card.Content>
                     <List bulleted>
-                        {dotd.ingredients.map(ingr => {
+                        {dotd.ingredients.map((ingr, index) => {
                             return (
-                                <List.Item>
+                                <List.Item data-testid={"dotd-ingredient-" + index.toString()}>
                                     {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                 </List.Item>
                             )
                         })}
                     </List>
                 </Card.Content>
-                <Card.Meta>{dotd.publisher}</Card.Meta>
+                <Card.Meta data-testid="dotd-publisher">{dotd.publisher}</Card.Meta>
                 <Card.Content extra>
                     <Rating icon='star' defaultRating={5} maxRating={5}/>
                 </Card.Content>

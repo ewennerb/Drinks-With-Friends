@@ -1,9 +1,7 @@
 import React from "react";
-import 'semantic-ui-css/semantic.min.css';
 import {Link} from 'react-router-dom';
-import {Input, Segment, Grid, Loader, Button, Form} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form, Checkbox, FormCheckbox} from 'semantic-ui-react'
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import "../css/Search.css"
 import {dotdCard, drinkCard, userCard} from "./utils";
 
 
@@ -12,6 +10,7 @@ export default class Search extends React.Component{
     constructor(props){
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleOfficialChange = this.handleOfficialChange.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getDOTD = this.getDOTD.bind(this);
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
@@ -22,6 +21,7 @@ export default class Search extends React.Component{
             response: undefined,
             loaded: false,
             loggedIn: false,
+            officialOnly: true,
             done: false,
             results: [],
             searchable: false,
@@ -38,16 +38,34 @@ export default class Search extends React.Component{
             user: this.props.user,
             done: true,
             results: [],
+            officialOnly: true,
             searchable: false,
             searchVal: "d",
         })
     }
 
 
-    handleSettingsChange = (e, { value }) => {
+    handleSettingsChange(event, value) {
         this.setState({ searchVal: value, results: this.state.results });
     };
 
+
+    handleOfficialChange(event){
+        this.setState({ officialOnly: !this.state.officialOnly })
+    }
+
+
+    //Records Search Bar Input
+    async handleInputChange(event){
+        const value = event.target.value;
+        let searchable;
+        if(value !== ' ' && value !== undefined && value !== ""){
+            searchable = false;
+        }else{
+            searchable = true;
+        }
+        await this.setState({searchText: value, searchable: searchable});
+    };
 
     //Fetches the Drink of the Day
     async getDOTD(){
@@ -74,6 +92,8 @@ export default class Search extends React.Component{
         }else if(this.state.searcVal === "i"){
             url = "http://localhost:8080/ingredients/search?s=" + this.state.searchText;
         }
+
+        //Todo: IF this.state.officialOnly add a flag to the URL
         console.log(url);
         await fetch(url, {
             method: 'GET',
@@ -92,19 +112,6 @@ export default class Search extends React.Component{
     }
 
 
-    //Records Search Bar Input
-    async handleInputChange(event){
-        const value = event.target.value;
-        let searchable;
-        if(value !== ' ' && value !== undefined && value !== ""){
-            searchable = false;
-        }else{
-            searchable = true;
-        }
-        await this.setState({searchText: value, searchable: searchable});
-    };
-
-
     handleRandomModalOpen() { //Paul Added
         this.setState({openRandomModal: true});
         console.log("random clicked!");
@@ -113,6 +120,7 @@ export default class Search extends React.Component{
 
     render() {
         const value = this.state.searchVal;
+        const officialOnly = this.state.officialOnly;
         if (!this.state.done) {
             return (
                 <div>
@@ -131,7 +139,7 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return (
                 <div>
-                    <Grid style={{height: '100vh'}} columns={16} centered>
+                    <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
                         <Grid.Column width={4}/>
                         <Grid.Column width={8} textAlign="center">
                             <br/>
@@ -148,19 +156,28 @@ export default class Search extends React.Component{
                                             label='Drinks'
                                             value='d'
                                             checked={value === 'd'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'d')}
+                                            data-testid="search-form-drinks"
                                         />
                                         <Form.Radio
                                             label='Ingredients'
                                             value='i'
                                             checked={value === 'i'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'i')}
+                                            data-testid="search-form-ingredients"
                                         />
                                         <Form.Radio
                                             label='Users'
                                             value='u'
                                             checked={value === 'u'}
-                                            onClick={this.handleSettingsChange}
+                                            onClick={(e) => this.handleSettingsChange(e,'u')}
+                                            data-testid="search-form-users"
+                                        />
+                                        <FormCheckbox
+                                            label='Display Official Drinks Only'
+                                            checked={officialOnly}
+                                            onClick={this.handleOfficialChange}
+                                            data-testid="search-form-official"
                                         />
                                     </Form.Group>
                                 </Form>
@@ -169,6 +186,8 @@ export default class Search extends React.Component{
                                     fluid
                                     placeholder='Search...'
                                     onChange={this.handleInputChange}
+                                    data-testid="search-form-bar"
+                                    value={this.state.searchText}
                                 />
                                 <br/>
                                 <Button color="yellow" onClick={this.getSearchResults} width={8}>
@@ -181,13 +200,13 @@ export default class Search extends React.Component{
                                 </p>
                                 <br/>
                                 <br/>
-                                {this.state.results.map(result => {
+                                {this.state.results.map((result, index) => {
                                     if(this.state.searchVal === 'd'){
                                         console.log(result);
-                                        return (drinkCard(result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                        return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                                     }else if(this.state.searchVal === 'u') {
                                         console.log(result.userName);
-                                        return (userCard(result.userName, result.photo))
+                                        return (userCard(index, result.userName, result.photo))
                                     }
                                 })}
                             </Grid.Row>
