@@ -249,10 +249,14 @@ public class DrinkSQL {
 		return outDrink;
 	}
 
-	public String likeDrink(int drinkId){
+	public String likeDrink(int drinkId, boolean toggle){
+		String query = "";
 		try{
-			String query = "update test_schema.drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
-
+			if (toggle){
+				query = "update test_schema.drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
+			}else{
+				query = "update test_schema.drink set likes = likes - 1 where drinkId = \""+drinkId+"\"";
+			}
 			int updateResult = smt.executeUpdate(query);
 
 			if(updateResult == 1) {
@@ -266,14 +270,17 @@ public class DrinkSQL {
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
-		
 
 	}
 
-	public String dislikeDrink(int drinkId){
+	public String dislikeDrink(int drinkId, boolean toggle){
+		String query = "";
 		try{
-			String query = "update test_schema.drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
-
+			if(toggle){
+				query = "update test_schema.drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
+			}else{
+				query = "update test_schema.drink set dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
+			}
 			int updateResult = smt.executeUpdate(query);
 
 			if(updateResult == 1) {

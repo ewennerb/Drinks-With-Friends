@@ -284,27 +284,33 @@ public class UserSQL {
 		}
 	}
 
-	public String likeDrink(String userName, int drinkId, int likeAction){
+	public String likeDrink(String userName, int drinkId, boolean toggle){
 		try{
 			String query = "";
+			String backupQuery = "";
 
 			DrinkSQL test = new DrinkSQL();
-			//Drink d = test.getDrink(drinkName, owner);
-			//int drinkId = d.id;
 
+			//Likes a drink & Un-Likes a Drink
+			if (toggle == true) { //liking drink
+				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 
-			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
-			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = 1, likes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else { //disliking drink
+				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			}
-			System.out.print("QUERY"+query);
+			System.out.print(query);
 
 			int updateResult = smt.executeUpdate(query);
 
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
+				updateResult = smt.executeUpdate(backupQuery);
+				if (updateResult == 1){
+					return "{ \"status\" : \"ok\" }";
+				}
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 
@@ -315,19 +321,20 @@ public class UserSQL {
 		}
 	}
 
-	public String removeLikeDrink(String userName, int drinkId, int likeAction){
+	public String dislikeDrink(String userName, int drinkId, boolean toggle){
 		try{
 			String query = "";
+			String backupQuery = "";
 
 			DrinkSQL test = new DrinkSQL();
-			//Drink d = test.getDrink(drinkName, owner);
-			//int drinkId = d.id;
 
-
-			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
-			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			//DISLIKES AND UN-DISLIKES A DRINK
+			if (toggle == true) { //liking drink
+				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else { //disliking drink
+				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			}
 			System.out.print("QUERY"+query);
 
@@ -336,6 +343,10 @@ public class UserSQL {
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
+				updateResult = smt.executeUpdate(backupQuery);
+				if (updateResult == 1){
+					return "{ \"status\" : \"ok\" }";
+				}
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 

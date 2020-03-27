@@ -109,7 +109,9 @@ export default class Search extends React.Component{
                 this.setState({results: data.results})
             }
         }).catch(this.setState({results: []}));
-        this.setState({loaded: true})
+        this.setState({loaded: true});
+
+        console.log(this.state.user);
     }
 
 
@@ -218,6 +220,10 @@ export default class Search extends React.Component{
                                         console.log(result.userName);
                                         return (userCard(index, result.userName, result.photo))
                                     }
+                                    // }else if(this.state.searchVal === 'i'){
+                                    //     console.log(result)
+                                    //     return (ingredientCard(index, result))
+                                    // }
                                 })}
                             </Grid.Row>
 

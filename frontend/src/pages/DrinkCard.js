@@ -29,10 +29,19 @@ export default class DrinkCard extends React.Component {
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
             let user;
+            let liked = false;
+            let disliked = false;
             if (data.userName === null){
                 user = undefined
             }else{
                 user = data;
+                // if (user.likedDrinks.some(item => this.props.drink.id === item)) {
+                //     liked = true
+                // }
+                //
+                // if (user.dislikedDrinks.some(item => this.props.drink.id === item)) {
+                //     liked = true
+                // }
             }
             // await this.setState({dotd: data})
             await this.setState({
@@ -40,8 +49,8 @@ export default class DrinkCard extends React.Component {
                 index: this.props.index,
                 drink: this.props.drink,
                 ready: true,
-                isLiked: false,
-                isDisliked: false
+                isLiked: liked,
+                isDisliked: disliked
             });
         }).catch(console.log);
     }
@@ -49,7 +58,8 @@ export default class DrinkCard extends React.Component {
 
 
     async likeDislikeRequestor(body, url, option) {
-        await fetch(url + this.state.drink.id, {
+        console.log(url);
+        await fetch(url, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -58,11 +68,6 @@ export default class DrinkCard extends React.Component {
             body: body
         }).then(res => res.json()).then(async (data) => {
             console.log(data);
-            if (option === "like"){
-                this.setState({ isLiked: !this.state.isLiked })
-            }else{
-                this.setState({ isDisliked: !this.state.isDisliked })
-            }
         }).catch(console.log);
     }
 
@@ -87,31 +92,24 @@ export default class DrinkCard extends React.Component {
             lastLogin: this.state.user.lastLogin,
         });
 
-
+        console.log(this.state.drink);
         if (option === "like") {
-            if(!this.state.isLiked) {
-                //Do Like
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id, option);
-                if (this.state.isDisliked) {
-                    //Undo Dislike
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/removeDislikeDrink/" + this.state.drink.id, option);
-                }
-            }else{
-                //Undo Like
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/removeLikeDrink/" + this.state.drink.id, option);
-
+            if (!this.state.isLiked) {
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/true", option);
+                this.setState({isLiked: true, isDisliked: false})
+            } else {
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/false", option);
+                this.setState({isLiked: false, isDisliked: false})
             }
         }else{
-            if(this.state.isDisliked === undefined) {
+            if(!this.state.isDisliked) {
                 //Do Dislike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id, option);
-                if(this.state.isLiked === "yellow"){
-                    //Undo Like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/removeLikeDrink/" + this.state.drink.id, option);
-                }
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/true" , option);
+                this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/removeDislikeDrink/" + this.state.drink.id, option);
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/false", option);
+                this.setState({ isLiked: false, isDisliked: false});
             }
         }
     }
@@ -140,19 +138,22 @@ export default class DrinkCard extends React.Component {
         if(ready){
             if (user !== undefined) {
 
+                let lColor = this.likeColor();
+                let dColor = this.dislikeColor();
+
                 likes = <div>
 
                     <FeedLike>
-                        <Icon name="caret up" size="large" onClick={() => this.handleLikeDislike("like")} color={this.likeColor}/>
+                        <Icon name="caret up" size="large" onClick={() => this.handleLikeDislike("like")} color={lColor}/>
                     </FeedLike>
                     {drink.likes} Likes&nbsp;
                     <FeedLike>
-                        <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("dislike")} color={this.dislikeColor}/>
+                        <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("dislike")} color={dColor}/>
                     </FeedLike>
 
                 </div>;
             }else{
-                likes = drink.likes.toString();
+                likes = <div>{drink.likes} Likes</div>
             }
 
             //Figures out if the drink comes with an image or not
