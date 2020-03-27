@@ -127,6 +127,22 @@ public class DrinkController {
         return out;
     }
 
+	@GetMapping("/searchIngredients")
+	public String searchIngredients(@RequestParam(name = "s") String request) throws JsonProcessingException {
+		DrinkSQL ds = new DrinkSQL();
+		Ingredient[] ingreds = ds.searchIngredients(request);
+		if(ingreds == null)
+			return "{\"results\": \"DNE\"";
+
+		String out =  "{ \"results\": [";
+		for (Ingredient ingredient : ingreds) {
+			out += new ObjectMapper().writeValueAsString(ingredient) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+	}
+
     @GetMapping("/all/{letter}") 
     public String requestAll(@PathVariable String letter) {
         DrinkSQL ds = new DrinkSQL();

@@ -122,6 +122,48 @@ public class DrinkSQL {
 			return null;
 		} 
 	}
+
+	public Ingredient[] searchIngredients(String request) {
+		System.out.print("ingredient searching");
+		StringBuilder searchString = new StringBuilder("%" + request + "%");
+		for (int i = 0; i < request.length(); i++) {
+			if (searchString.charAt(i) == ' ') {
+				searchString.setCharAt(i, '%');
+			}
+		}
+		System.out.println("Search String: "+searchString);
+		try{
+			
+			String query = "select * from test_schema.drink_ingredient where ingredient LIKE \""+searchString+"\"";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+
+			ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+			while(rs.next())
+			{
+				//getResults
+				//add to arraylist
+				String username = rs.getString("username");
+				int drinkId = rs.getInt("drink_id");
+				String ingredient = rs.getString("ingredient");
+				String measurement = rs.getString("measurement");
+				String quantity = rs.getString("quantity");
+
+				Ingredient i = new Ingredient(username, drinkId, ingredient, measurement, quantity);
+				ingredients.add(i);
+			}
+			conn.close();
+			//add to Array
+			Ingredient[] outList = new Ingredient[ingredients.size()];
+			outList = ingredients.toArray(outList);
+			return outList;
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public Drink[] searchDrink(String request, int flag) {
 		System.out.println("searching");
 		StringBuilder searchString = new StringBuilder("%" + request + "%");
