@@ -75,4 +75,30 @@ public class PostSQL {
 		}
 	}
 
+	public ArrayList<Post> getUserPosts(String userName){
+		try{
+			rs = smt.executeQuery("select * from test_schema.post where userName = \""+userName+"\"");
+			ArrayList<Post> post = new ArrayList<Post>();
+
+			while(rs.next())
+			{
+				int postId = rs.getInt("postId");
+				String text = rs.getString("text");
+				String image = rs.getString("image");
+				String username = rs.getString("userName");
+				String geolocation = rs.getString("geolocation");
+				String date = rs.getString("date");
+			
+
+				Post p = new Post(postId, text, image, username, geolocation, date);
+				post.add(p);
+			}
+			conn.close();
+			return post;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }
