@@ -1,8 +1,9 @@
 import React from "react";
 import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, Checkbox, FormCheckbox} from 'semantic-ui-react'
+import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, drinkCard, userCard} from "./utils";
+import {dotdCard, userCard} from "./utils";
 
 
 export default class Search extends React.Component{
@@ -203,7 +204,14 @@ export default class Search extends React.Component{
                                 {this.state.results.map((result, index) => {
                                     if(this.state.searchVal === 'd'){
                                         console.log(result);
-                                        return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                        return(
+                                            <DrinkCard
+                                                user={this.state.user}
+                                                index={index}
+                                                drink={result}
+                                            />
+                                            )
+                                        // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                                     }else if(this.state.searchVal === 'u') {
                                         console.log(result.userName);
                                         return (userCard(index, result.userName, result.photo))
