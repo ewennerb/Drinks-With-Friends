@@ -119,7 +119,7 @@ class All extends Component{
             <GridRow>
                 <GridColumn width={4}>
                 {this.state.resultsCol1.map(result => {
-                  var test = <NavLink class="drinklink" to={(`/profile/${result.publisher}/drink/${result.name}`)}>
+                  var test = <NavLink class="drinklink" to={(`/${result.publisher}/drink/${result.name}`)}>
                     {result.name} by {result.publisher}
                     </NavLink>
                   return(
