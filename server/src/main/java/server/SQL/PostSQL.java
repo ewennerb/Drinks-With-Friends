@@ -101,4 +101,20 @@ public class PostSQL {
 		}
 	}
 
+	public String deletePost(int postId){
+		try{
+			String query = "delete from test_schema.post where postId = \""+postId+"\"";
+			System.out.print(query);
+			
+			int result = smt.executeUpdate(query);
+
+			return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error inserting post to db");
+			return "{ \"status\" : \"Error: SQL insert failed.\"}";
+		}
+
+	}
+
 }
