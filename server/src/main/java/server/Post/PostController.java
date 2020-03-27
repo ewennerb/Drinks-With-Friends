@@ -70,8 +70,8 @@ public class PostController {
 		return om.writeValueAsString(posts.getUserPosts(username));
 	}
 
-	@PostMapping("/delete/{postId}")
-	public String deletePost(@PathVariable int postId)
+	@PostMapping("/delete")
+	public String deletePost(@RequestBody String username)
 			throws JsonParseException, JsonMappingException, IOException {
 		
 		ObjectMapper om = new ObjectMapper();
@@ -79,10 +79,10 @@ public class PostController {
 		sm.addDeserializer(Post.class, new PostDeserializer());
 		om.registerModule(sm);
 
-		//Post p = om.readValue(postId, Post.class);
+		Post p = om.readValue(username, Post.class);
 
 		PostSQL posts = new PostSQL();
-		return posts.deletePost(postId);
+		return posts.deletePost(p.postId);
 	}
 
 }
