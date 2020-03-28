@@ -232,7 +232,7 @@ public class UserController {
 	}
 	//TODO need to add check for when user didnt like/dislike the drink db shouldnt be updated
 	@PostMapping("/likeDrink/{drinkId}/{toggle}")
-	public String likeDrink(@PathVariable int drinkId, @PathVariable boolean toggle, @RequestBody String userName)
+	public String likeDrink(@PathVariable int drinkId, @PathVariable String toggle, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -245,13 +245,14 @@ public class UserController {
 		System.out.print(u.userName +  " Liked --- DrinkId: "+ drinkId +"\n");
 		
 		DrinkSQL ds = new DrinkSQL();
-		ds.likeDrink(drinkId, toggle);
 
-		return users.likeDrink(u.userName, drinkId, toggle);
+
+		users.likeDrink(u.userName, drinkId, toggle);
+		return ds.likeDrink(drinkId, toggle);
 	}
 
 	@PostMapping("/dislikeDrink/{drinkId}/{toggle}")
-	public String dislikeDrink(@PathVariable int drinkId, @PathVariable boolean toggle, @RequestBody String userName)
+	public String dislikeDrink(@PathVariable int drinkId, @PathVariable String toggle, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -263,9 +264,10 @@ public class UserController {
 		UserSQL users = new UserSQL();
 		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
 		DrinkSQL ds = new DrinkSQL();
-		ds.dislikeDrink(drinkId, toggle);
+
 		
-		return users.dislikeDrink(u.userName, drinkId, toggle);
+		users.dislikeDrink(u.userName, drinkId, toggle);
+		return ds.dislikeDrink(drinkId, toggle);
 	}
 
 //	@PostMapping("/removeLikeDrink/{drinkId}")

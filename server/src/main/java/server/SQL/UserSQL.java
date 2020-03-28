@@ -284,7 +284,7 @@ public class UserSQL {
 		}
 	}
 
-	public String likeDrink(String userName, int drinkId, boolean toggle){
+	public String likeDrink(String userName, int drinkId, String toggle){
 		try{
 			String query = "";
 			String backupQuery = "";
@@ -292,7 +292,7 @@ public class UserSQL {
 			DrinkSQL test = new DrinkSQL();
 
 			//Likes a drink & Un-Likes a Drink
-			if (toggle == true) { //liking drink
+			if (toggle.equals("on")) { //liking drink
 				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
 				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 
@@ -314,14 +314,15 @@ public class UserSQL {
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 
-			return "{ \"status\" : \"Error: SQL update failed.\" }";
+//			return "{ \"status\" : \"Error: SQL update failed.\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
+		return("End of likeDrink in UserSQL.java");
 	}
 
-	public String dislikeDrink(String userName, int drinkId, boolean toggle){
+	public String dislikeDrink(String userName, int drinkId, String toggle){
 		try{
 			String query = "";
 			String backupQuery = "";
@@ -329,7 +330,7 @@ public class UserSQL {
 			DrinkSQL test = new DrinkSQL();
 
 			//DISLIKES AND UN-DISLIKES A DRINK
-			if (toggle == true) { //liking drink
+			if (toggle.equals("on")) { //liking drink
 				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else { //disliking drink
@@ -350,11 +351,14 @@ public class UserSQL {
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 
-			return "{ \"status\" : \"Error: SQL update failed.\" }";
+//			return "{ \"status\" : \"Error: SQL update failed.\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
+
+		return("End of dislikeDrink in UserSQL.java");
 	}
+
 
 }

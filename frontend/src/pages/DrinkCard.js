@@ -95,16 +95,28 @@ export default class DrinkCard extends React.Component {
         console.log(this.state.drink);
         if (option === "like") {
             if (!this.state.isLiked) {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/true", option);
+                //If disliked and like gets hit, flip
+                if (this.state.isDisliked){
+                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/flip", option);
+                }else{
+                    //Do normal like
+                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/on", option);
+                }
+
                 this.setState({isLiked: true, isDisliked: false})
             } else {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/false", option);
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
             }
         }else{
             if(!this.state.isDisliked) {
-                //Do Dislike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/true" , option);
+                //If liked and dislike gets hit, flip
+                if (this.state.isLiked){
+                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
+                }else{
+                    //Do normal like
+                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/true" , option);
+                }
                 this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
