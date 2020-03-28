@@ -249,8 +249,8 @@ public class UserController {
 		return users.updateFavoriteDrink(u.userName, u.favoriteDrink);
 	}
 	//TODO need to add check for when user didnt like/dislike the drink db shouldnt be updated
-	@PostMapping("/likeDrink/{drinkId}")
-	public String likeDrink(@PathVariable int drinkId, @RequestBody String userName)
+	@PostMapping("/likeDrink/{drinkId}/{toggle}")
+	public String likeDrink(@PathVariable int drinkId, @PathVariable String toggle, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -260,16 +260,17 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
+		System.out.print(u.userName +  " Liked --- DrinkId: "+ drinkId +"\n");
 		
 		DrinkSQL ds = new DrinkSQL();
-		ds.likeDrink(drinkId);
 
-		return users.likeDrink(u.userName, drinkId, 1);
+
+		users.likeDrink(u.userName, drinkId, toggle);
+		return ds.likeDrink(drinkId, toggle);
 	}
 
-	@PostMapping("/dislikeDrink/{drinkId}")
-	public String dislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
+	@PostMapping("/dislikeDrink/{drinkId}/{toggle}")
+	public String dislikeDrink(@PathVariable int drinkId, @PathVariable String toggle, @RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectMapper om = new ObjectMapper();
@@ -281,48 +282,71 @@ public class UserController {
 		UserSQL users = new UserSQL();
 		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
 		DrinkSQL ds = new DrinkSQL();
-		ds.dislikeDrink(drinkId);
+
 		
-		return users.likeDrink(u.userName, drinkId, -1);
+		users.dislikeDrink(u.userName, drinkId, toggle);
+		return ds.dislikeDrink(drinkId, toggle);
 	}
 
-	@PostMapping("/removeLikeDrink/{drinkId}")
-	public String removeLikeDrink(@PathVariable int drinkId, @RequestBody String userName)
-			throws JsonParseException, JsonMappingException, IOException {
 
-		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-		sm.addDeserializer(User.class, new UserDeserializer());
-		om.registerModule(sm);
-		User u = om.readValue(userName, User.class);
+
+
+	@GetMapping("/getLikeStatus/{username}/{drinkId}")
+	public String getLikeStatus(@PathVariable String username, @PathVariable int drinkId)
+			throws JsonParseException, JsonMappingException, IOException {
+//		ObjectMapper om2 = new ObjectMapper();
+//		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+//		sm2.addSerializer(User.class, new UserSerializer());
+//		om2.registerModule(sm2);
+//		ObjectMapper om2 = new ObjectMapper();
+//		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+//		sm2.addSerializer(User.class, new UserSerializer());
+//		om2.registerModule(sm);
+//		User u = om2.readValue(userName, User.class);
 
 		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
-		DrinkSQL ds = new DrinkSQL();
-		ds.removeLikeDrink(drinkId, 1);
-
-		return users.removeLikeDrink(u.userName, drinkId, 1);
+		return users.getLikeStatus(username, drinkId);
 	}
 
-	@PostMapping("/removeDislikeDrink/{drinkId}")
-	public String removeDislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
-			throws JsonParseException, JsonMappingException, IOException {
 
-		ObjectMapper om = new ObjectMapper();
-		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-		sm.addDeserializer(User.class, new UserDeserializer());
-		om.registerModule(sm);
-		User u = om.readValue(userName, User.class);
 
-		UserSQL users = new UserSQL();
-		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
-		
-		DrinkSQL ds = new DrinkSQL();
-		ds.removeLikeDrink(drinkId, -1);
-
-		return users.removeLikeDrink(u.userName, drinkId, -1);
-	}
-
+//	@PostMapping("/removeLikeDrink/{drinkId}")
+//	public String removeLikeDrink(@PathVariable int drinkId, @RequestBody String userName)
+//			throws JsonParseException, JsonMappingException, IOException {
+//
+//		ObjectMapper om = new ObjectMapper();
+//		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+//		sm.addDeserializer(User.class, new UserDeserializer());
+//		om.registerModule(sm);
+//		User u = om.readValue(userName, User.class);
+//
+//		UserSQL users = new UserSQL();
+//		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
+//		DrinkSQL ds = new DrinkSQL();
+//		ds.removeLikeDrink(drinkId, 1);
+//
+//		return users.removeLikeDrink(u.userName, drinkId, 1);
+//	}
+//
+//	@PostMapping("/removeDislikeDrink/{drinkId}")
+//	public String removeDislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
+//			throws JsonParseException, JsonMappingException, IOException {
+//
+//		ObjectMapper om = new ObjectMapper();
+//		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+//		sm.addDeserializer(User.class, new UserDeserializer());
+//		om.registerModule(sm);
+//		User u = om.readValue(userName, User.class);
+//
+//		UserSQL users = new UserSQL();
+//		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
+//
+//		DrinkSQL ds = new DrinkSQL();
+//		ds.removeLikeDrink(drinkId, -1);
+//
+//		return users.removeLikeDrink(u.userName, drinkId, -1);
+//	}
+//
 
 
 

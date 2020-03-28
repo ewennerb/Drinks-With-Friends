@@ -2,52 +2,7 @@ import {Card, Header, List, Rating, Segment, Image, Button} from "semantic-ui-re
 import React from "react";
 import {NavLink} from "react-router-dom";
 
-export const drinkCard = (index, name, description, photo, ingredients, publisher) => {
-    let drinkPic;
-    if(photo !== ""){
-        drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${photo}`} data-testid={"drink-b64-img-" + index.toString()}/>
-    }else{
-        drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
-    }
 
-    return(
-        <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
-            {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
-                <Card.Content>
-                    <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>{name}</Card.Header>
-                    <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}>{publisher}</Card.Meta>
-                </Card.Content>
-                <Card.Content textAlign="left">
-                    {drinkPic}
-                    <div>
-                        <p><strong>Description: </strong></p>
-                        <Card.Description data-testid={"drink-description-" + index.toString()}>{description}</Card.Description>
-
-                    </div>
-
-                    <div>
-                        <br/>
-                        <p><strong>Ingredients: </strong></p>
-                        <Card.Content>
-                            <List bulleted>
-                                {ingredients.map((ingr, idx) => {
-                                    return (
-                                        <p data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
-                                            {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                        </p>
-                                    )
-                                })}
-                            </List>
-                        </Card.Content>
-                    </div>
-                </Card.Content>
-
-                <Card.Content extra>
-                    <Rating icon='star' defaultRating={5} maxRating={5}/>
-                </Card.Content>
-        </Card>
-    )
-};
 
 
 export const userCard = (index, username, photo) => {
