@@ -110,6 +110,58 @@ public class UserSQL {
 		}
 	}
 
+	public User[] searchUsers(String request){
+		StringBuilder searchString = new StringBuilder("%" + request + "%");
+		for (int i = 0; i < request.length(); i++) {
+			if (searchString.charAt(i) == ' ') {
+				searchString.setCharAt(i, '%');
+			}
+		}
+		System.out.println(searchString);
+		try{
+			String query = "Select * FROM test_schema.user WHERE userName LIKE \"" + searchString + "\"";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+			ArrayList<User> user = new ArrayList<User>();
+			String all = "User Info:<br>";
+			while (rs.next())
+			{
+				int userId=rs.getInt("userId");
+				String userName=rs.getString("userName");
+				String password = rs.getString("password");
+				String fullName = rs.getString("name");
+				String email = rs.getString("email");
+				String phoneNum = rs.getString("phoneNumber");
+				String photo=rs.getString("profilePhoto");
+				String bio=rs.getString("bio");
+				String likedDrinks = rs.getString("likedDrinks");
+				String dislikedDrinks = rs.getString("dislikedDrinks");
+				String favoriteDrink = rs.getString("favoriteDrink");
+				String publishedDrinks = rs.getString("publishedDrinks");
+				String postHistory = rs.getString("postHistory");
+				String friendsList = rs.getString("friendsList");
+				String dateCreated = rs.getString("dateCreated");
+				String lastLogin = rs.getString("lastLogin");
+				int darkMode=0;
+				User u = new User(userId, userName, password, fullName, email, phoneNum, photo,bio,likedDrinks, dislikedDrinks, favoriteDrink, publishedDrinks, postHistory, friendsList, dateCreated, lastLogin,darkMode);
+				user.add(u);
+				//all+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+photo+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
+				//all+="<br>";
+			}
+			conn.close();
+			//System.out.print(all);
+			//System.out.print("INSQL "+user.get(0).userName);
+
+			User[] outUser = new User[user.size()];
+			outUser = user.toArray(outUser);
+			return outUser;
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public boolean checkUniqueUserName(String userName){
 		try{
 			String query = "select userName from test_schema.user where userName = \""+userName+"\"";

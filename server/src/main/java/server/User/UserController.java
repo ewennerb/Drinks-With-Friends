@@ -67,6 +67,24 @@ public class UserController {
         return om2.writeValueAsString(users.getUser(name));
     }
 
+	@GetMapping("/searchUsers")
+	public String searchUsers(@RequestParam(name = "s") String request) throws JsonProcessingException {
+		UserSQL us = new UserSQL();
+		User[] users = us.searchUsers(request);
+		
+		if(users == null) {
+			return "{\"results\": \"DNE\"";
+		}
+
+		String out =  "{ \"results\": [";
+		for (User user : users ) {
+			out += new ObjectMapper().writeValueAsString(user) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+	}
+
 	@GetMapping("/find/{email}")
 	public String findUserNameByEmail(@PathVariable String email) 
 			throws JsonParseException, JsonMappingException, IOException {
