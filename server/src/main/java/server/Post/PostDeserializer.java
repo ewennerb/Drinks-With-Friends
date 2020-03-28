@@ -31,7 +31,8 @@ public class PostDeserializer extends StdDeserializer<Post> {
 		ObjectCodec c = new ObjectMapper();
 		JsonNode node = c.readTree(p);
 
-		Post post = new Post(-1, 
+		Post post = new Post(
+			variablePostId(node), 
 			node.get("text").asText(),
 			node.get("image").asText(),
 			node.get("userName").asText(),
@@ -40,5 +41,12 @@ public class PostDeserializer extends StdDeserializer<Post> {
 		);
 
 		return post;
+	}
+
+	public int variablePostId(JsonNode n) {
+		if (n.get("postId") == null)
+			return -1;
+		else
+			return n.get("postId").asInt();
 	}
 }

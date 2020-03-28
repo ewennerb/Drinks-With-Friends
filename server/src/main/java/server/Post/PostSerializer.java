@@ -21,6 +21,7 @@ public class PostSerializer extends StdSerializer<Post> {
 	@Override
 	public void serialize(Post value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
+		gen.writeNumberField("postId", value.postId);
 		gen.writeStringField("text", value.text);
 		gen.writeStringField("image", value.image);
 		gen.writeStringField("userName", value.userName);
