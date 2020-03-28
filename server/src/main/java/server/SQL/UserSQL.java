@@ -413,4 +413,39 @@ public class UserSQL {
 	}
 
 
+	public String getLikeStatus(String userName, int drinkId){
+		String query = "";
+		query = "select * from test_schema.drink_likes where username='" + userName + "' AND drinkId='" + drinkId + "'";
+		System.out.print(query);
+
+		DrinkSQL test = new DrinkSQL();
+		boolean userLikes = false;
+		boolean userDislikes = false;
+
+		try{
+			rs = smt.executeQuery(query);
+			int l = -1;
+			int d = -1;
+
+			while(rs.next()) {
+				l = rs.getInt("likes");
+				d = rs.getInt("dislikes");
+				if (l == 1 && d == 0){
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Likes drinkId=" + drinkId);
+					userLikes = true;
+					userDislikes = false;
+				}else if (l == 0 && d == 1){
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Dislikes drinkId=" + drinkId);
+					userLikes = false;
+					userDislikes = true;
+				}
+			}
+			return "{\"isLiked\": " + userLikes + ", \"isDisliked\": " + userDislikes + "}";
+		}catch(Exception e){
+			System.out.print("Didn't exist in DB, so the user hasn't liked it.");
+			//Doesn't exist in DB and therefore hasn't been liked or disliked yet
+			return "{\"isLiked\": " + userLikes + ", \"isDisliked\": " + userDislikes + "}";
+		}
+
+	}
 }

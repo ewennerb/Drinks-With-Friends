@@ -288,6 +288,28 @@ public class UserController {
 		return ds.dislikeDrink(drinkId, toggle);
 	}
 
+
+
+
+	@GetMapping("/getLikeStatus/{username}/{drinkId}")
+	public String getLikeStatus(@PathVariable String username, @PathVariable int drinkId)
+			throws JsonParseException, JsonMappingException, IOException {
+//		ObjectMapper om2 = new ObjectMapper();
+//		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+//		sm2.addSerializer(User.class, new UserSerializer());
+//		om2.registerModule(sm2);
+//		ObjectMapper om2 = new ObjectMapper();
+//		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
+//		sm2.addSerializer(User.class, new UserSerializer());
+//		om2.registerModule(sm);
+//		User u = om2.readValue(userName, User.class);
+
+		UserSQL users = new UserSQL();
+		return users.getLikeStatus(username, drinkId);
+	}
+
+
+
 //	@PostMapping("/removeLikeDrink/{drinkId}")
 //	public String removeLikeDrink(@PathVariable int drinkId, @RequestBody String userName)
 //			throws JsonParseException, JsonMappingException, IOException {

@@ -21,7 +21,9 @@ export default class DrinkCard extends React.Component {
     }
 
 
-    async componentDidMount(){
+    async componentDidMount() {
+        let userData;
+
         await fetch("http://localhost:8080/user/" + this.props.user, {
             method: "GET",
             headers: {
@@ -29,21 +31,27 @@ export default class DrinkCard extends React.Component {
                 'Content-Type': 'application/json',
             },
         }).then(res => res.json()).then(async (data) => {
-            console.log(data);
+
+            //Doing another fetch to get the status of each drink and whether it is liked by the user or not
             let user;
-            let liked = false;
-            let disliked = false;
+            let isLiked = false;
+            let isDisliked = false;
+
+            //DOesn't do query if not logged in
             if (data.userName === null){
-                user = undefined
+                user = undefined;
             }else{
                 user = data;
-                // if (user.likedDrinks.some(item => this.props.drink.id === item)) {
-                //     liked = true
-                // }
-                //
-                // if (user.dislikedDrinks.some(item => this.props.drink.id === item)) {
-                //     liked = true
-                // }
+                await fetch("http://localhost:8080/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json()).then(async (data) => {
+                    console.log(data);
+                    isLiked = data.isLiked;
+                    isDisliked = data.isDisliked;
+                }).catch(console.log);
             }
             // await this.setState({dotd: data})
             await this.setState({
@@ -53,10 +61,13 @@ export default class DrinkCard extends React.Component {
                 likes: this.props.drink.likes,
                 dislikes: this.props.drink.dislikes,
                 ready: true,
-                isLiked: liked,
-                isDisliked: disliked
+                isLiked: isLiked,
+                isDisliked: isDisliked
             });
         }).catch(console.log);
+
+
+
     }
 
 
