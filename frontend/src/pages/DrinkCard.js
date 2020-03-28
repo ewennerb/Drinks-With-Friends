@@ -10,6 +10,8 @@ export default class DrinkCard extends React.Component {
             user: undefined,
             index: this.props.index,
             drink: this.props.drink,
+            likes: this.props.drink.likes,
+            dislikes: this.props.drink.dislikes,
             ready: false,
             isLiked: false,
             isDisliked: false
@@ -48,6 +50,8 @@ export default class DrinkCard extends React.Component {
                 user: user,
                 index: this.props.index,
                 drink: this.props.drink,
+                likes: this.props.drink.likes,
+                dislikes: this.props.drink.dislikes,
                 ready: true,
                 isLiked: liked,
                 isDisliked: disliked
@@ -67,7 +71,10 @@ export default class DrinkCard extends React.Component {
             },
             body: body
         }).then(res => res.json()).then(async (data) => {
-            console.log(data);
+            await this.setState({
+                likes: data.likes,
+                dislikes: data.dislikes
+            })
         }).catch(console.log);
     }
 
@@ -153,19 +160,34 @@ export default class DrinkCard extends React.Component {
                 let lColor = this.likeColor();
                 let dColor = this.dislikeColor();
 
-                likes = <div>
+                likes =
+                    <Menu fluid>
+                        <Menu.Item position="left">
+                            <FeedLike>
+                                <Icon name="caret up" size="large" onClick={() => this.handleLikeDislike("like")} color={lColor}/>
+                            </FeedLike>
+                            {this.state.likes}
+                        </Menu.Item>
+                        <Menu.Item position="right">
+                            {this.state.dislikes}
+                            <FeedLike>
+                                <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("like")} color={dColor}/>
+                            </FeedLike>
+                        </Menu.Item>
+                    </Menu>
+                ;
 
-                    <FeedLike>
-                        <Icon name="caret up" size="large" onClick={() => this.handleLikeDislike("like")} color={lColor}/>
-                    </FeedLike>
-                    {drink.likes} Likes&nbsp;
-                    <FeedLike>
-                        <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("dislike")} color={dColor}/>
-                    </FeedLike>
-
-                </div>;
             }else{
-                likes = <div>{drink.likes} Likes</div>
+                likes = <div>
+                    <Menu fluid>
+                        <Menu.Item position="left">
+                            {this.state.likes} Likes
+                        </Menu.Item>
+                        <Menu.Item position="right">
+                            {this.state.dislikes} Dislikes
+                        </Menu.Item>
+                    </Menu>
+                </div>;
             }
 
             //Figures out if the drink comes with an image or not
@@ -207,7 +229,7 @@ export default class DrinkCard extends React.Component {
                         </div>
                     </Card.Content>
 
-                    <Card.Content extra>
+                    <Card.Content>
                         {likes}
                     </Card.Content>
                 </Card>
