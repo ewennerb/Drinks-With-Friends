@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Image, List, Rating, Loader, FeedLike, Icon, Button, Menu} from "semantic-ui-react";
+import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
 
 
 export default class DrinkCard extends React.Component {

@@ -225,6 +225,8 @@ export default class Search extends React.Component{
                                     //     return (ingredientCard(index, result))
                                     // }
                                 })}
+                                <br/>
+                                <br/>
                             </Grid.Row>
 
                         </Grid.Column>
