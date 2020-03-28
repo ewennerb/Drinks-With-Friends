@@ -52,4 +52,37 @@ public class PostController {
 		return om.writeValueAsString(posts.getAllPosts());
 	}
 
+	@GetMapping("/{username}")
+	public String findUserPosts(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+			
+		PostSQL posts = new PostSQL();
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostSerializer", new Version(1, 0, 0, null, null, null));
+		sm.addSerializer(Post.class, new PostSerializer());
+		om.registerModule(sm);
+
+		//Post p = posts.getUserPosts(username);
+		//if (p == null )
+		//	return "{ \"status\": \"DNE\"}";
+
+		return om.writeValueAsString(posts.getUserPosts(username));
+	}
+
+	@PostMapping("/delete")
+	public String deletePost(@RequestBody String username)
+			throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Post.class, new PostDeserializer());
+		om.registerModule(sm);
+
+		Post p = om.readValue(username, Post.class);
+
+		PostSQL posts = new PostSQL();
+		return posts.deletePost(p.postId);
+	}
+
 }
