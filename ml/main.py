@@ -2,8 +2,10 @@ import mysql.connector
 from mysql.connector import Error
 from kmeans import km
 from preprocessing import pp
+from tag_generation import generator
 
-
+gen = generator()
+gen.print_tags()
 try:
     connection = mysql.connector.connect(host='localhost',
         database='test_schema',
@@ -15,6 +17,7 @@ try:
         
         cursor = connection.cursor(named_tuple=True)
         cursor.execute("SELECT * FROM drink")
+        
         prep = pp(cursor)
         df = prep.preprocess()
         cursor.execute("SELECT drinkId, name FROM drink")
@@ -27,7 +30,7 @@ try:
             print(g)
             for i in group[g]:
                 print("", int(i),test[int(i)])
-
+        
 
 except Error as e:
     print("Error while connecting to MySQL", e)
