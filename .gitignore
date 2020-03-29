@@ -2,4 +2,4 @@
 /.idea
 *.iml
 /server/target/*
-
+/ml/__pycache__/*

@@ -197,6 +197,19 @@ public class DrinkController {
         
         
     }
+
+    @Scheduled(cron = "0 30 7 * * *")
+    public void runTaggingRecommend(){
+        //1 * * * * *
+        
+        try {
+            Process p = Runtime.getRuntime().exec("py ../ml/main.py");
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            System.out.println("Tags updated/ drink recommendation updated");
+        }
+    }
 	//TODO merge like drink with user liking drink
 /*	@PostMapping("/like")
 	public String likeDrink(@RequestBody String drinkName)
