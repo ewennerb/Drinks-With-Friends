@@ -23,7 +23,8 @@ class pp():
         data = self.data
         data_frame_cols = self.base_ing
         try:
-            connection = mysql.connector.connect(host='localhost',
+            connection = mysql.connector.connect(
+                host='localhost',
                 database='test_schema',
                 user='root',
                 password='1234DrinksWithFriends')

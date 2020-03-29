@@ -43,7 +43,7 @@ export const dotdCard = (dotd) => {
             <Card.Header>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Header textAlign="center" style={{marginTop: "0px"}}>
-                    <NavLink class="drinklink" to={(`/profile/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
+                    <NavLink class="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
                         {dotd.name}
                     </NavLink>
                 </Header>
