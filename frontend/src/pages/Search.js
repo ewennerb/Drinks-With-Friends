@@ -28,6 +28,8 @@ export default class Search extends React.Component{
             results: [],
             searchable: false,
             openRandomModal: false,
+            randomDrink: "",
+            randomNum: 0,
         }
     }
 
@@ -134,11 +136,50 @@ export default class Search extends React.Component{
         console.log(this.state.user);
     }
 
-
-    handleRandomModalOpen() { //Paul Added
-        this.setState({openRandomModal: true});
-        console.log("random clicked!");
+    getRandomInt(max) { //Paul Added
+        this.setState({ randomNum: (Math.floor(Math.random() * Math.floor(max))) });
+        return;
     }
+
+    async handleRandomModalOpen() { //Paul Added
+        this.setState({openRandomModal: true});
+
+        await fetch('http://localhost:8080/drink', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            console.log(data);
+            await this.setState({randomDrink: data})
+        }).catch(console.log);
+        //await this.setState({done: true})
+
+        var max = this.state.randomDrink.length;
+        //console.log(max); //test to make sure that the max is right
+        this.getRandomInt(max);
+        var randomDrink = this.state.randomDrink[this.state.randomNum];
+        console.log(randomDrink.name);
+
+
+        //searches the drink
+        await fetch("http://localhost:8080/drink/search?s=" + randomDrink.name, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            this.setState({results: data.results})
+        }).catch(this.setState({results: []}));
+        this.setState({loaded: true});
+
+        console.log(this.state.user);
+
+    }
+
+    
 
 
     render() {
@@ -152,10 +193,6 @@ export default class Search extends React.Component{
                             <Loader content='Loading'/>
                         </Dimmer>
                     </Segment>
-
-                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}>
-                        Search
-                    </Button>
                 </div>
             )
         } else {
@@ -221,6 +258,7 @@ export default class Search extends React.Component{
                                     data-testid="search-form-bar"
                                     value={this.state.searchText}
                                 />
+
                                 <br/>
                                 <div class="search_block">
                                     <div class="search_left">
@@ -234,13 +272,21 @@ export default class Search extends React.Component{
                                             For You
                                         </Button>
                                     </div>
+
                                 </div>
                                 <br/>
+
                                 <p hidden={this.state.loggedIn}>
                                     <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
                                 </p>
                                 <br/>
                                 <br/>
+                                <div>
+                                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}> 
+                                        Random Drink
+                                    </Button>
+                                </div>
+                                
                                 {this.state.results.map((result, index) => {
                                     if(this.state.searchVal === 'd'){
                                         console.log(result);
@@ -266,8 +312,11 @@ export default class Search extends React.Component{
                                         )
                                     }
                                 })}
+
                                 <br/>
                                 <br/>
+
+                                
                             </Grid.Row>
 
                         </Grid.Column>
