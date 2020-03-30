@@ -1,6 +1,6 @@
 import React from "react";
 import {Link} from 'react-router-dom';
-import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, Label} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
@@ -113,8 +113,8 @@ export default class Search extends React.Component{
 
     async getSearchResults(){
         let url;
-        console.log(this.state.searchVal)
-        console.log(this.state.officialOnly)
+        console.log(this.state.searchVal);
+        console.log(this.state.officialOnly);
         if (this.state.searchVal === 'u'){
             url = "http://localhost:8080/user/" + this.state.searchText;
         }else if(this.state.searchVal === "d"){
@@ -203,6 +203,9 @@ export default class Search extends React.Component{
 
     render() {
         const value = this.state.searchVal;
+        const activeIndex = this.state.accActive;
+        let showMsg = true;
+
         if (!this.state.done) {
             return (
                 <div>
@@ -214,6 +217,11 @@ export default class Search extends React.Component{
                 </div>
             )
         } else {
+
+            if (this.state.user !== undefined){
+                showMsg = false;
+            }
+
             //IF dotd not ready return loader
             return (
                 <div>
@@ -235,7 +243,11 @@ export default class Search extends React.Component{
                             <Grid.Row textAlign="left">
                                 <Grid.Column width={16} textAlign="left">
                                     <Accordion>
-                                        <Accordion.Title active={this.state.accActive === 0} index={0} onClick={this.handleAcc}>
+                                        <Accordion.Title
+                                            active={activeIndex === 0}
+                                            index={0}
+                                            onClick={this.handleAcc}
+                                        >
                                             <Icon name="dropdown"/>
                                             Search Options
                                         </Accordion.Title>
@@ -313,7 +325,7 @@ export default class Search extends React.Component{
                                 <br/>
                                 <div style={{textAlign: "center"}}>
                                     <div style={{display: "inline-block"}}>
-                                        <p hidden={this.state.loggedIn}>
+                                        <p hidden={!showMsg}>
                                             <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
                                         </p>
                                     </div>
