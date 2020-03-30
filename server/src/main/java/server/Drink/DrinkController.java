@@ -180,7 +180,7 @@ public class DrinkController {
     public String requestAll(@PathVariable String letter) {
         DrinkSQL ds = new DrinkSQL();
         String[] names = ds.getDrinkNamesStartingWith(letter.charAt(0));
-       
+
         String out = "{ \"results\": [";
         if (names.length == 0) {
             return out + "]}";
@@ -190,6 +190,18 @@ public class DrinkController {
             out += "{ \"name\": \"" + names[i] + "\", \"publisher\": \"" + names[i+1]+ "\"},"; 
         }
         
+        out = out.substring(0, out.length()-1) + "] }";
+        return out;
+    }
+
+    @GetMapping("/getUserRecommended/{username}")
+    public String getUserRecommended(@PathVariable String username)  throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.getRecommended(username);
+        String out = "{ \"results\": [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
         out = out.substring(0, out.length()-1) + "] }";
         return out;
     }

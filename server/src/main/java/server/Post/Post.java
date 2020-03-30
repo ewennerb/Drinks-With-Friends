@@ -8,6 +8,8 @@ public class Post{
 	public String userName;
 	public String geolocation;
 	public String date;
+	public String profileImage;
+	public String name;
 
 	public Post(){
 		this.postId = 0;

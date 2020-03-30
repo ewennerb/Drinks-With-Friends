@@ -1,6 +1,6 @@
-import {Card, Header, List, Rating, Segment, Image, Button} from "semantic-ui-react";
+import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow} from "semantic-ui-react";
 import React from "react";
-import {NavLink} from "react-router-dom";
+import {NavLink, Link} from "react-router-dom";
 
 
 
@@ -65,6 +65,46 @@ export const dotdCard = (dotd) => {
                     <Rating icon='star' defaultRating={5} maxRating={5}/>
                 </Card.Content>
             </Segment>
+        </Card>
+    )
+};
+
+export const postCard = (post) => {
+    let pfp;
+    if (post.profileImage === null || post.profileImage === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"}/>
+    }else{
+        pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} />
+    }
+    return(
+        <Card style={{width: "500px"}} centered data-testid="dotd-card">
+            
+            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                <Link to={(`${post.userName}`)}>
+                    <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                        {pfp}
+                    </CardContent>
+                </Link>
+                <Grid columns={1}>
+                    <GridRow style={{paddingBottom: "0px"}}>
+                        <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
+                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
+                                @{post.userName}
+                            </p>
+                        </Link>
+                    </GridRow>
+                    <GridRow  style={{paddingTop: "0px"}}>
+                        <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
+                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                                {post.name}
+                            </p>
+                        </Link>
+                    </GridRow>
+                </Grid>
+                
+            </Segment>
+            <CardContent>{post.text}</CardContent>
+            <CardContent>{post.image}</CardContent>
         </Card>
     )
 };

@@ -2,3 +2,14 @@ a.drinklink {
     color: black;
     text-decoration: none;
 }
+.search_block {
+    width: 40%;
+    margin: auto;
+    padding-bottom: 20px;
+}
+.search_right {
+    float: right;
+}
+.search_left {
+    float: left;
+}
