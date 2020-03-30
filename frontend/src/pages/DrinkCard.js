@@ -182,7 +182,7 @@ export default class DrinkCard extends React.Component {
                         <Menu.Item position="right">
                             {this.state.dislikes}
                             <FeedLike>
-                                <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("like")} color={dColor}/>
+                                <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("dislike")} color={dColor}/>
                             </FeedLike>
                         </Menu.Item>
                     </Menu>
