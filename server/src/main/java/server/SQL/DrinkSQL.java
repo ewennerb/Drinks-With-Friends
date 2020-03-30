@@ -358,7 +358,7 @@ public class DrinkSQL {
 				finalSorted.add(k);
 			}
 
-			//conn.close();
+			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
 			outDrink = finalSorted.toArray(outDrink);
 			return outDrink;
@@ -506,7 +506,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 
-
+			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
 //			} else if(updateResult == 0) {
@@ -514,6 +514,7 @@ public class DrinkSQL {
 //			}
 
 //			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
@@ -531,6 +532,7 @@ public class DrinkSQL {
 			}else if (toggle.equals("flip")){
 				query = "update test_schema.drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
 			}
+			
 			int updateResult = smt.executeUpdate(query);
 
 			rs = smt.executeQuery("select * from test_schema.drink where drinkId = \""+drinkId+"\"");
@@ -540,7 +542,7 @@ public class DrinkSQL {
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
-
+			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
 //			} else if(updateResult == 0) {
@@ -548,6 +550,7 @@ public class DrinkSQL {
 //			}
 
 //			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
