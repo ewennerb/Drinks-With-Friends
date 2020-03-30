@@ -4,7 +4,7 @@ import {Input, Segment, Grid, Loader, Button, Form, Checkbox, FormCheckbox} from
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import {dotdCard, userCard, postCard} from "./utils";
-
+import "../css/Search.css"
 
 export default class Search extends React.Component{
 
@@ -15,6 +15,7 @@ export default class Search extends React.Component{
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getDOTD = this.getDOTD.bind(this);
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
+        this.getRecommended = this.getRecommended.bind(this);
         this.state = {
             user: this.props.user,
             searchText: "",
@@ -81,6 +82,22 @@ export default class Search extends React.Component{
             await this.setState({dotd: data})
         }).catch(console.log);
         await this.setState({done: true})
+    }
+
+    async getRecommended(){
+        if (this.state.user === undefined){
+            return
+        }
+        await fetch('http://localhost:8080/drink/getUserRecommended/'+this.state.user, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            this.setState({results: data.results, searchVal: 'd'})
+        }).catch(console.log);
+        //this.setState({loaded: true});
     }
 
 
@@ -205,10 +222,19 @@ export default class Search extends React.Component{
                                     value={this.state.searchText}
                                 />
                                 <br/>
-                                <Button color="yellow" onClick={this.getSearchResults} width={8}>
-                                    Search
-                                </Button>
-
+                                <div class="search_block">
+                                    <div class="search_left">
+                                        <Button color="yellow" onClick={this.getSearchResults} width={8}>
+                                            Search
+                                        </Button>
+                                    </div>
+                                    
+                                    <div class="search_right">
+                                        <Button color="yellow" onClick={this.getRecommended} width={8}>
+                                            For You
+                                        </Button>
+                                    </div>
+                                </div>
                                 <br/>
                                 <p hidden={this.state.loggedIn}>
                                     <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>

@@ -274,7 +274,8 @@ public class DrinkSQL {
 		try {
 			String query = "SELECT DISTINCT d.name, d.publisher " +
 			"FROM test_schema.drink d "+
-			"WHERE d.name like \""+let+"%\"";
+			"WHERE d.name like \""+let+"%\" " + 
+			"ORDER BY d.name ASC";
 
 			rs = smt.executeQuery(query);
 			while (rs.next()) {
@@ -289,6 +290,56 @@ public class DrinkSQL {
 		outDrink = dnames.toArray(outDrink);
 
 		return outDrink;
+	}
+
+	public Drink[] getRecommended(String username){
+		try {
+
+			String query = "Select * FROM test_schema.drink_recommendation dr, test_schema.user u, test_schema.drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+			ArrayList<Drink> drink = new ArrayList<Drink>();
+			
+			while (rs.next())
+			{
+				int drinkId=rs.getInt("drinkId");
+				String dName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
+				String publisher=rs.getString("publisher");
+
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM test_schema.drink_ingredient " +
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				if (rs2 != null){
+
+					while (rs2.next()){
+						ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+					}
+
+				}
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
+				System.out.println(d.toString());
+				drink.add(d);
+
+
+			}
+			
+			conn.close();
+			Drink[] outDrink = new Drink[drink.size()];
+			outDrink = drink.toArray(outDrink);
+			return outDrink;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public String likeDrink(int drinkId, String toggle){

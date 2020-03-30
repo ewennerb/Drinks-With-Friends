@@ -1,6 +1,6 @@
 import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow} from "semantic-ui-react";
 import React from "react";
-import {NavLink} from "react-router-dom";
+import {NavLink, Link} from "react-router-dom";
 
 
 
@@ -80,20 +80,25 @@ export const postCard = (post) => {
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
             
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
-                    {pfp}
-                </CardContent>
-                
+                <Link to={(`${post.userName}`)}>
+                    <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                        {pfp}
+                    </CardContent>
+                </Link>
                 <Grid columns={1}>
                     <GridRow style={{paddingBottom: "0px"}}>
-                        <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
-                            @{post.userName}
-                        </p>
+                        <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
+                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
+                                @{post.userName}
+                            </p>
+                        </Link>
                     </GridRow>
                     <GridRow  style={{paddingTop: "0px"}}>
-                        <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
-                            {post.name}
-                        </p>
+                        <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
+                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                                {post.name}
+                            </p>
+                        </Link>
                     </GridRow>
                 </Grid>
                 
