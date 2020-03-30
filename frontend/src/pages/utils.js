@@ -78,7 +78,7 @@ export const postCard = (post) => {
     }
     return(
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
-            
+
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Link to={(`${post.userName}`)}>
                     <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
@@ -88,23 +88,35 @@ export const postCard = (post) => {
                 <Grid columns={1}>
                     <GridRow style={{paddingBottom: "0px"}}>
                         <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
-                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
+                            <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
                                 @{post.userName}
                             </p>
                         </Link>
                     </GridRow>
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
-                            <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                            <p style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
                                 {post.name}
                             </p>
                         </Link>
                     </GridRow>
                 </Grid>
-                
+
             </Segment>
             <CardContent>{post.text}</CardContent>
             <CardContent>{post.image}</CardContent>
+        </Card>
+    )
+};
+
+
+
+export const ingredientCard = (index, ingrName) => {
+    return(
+        <Card centered>
+            <Card.Header>
+                {ingrName}
+            </Card.Header>
         </Card>
     )
 };
