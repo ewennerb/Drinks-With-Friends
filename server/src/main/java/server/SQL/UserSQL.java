@@ -110,6 +110,58 @@ public class UserSQL {
 		}
 	}
 
+	public User[] searchUsers(String request){
+		StringBuilder searchString = new StringBuilder("%" + request + "%");
+		for (int i = 0; i < request.length(); i++) {
+			if (searchString.charAt(i) == ' ') {
+				searchString.setCharAt(i, '%');
+			}
+		}
+		System.out.println(searchString);
+		try{
+			String query = "Select * FROM test_schema.user WHERE userName LIKE \"" + searchString + "\"";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+			ArrayList<User> user = new ArrayList<User>();
+			String all = "User Info:<br>";
+			while (rs.next())
+			{
+				int userId=rs.getInt("userId");
+				String userName=rs.getString("userName");
+				String password = rs.getString("password");
+				String fullName = rs.getString("name");
+				String email = rs.getString("email");
+				String phoneNum = rs.getString("phoneNumber");
+				String photo=rs.getString("profilePhoto");
+				String bio=rs.getString("bio");
+				String likedDrinks = rs.getString("likedDrinks");
+				String dislikedDrinks = rs.getString("dislikedDrinks");
+				String favoriteDrink = rs.getString("favoriteDrink");
+				String publishedDrinks = rs.getString("publishedDrinks");
+				String postHistory = rs.getString("postHistory");
+				String friendsList = rs.getString("friendsList");
+				String dateCreated = rs.getString("dateCreated");
+				String lastLogin = rs.getString("lastLogin");
+				int darkMode=0;
+				User u = new User(userId, userName, password, fullName, email, phoneNum, photo,bio,likedDrinks, dislikedDrinks, favoriteDrink, publishedDrinks, postHistory, friendsList, dateCreated, lastLogin,darkMode);
+				user.add(u);
+				//all+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+photo+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
+				//all+="<br>";
+			}
+			conn.close();
+			//System.out.print(all);
+			//System.out.print("INSQL "+user.get(0).userName);
+
+			User[] outUser = new User[user.size()];
+			outUser = user.toArray(outUser);
+			return outUser;
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public boolean checkUniqueUserName(String userName){
 		try{
 			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
@@ -284,19 +336,58 @@ public class UserSQL {
 		}
 	}
 
-	public String likeDrink(String userName, String drinkName, String owner, int likeAction){
+	public String likeDrink(String userName, int drinkId, String toggle){
 		try{
 			String query = "";
+			String backupQuery = "";
 
 			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
 
+			//Likes a drink & Un-Likes a Drink
+			if (toggle.equals("on")) { //liking drink
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 
-			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = likes + 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
-			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = dislikes + \""+1+"\" where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else { //disliking drink
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+			}
+			System.out.print(query);
+
+			int updateResult = smt.executeUpdate(query);
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				updateResult = smt.executeUpdate(backupQuery);
+				if (updateResult == 1){
+					return "{ \"status\" : \"ok\" }";
+				}
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+//			return "{ \"status\" : \"Error: SQL update failed.\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+		return("End of likeDrink in UserSQL.java");
+	}
+
+	public String dislikeDrink(String userName, int drinkId, String toggle){
+		try{
+			String query = "";
+			String backupQuery = "";
+
+			DrinkSQL test = new DrinkSQL();
+
+			//DISLIKES AND UN-DISLIKES A DRINK
+			if (toggle.equals("on")) { //liking drink
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			} else { //disliking drink
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
 			System.out.print("QUERY"+query);
 
@@ -305,45 +396,56 @@ public class UserSQL {
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
+				updateResult = smt.executeUpdate(backupQuery);
+				if (updateResult == 1){
+					return "{ \"status\" : \"ok\" }";
+				}
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 
-			return "{ \"status\" : \"Error: SQL update failed.\" }";
+//			return "{ \"status\" : \"Error: SQL update failed.\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
+
+		return("End of dislikeDrink in UserSQL.java");
 	}
 
-	public String removeLikeDrink(String userName, String drinkName, String owner, int likeAction){
+
+	public String getLikeStatus(String userName, int drinkId){
+		String query = "";
+		query = "select * from test_schema.drink_likes where username='" + userName + "' AND drink_id='" + drinkId + "'";
+		System.out.print(query);
+
+		DrinkSQL test = new DrinkSQL();
+		boolean userLikes = false;
+		boolean userDislikes = false;
+
 		try{
-			String query = "";
+			rs = smt.executeQuery(query);
+			int l = -1;
+			int d = -1;
 
-			DrinkSQL test = new DrinkSQL();
-			Drink d = test.getDrink(drinkName, owner);
-			int drinkId = d.id;
-
-
-			if (likeAction == 1) { //liking drink
-				query = "update test_schema.drink_likes set likes = likes - 1 where likes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
-			} else if (likeAction == -1) { //disliking drink
-				query = "update test_schema.drink_likes set dislikes = dislikes - 1 where dislikes > 0 and userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+			while(rs.next()) {
+				l = rs.getInt("likes");
+				d = rs.getInt("dislikes");
+				if (l == 1 && d == 0){
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Likes drink_id=" + drinkId);
+					userLikes = true;
+					userDislikes = false;
+				}else if (l == 0 && d == 1){
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Dislikes drink_id=" + drinkId);
+					userLikes = false;
+					userDislikes = true;
+				}
 			}
-			System.out.print("QUERY"+query);
-
-			int updateResult = smt.executeUpdate(query);
-
-			if ( updateResult == 1 ) {
-				return "{ \"status\" : \"ok\" }";
-			} else if(updateResult == 0) {
-				return "{ \"status\" : \"Error: SQL update failed.\"}";
-			}
-
-			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			return "{\"isLiked\": " + userLikes + ", \"isDisliked\": " + userDislikes + "}";
 		}catch(Exception e){
-			e.printStackTrace();
-			return "{ \"status\" : \"Error: SQL update failed.\"}";
+			System.out.print("Didn't exist in DB, so the user hasn't liked it.");
+			//Doesn't exist in DB and therefore hasn't been liked or disliked yet
+			return "{\"isLiked\": " + userLikes + ", \"isDisliked\": " + userDislikes + "}";
 		}
-	}
 
+	}
 }

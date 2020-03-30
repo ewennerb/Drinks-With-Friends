@@ -6,24 +6,28 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.19.2",
+    "base-64": "^0.1.0",
     "nodemailer": "^5.1.1",
     "nodemailer-mailgun-transport": "^1.4.0",
-    "axios": "^0.19.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-phone-input-2": "^2.12.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.1",
+    "react-scripts": "^3.4.0",
+    "react-dev-utils": "10.2.1",
+    "regenerator-runtime": "^0.13.5",
+    "save-file": "^2.3.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
-  "proxy":  "http://localhost:8080",
+  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -38,5 +42,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "jest": "24.9.0",
+    "react-test-renderer": "^16.13.1"
   }
 }
