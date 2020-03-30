@@ -36,6 +36,7 @@ class Profile extends Component{
     this.handleBioChange = this.handleBioChange.bind(this);    
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
+    this.handleNewUsernameChange = this.handleNewUsernameChange.bind(this);
 
     //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
     this.state = {
@@ -260,20 +261,22 @@ handleOpen2() { //Paul Add
           
           <Form size='large'>
           <Segment stacked>
+          
+
          
+          <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
           <Form.Input
             fluid icon='user'
             iconPosition='left'
-            placeholder={this.state.userName}
+            value={this.state.userName}
             onChange={this.handleUsernameChange}
           />
 
           <Form.Input
           fluid icon='lock'
           iconPosition='left'
-          placeholder='Password'
-          value={this.state.password}
-          onChange={this.handlePasswordChange}
+          placeholder='New Username'
+          onChange={this.handleNewUsernameChange}
           />
 
           <Header as='h2' color='grey' textAlign='center'>Bio</Header>
@@ -317,6 +320,12 @@ handleOpen2() { //Paul Add
     await this.setState({password: value});
   };
 
+  async handleNewUsernameChange(event) {
+    const value = event.target.value;
+    await this.setState({newUsername: value});
+    console.log(this.newUsername)
+  }
+
   
   async handleBioChange(event) {
     const value = event.target.value;
@@ -356,7 +365,7 @@ handleOpen2() { //Paul Add
 
 
     //username
-    if (this.state.userName !== User.userName)
+    if (this.state.newUserame !== '')
     await fetch('http://localhost:8080/user/updateUsername', {
         method: 'POST',
         headers: {
@@ -368,7 +377,7 @@ handleOpen2() { //Paul Add
             password: this.state.password,
             phoneNumber: '',
             name: this.newUsername,
-            email: '',
+            email: User.email,
             
         })
         }).then(res => res.json()).then((data) => {
