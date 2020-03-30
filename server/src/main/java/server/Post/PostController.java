@@ -85,4 +85,26 @@ public class PostController {
 		return posts.deletePost(p.postId);
 	}
 
+	@GetMapping("/search")
+    public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        PostSQL us = new PostSQL();
+		Post[] posts = us.searchPost(request);
+		if(posts == null) {
+			return "{\"results\": \"DNE\"";
+		}
+		//us = new PostSQL();
+		
+		//String[] post_users = us.getPostUsernames(posts);
+		
+		
+
+		String out =  "{ \"results\": [";
+		for (Post post : posts ) {
+			out += new ObjectMapper().writeValueAsString(post) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+		
+        return out;
+    }
+
 }

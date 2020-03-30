@@ -1,4 +1,4 @@
-import {Card, Header, List, Rating, Segment, Image, Button} from "semantic-ui-react";
+import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow} from "semantic-ui-react";
 import React from "react";
 import {NavLink} from "react-router-dom";
 
@@ -65,6 +65,41 @@ export const dotdCard = (dotd) => {
                     <Rating icon='star' defaultRating={5} maxRating={5}/>
                 </Card.Content>
             </Segment>
+        </Card>
+    )
+};
+
+export const postCard = (post) => {
+    let pfp;
+    if (post.profileImage === null || post.profileImage === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"}/>
+    }else{
+        pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} />
+    }
+    return(
+        <Card style={{width: "500px"}} centered data-testid="dotd-card">
+            
+            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                    {pfp}
+                </CardContent>
+                
+                <Grid columns={1}>
+                    <GridRow style={{paddingBottom: "0px"}}>
+                        <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
+                            @{post.userName}
+                        </p>
+                    </GridRow>
+                    <GridRow  style={{paddingTop: "0px"}}>
+                        <p textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                            {post.name}
+                        </p>
+                    </GridRow>
+                </Grid>
+                
+            </Segment>
+            <CardContent>{post.text}</CardContent>
+            <CardContent>{post.image}</CardContent>
         </Card>
     )
 };
