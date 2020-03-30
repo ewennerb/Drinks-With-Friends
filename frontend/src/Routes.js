@@ -36,7 +36,8 @@ export default class Routes extends React.Component {
             user: undefined,
             darkMode: false,
             is21: false,
-            checked: false
+            checked: false,
+            profile: undefined,
         };
     }
 
@@ -72,6 +73,15 @@ export default class Routes extends React.Component {
         });
     }
 
+    /*Rod added this trying to figure out other user's profiles */
+    async componentDidMount() {
+        //capital U is the object :^)
+        if (this.state.loggedIn && this.state.user !== undefined){
+            await this.getUser(this.state.user);
+            let User = this.state.User;
+        }
+
+    }
     render(){
         let logOrProfile;
         let logOrRegister;
@@ -79,7 +89,7 @@ export default class Routes extends React.Component {
         if (this.state.user !== undefined){
              logOrProfile = <Menu.Item
                 as={Link}
-                to={{pathname: `/${this.state.user}`, state: {user: this.state.user}}}
+                to={{pathname: `/${this.state.user}`, state: {user: this.state.user, profile: this.state.user}}}
                 icon="user circle outline"
                 position="right"
                 size="large"
@@ -216,9 +226,10 @@ export default class Routes extends React.Component {
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
+                                        {/* im so sorry for fucking up the username and user i shouldve fixed it way earlier */}
                                         <Route path="/:username/drink/:name" component={Drink}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
-                                        <Route exact path="/:user" render={() => <Profile user={this.state.user}/>}/>
+                                        <Route path="/:profile" render={({match}) => <Profile user={this.state.user} profile={this.state.profile} match={match}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         
 
@@ -231,5 +242,22 @@ export default class Routes extends React.Component {
             </div>
 
         );
-    }
+    } //end render
+
+
+
+    // rod added this to get user from username if logged in to have userobject available in routesstate
+    async getUser(name) {
+        await fetch('http://localhost:8080/user/'+name, {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+          }).then(res => res.json()).then((data) => { //dk tbh
+              console.log(data);
+              
+              this.setState({User: data});
+          }).catch(console.log);
+      }
 }

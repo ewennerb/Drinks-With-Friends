@@ -53,9 +53,9 @@ class Profile extends Component{
 
   async componentDidMount(){
     // getting user
-    //console.log(this.props)
-
-    let currentUser = this.props.user;
+    console.log(this.props.match);
+    //console.log(match.params)
+    let currentUser = this.props.match.params.profile;
     
     if (currentUser !== undefined){
     await this.getUser(currentUser);
@@ -114,22 +114,22 @@ handleOpen2() { //Paul Add
 
 
     let notUser = <p/>;
-    if (this.props.user === "" || this.props.user === undefined){
-      notUser =
-          <Modal open={true}>
-            <Segment stacked>
-              <h1>Create an Free Account!</h1>
-              <p>
-                <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
-                <Message>
-                  <Icon name='help'/>
-                  Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
-                </Message>
-              </p>
+    // if (this.props.user === "" || this.props.user === undefined){
+    //   notUser =
+    //       <Modal open={true}>
+    //         <Segment stacked>
+    //           <h1>Create an Free Account!</h1>
+    //           <p>
+    //             <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
+    //             <Message>
+    //               <Icon name='help'/>
+    //               Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
+    //             </Message>
+    //           </p>
 
-            </Segment>
-          </Modal>
-    }
+    //         </Segment>
+    //       </Modal>
+    // }
 
     let currentUser = this.state.userName;
 
@@ -138,7 +138,7 @@ handleOpen2() { //Paul Add
     let favoriteDrink = <p/>;
     let pfp;
     //methods
-    if (this.props.user === currentUser) {
+    if (this.props.profile === currentUser) {
         //allow the option to edit profile
         editProfile = 
         <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
