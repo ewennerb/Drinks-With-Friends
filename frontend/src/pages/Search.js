@@ -56,7 +56,7 @@ export default class Search extends React.Component{
 
 
     handleSettingsChange(event, value) {
-        this.setState({ searchVal: value, results: this.state.results });
+        this.setState({ searchVal: value, results: [] });
     };
 
 
@@ -107,6 +107,7 @@ export default class Search extends React.Component{
         }).then(res => res.json()).then(async (data) => {
             this.setState({results: data.results, searchVal: 'd'})
         }).catch(console.log);
+        this.setState({loaded: true});
     }
 
 
