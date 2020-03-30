@@ -1,9 +1,9 @@
 import React from "react";
 import {Link} from 'react-router-dom';
-import {Input, Segment, Grid, Loader, Button, Form, Checkbox, FormCheckbox} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, userCard, postCard} from "./utils";
+import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
 
 export default class Search extends React.Component{
@@ -50,11 +50,12 @@ export default class Search extends React.Component{
 
 
     handleSettingsChange(event, value) {
-        this.setState({ searchVal: value, results: this.state.results });
+        this.setState({ searchVal: value, results: [] });
     };
 
 
     handleOfficialChange(event){
+        console.log(event);
         this.setState({ officialOnly: !this.state.officialOnly })
     }
 
@@ -63,11 +64,7 @@ export default class Search extends React.Component{
     async handleInputChange(event){
         const value = event.target.value;
         let searchable;
-        if(value !== ' ' && value !== undefined && value !== ""){
-            searchable = false;
-        }else{
-            searchable = true;
-        }
+        searchable = !(value !== ' ' && value !== undefined && value !== "");
         await this.setState({searchText: value, searchable: searchable});
     };
 
@@ -99,7 +96,7 @@ export default class Search extends React.Component{
         }).then(res => res.json()).then(async (data) => {
             this.setState({results: data.results, searchVal: 'd'})
         }).catch(console.log);
-        //this.setState({loaded: true});
+        this.setState({loaded: true});
     }
 
 
@@ -108,11 +105,15 @@ export default class Search extends React.Component{
         if (this.state.searchVal === 'u'){
             url = "http://localhost:8080/user/" + this.state.searchText;
         }else if(this.state.searchVal === "d"){
-            url = "http://localhost:8080/drink/search?s=" + this.state.searchText;
-        }else if(this.state.searchVal === "i"){
-            url = "http://localhost:8080/ingredients/search?s=" + this.state.searchText;
+            if(this.state.officialOnly){
+                url = "http://localhost:8080/drink/searchOfficial?s=" + this.state.searchText;
+            }else{
+                url = "http://localhost:8080/drink/search?s=" + this.state.searchText;
+            }
         }else if(this.state.searchVal === "p"){
             url = "http://localhost:8080/post/search?s=" + this.state.searchText;
+        }else if(this.state.searchVal === "i"){
+            url = "http://localhost:8080/drink/searchIngredients?s=" + this.state.searchText;
         }
 
         //Todo: IF this.state.officialOnly set url = "http://localhost:8080/ingredients/searchOfficialDrink?s=" + this.state.searchText;
@@ -127,7 +128,7 @@ export default class Search extends React.Component{
             if (this.state.searchVal === 'u'){
                 this.setState({results: [data]})
             }else{
-                
+
                 this.setState({results: data.results})
             }
         }).catch(this.setState({results: []}));
@@ -138,7 +139,6 @@ export default class Search extends React.Component{
 
     getRandomInt(max) { //Paul Added
         this.setState({ randomNum: (Math.floor(Math.random() * Math.floor(max))) });
-        return;
     }
 
     async handleRandomModalOpen() { //Paul Added
@@ -179,7 +179,7 @@ export default class Search extends React.Component{
 
     }
 
-    
+
 
 
     render() {
@@ -240,7 +240,7 @@ export default class Search extends React.Component{
                                             value='p'
                                             checked={value === 'p'}
                                             onClick={(e) => this.handleSettingsChange(e,'p')}
-                                            
+
                                         />
                                         <FormCheckbox
                                             label='Display Official Drinks Only'
@@ -260,63 +260,55 @@ export default class Search extends React.Component{
                                 />
 
                                 <br/>
-                                <div class="search_block">
-                                    <div class="search_left">
-                                        <Button color="yellow" onClick={this.getSearchResults} width={8}>
-                                            Search
-                                        </Button>
-                                    </div>
-                                    
-                                    <div class="search_right">
-                                        <Button color="yellow" onClick={this.getRecommended} width={8}>
-                                            For You
-                                        </Button>
-                                    </div>
-
+                                <div className='ui three buttons'>
+                                    <Button color='yellow' onClick={this.getSearchResults} width={8} content="Search"/>
+                                    <Button color='yellow' onClick={this.getRecommended} width={8} content="For You"/>
+                                    <Button color='yellow' onClick={this.handleRandomModalOpen} width={8} content="Random Drink"/>
                                 </div>
                                 <br/>
-
+                                <br/>
                                 <p hidden={this.state.loggedIn}>
                                     <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
                                 </p>
                                 <br/>
                                 <br/>
                                 <div>
-                                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}> 
+                                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}>
                                         Random Drink
                                     </Button>
                                 </div>
                                 
-                                {this.state.results.map((result, index) => {
-                                    if(this.state.searchVal === 'd'){
-                                        console.log(result);
-                                        return(
-                                            <DrinkCard
-                                                user={this.state.user}
-                                                index={index}
-                                                drink={result}
-                                            />
+                                {this.state.results === undefined
+                                    ? <Header>No Results Found</Header>
+                                    : this.state.results.map((result, index) => {
+                                        if(this.state.searchVal === 'd'){
+                                            console.log(result);
+                                            return(
+                                                <DrinkCard
+                                                    user={this.state.user}
+                                                    index={index}
+                                                    drink={result}
+                                                />
                                             )
-                                        // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
-                                    }else if(this.state.searchVal === 'u') {
-                                        console.log(result.userName);
-                                        return (userCard(index, result.userName, result.photo))
-                                    }
-                                    // }else if(this.state.searchVal === 'i'){
-                                    //     console.log(result)
-                                    //     return (ingredientCard(index, result))
-                                    // }
-                                    else if (this.state.searchVal === 'p'){
-                                        return (
-                                            postCard(result)
-                                        )
-                                    }
-                                })}
+                                            // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                        }else if(this.state.searchVal === 'u') {
+                                            console.log(result.userName);
+                                            return (userCard(index, result.userName, result.photo))
+                                        } else if(this.state.searchVal === 'i'){
+                                                return (ingredientCard(index, result))
+                                        }
+                                        else if (this.state.searchVal === 'p'){
+                                            return (
+                                                postCard(result)
+                                            )
+                                        }
+                                    })
+                                }
+
 
                                 <br/>
                                 <br/>
 
-                                
                             </Grid.Row>
 
                         </Grid.Column>
