@@ -10,14 +10,17 @@ import {
   Modal,
   Header,
   Segment,
-  Form, Message,
-
+  Form, 
+  Message,
+  Image,
 } from "semantic-ui-react";
 import LikedDrinks from "./userpages/LikedDrinks.js"
 import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
+
+
 //import "../css/Profile.css"
 
 class Profile extends Component{
@@ -36,27 +39,29 @@ class Profile extends Component{
     this.handleBioChange = this.handleBioChange.bind(this);    
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handleNewUsernameChange = this.handleNewUsernameChange.bind(this);
-
+    this.handleFileSelect = this.handleFileSelect.bind(this);
+    this.handleFavoriteDrinkChange = this.handleFavoriteDrinkChange.bind(this);
     //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
     this.state = {
       modalOpen: false, 
       modalOpen2: false,
       activeItem: "posts",
-    
-      newUsername: '',
+      bio: '',
+      userName: '',
+      browser: props.user,
+      profile: props.match.params.profile,
       User: {},
     };
 }
 
   async componentDidMount(){
     // getting user
-    //console.log(this.props)
-
-    let currentUser = this.props.user;
+    console.log(this.props.match);
+    //console.log(match.params)
+    let userPage = this.state.profile;
     
-    if (currentUser !== undefined){
-    await this.getUser(currentUser);
+    if (userPage !== undefined){
+    await this.getUser(userPage);
     
     console.log(this.state.User);
     let User = this.state.User;
@@ -68,6 +73,7 @@ class Profile extends Component{
       userName: User.userName,
       password: User.password,
       bio: User.bio,
+      profilePhoto: User.profilePhoto,
       email: User.email,
       name: User.name,
       photo: User.photo,
@@ -111,30 +117,31 @@ handleOpen2() { //Paul Add
 
 
     let notUser = <p/>;
-    if (this.props.user === "" || this.props.user === undefined){
-      notUser =
-          <Modal open={true}>
-            <Segment stacked>
-              <h1>Create an Free Account!</h1>
-              <p>
-                <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
-                <Message>
-                  <Icon name='help'/>
-                  Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
-                </Message>
-              </p>
+    // if (this.props.user === "" || this.props.user === undefined){
+    //   notUser =
+    //       <Modal open={true}>
+    //         <Segment stacked>
+    //           <h1>Create an Free Account!</h1>
+    //           <p>
+    //             <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
+    //             <Message>
+    //               <Icon name='help'/>
+    //               Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
+    //             </Message>
+    //           </p>
 
-            </Segment>
-          </Modal>
-    }
+    //         </Segment>
+    //       </Modal>
+    // }
 
     let currentUser = this.state.userName;
 
-
+    //vars
     let editProfile = <p/>;
     let favoriteDrink = <p/>;
-
-    if (this.props.user === currentUser) {
+    let pfp;
+    //methods
+    if (this.state.profile === this.state.browser) {
         //allow the option to edit profile
         editProfile = 
         <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
@@ -152,6 +159,13 @@ handleOpen2() { //Paul Add
       favoriteDrink = 
       <p>My favorite drink is {this.state.favoriteDrink}</p>
     }
+    if (this.state.profilePhoto === null || this.state.profilePhoto === "" || this.state.profilePhoto ===undefined){
+      pfp = <Image size="small" src={process.env.PUBLIC_URL + "/nopfp.png"} />
+      
+      //what this data-testid={"user-placeholder-img-"}
+    } else {
+      pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.profilePhoto}`}/>
+    }
 
 
 
@@ -163,9 +177,11 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Grid.Column  
             as={Link}
-            to={{pathname: `/${this.state.user}/posts`}}
+            to={{pathname: `/${this.state.userName}/posts`}}
           >
-          <Icon name="user circle outline" size="massive"/>
+          {pfp}
+
+
           </Grid.Column>
           
           <Grid.Column textAlign="left">
@@ -190,21 +206,21 @@ handleOpen2() { //Paul Add
             //  this one will be hard to decide how to do 
               name="posts"
               as={Link}
-              to={{pathname: `/${this.state.user}/posts`}}
+              to={{pathname: `/${this.state.userName}/posts`, state: {User: this.state.User} }}
               active={activeItem === "posts"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="likedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.user}/likedDrinks`}}
+              to={{pathname: `/${this.state.userName}/likedDrinks`}}
               active={activeItem === "likedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="dislikedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.user}/dislikedDrinks`}}
+              to={{pathname: `/${this.state.userName}/dislikedDrinks`}}
               active={activeItem === "dislikedDrinks"}
               onClick={this.handleItemClick}
             />
@@ -235,11 +251,11 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="/:user/posts" component={Posts} />
-              <Route exact path="/:user/likedDrinks" component={LikedDrinks}/>
-              <Route exact path="/:user/dislikedDrinks" component={DislikedDrinks}/>
-              <Route exact path="/:user/map" component={Map}/>
-              <Route exact path="/:user/friends" component={Friends}/>
+              <Route exact path="/:userName/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile} match={match}/>} />
+              <Route exact path="/:userName/likedDrinks" component={LikedDrinks}/>
+              <Route exact path="/:userName/dislikedDrinks" component={DislikedDrinks}/>
+              <Route exact path="/:userName/map" component={Map}/>
+              <Route exact path="/:userName/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>
@@ -261,30 +277,41 @@ handleOpen2() { //Paul Add
           
           <Form size='large'>
           <Segment stacked>
-          
-
-         
-          <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
+          {/* file input */}
+          <Form.Input
+            type="file"
+            accept="image/*"
+            id="imageselector"
+            onChange={this.handleFileSelect}
+          />
+         {/* username change input */}
           <Form.Input
             fluid icon='user'
             iconPosition='left'
-            value={this.state.userName}
+            placeholder={this.state.userName}
             onChange={this.handleUsernameChange}
           />
-
+          {/* password chang einput */}
           <Form.Input
           fluid icon='lock'
           iconPosition='left'
-          placeholder='New Username'
-          onChange={this.handleNewUsernameChange}
+          placeholder='Password'
+          value={this.state.password}
+          onChange={this.handlePasswordChange}
           />
-
+          {/* bio change input */}
           <Header as='h2' color='grey' textAlign='center'>Bio</Header>
           <Form.Input
           fluid
-          placeholder={this.state.bio}
-          value={this.state.bio}
+          value={this.ifNullthenEmpty(this.state.bio)}
           onChange={this.handleBioChange}
+          />
+          {/* favorite drink change input */}
+          <Form.Input
+          fluid icon='beer'
+          iconPosition='left'
+          value={this.ifNullthenEmpty(this.state.favoriteDrink)}
+          onChange={this.handleFavoriteDrinkChange}
           />
           
           <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
@@ -310,6 +337,19 @@ handleOpen2() { //Paul Add
   }//end render
 
   //form input on change functions
+  async handleFileSelect(event, {id}) {
+    event.preventDefault();
+    //const value = event;
+    //how to convert to 64base or get image data
+    let input = document.getElementById(id);
+    console.log(input);
+    let image = input.files[0];
+    console.log(image)
+    let reader = new FileReader();
+    let data = new Blob(image);
+    console.log(data);
+    //this.setState({profilePicture: value})
+  }
   async handleUsernameChange(event) {
     const value = event.target.value;
     await this.setState({userName: value});
@@ -319,18 +359,15 @@ handleOpen2() { //Paul Add
     const value = event.target.value;
     await this.setState({password: value});
   };
-
-  async handleNewUsernameChange(event) {
-    const value = event.target.value;
-    await this.setState({newUsername: value});
-    console.log(this.newUsername)
-  }
-
-  
   async handleBioChange(event) {
     const value = event.target.value;
     await this.setState({bio: value});
   };
+
+  async handleFavoriteDrinkChange(event) {
+    let value = event.target.value;
+    await this.setState({favoriteDrink: value});
+  }
   //end of forminput on change functions
 
   async handleItemClick (e, {name}) {
@@ -365,19 +402,19 @@ handleOpen2() { //Paul Add
 
 
     //username
-    if (this.state.newUserame !== '')
-    await fetch('http://localhost:8080/user/updateUsername', {
+    if (this.state.userName !== User.userName){
+    await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            userName: this.state.username,
+            userName: this.state.userName,
             password: this.state.password,
             phoneNumber: '',
-            name: this.newUsername,
-            email: User.email,
+            name: '',
+            email: this.state.email,
             
         })
         }).then(res => res.json()).then((data) => {
@@ -385,7 +422,7 @@ handleOpen2() { //Paul Add
         console.log(data);
         this.setState({response: data});
         }).catch(console.log);
-
+      }
 
     //password
     if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
@@ -396,7 +433,7 @@ handleOpen2() { //Paul Add
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          userName: this.state.user,
+          userName: this.state.userName,
           password: this.state.password,
           phoneNumber: '',
           name: '',
@@ -422,7 +459,7 @@ handleOpen2() { //Paul Add
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          userName: this.state.user,
+          userName: this.state.userName,
           password: '',
           phoneNumber: '',
           name: '',
@@ -468,6 +505,13 @@ handleOpen2() { //Paul Add
     return !(input == undefined || input === '' || input == null);
   }
   
+  ifNullthenEmpty(str) {
+    if(str === null || str === undefined || str === ''){
+      return '';
+    } else {
+      return str;
+    }
+  }
 
 }
 
