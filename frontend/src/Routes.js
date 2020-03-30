@@ -229,7 +229,7 @@ export default class Routes extends React.Component {
                                         {/* im so sorry for fucking up the username and user i shouldve fixed it way earlier */}
                                         <Route path="/:username/drink/:name" component={Drink}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
-                                        <Route path="/:profile" render={({match}) => <Profile user={this.state.user} profile={this.state.profile} match={match}/>}/>
+                                        <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         
 

@@ -134,26 +134,48 @@ public class UserController {
 		return updatePassword;
 	}
 
-
-	@PostMapping("/updateUsername")
-	public String updateUsername(@RequestBody String username)
+	//this was rod i can make it cleaner if needed i was just playing around
+	@PostMapping("/updateUsername/{oldusername}")
+	public String updateUsername(@PathVariable String oldusername ,@RequestBody String userName)
 			throws JsonParseException, JsonMappingException, IOException {
 		
+		System.out.println(userName);
 		ObjectMapper om = new ObjectMapper();
 		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(User.class, new UserDeserializer());
 		om.registerModule(sm);
-		User u = om.readValue(username, User.class);
-		System.out.print(u.toString());
-		System.out.println(u.name.toString());
-		System.out.println(u.bio.toString());
+		User u = om.readValue(userName, User.class);
+		//System.out.println(email);
+		//System.out.print(u.toString());
+		System.out.println(u.email.toString());
+		System.out.println(u.userName.toString());
 
 
 		UserSQL users = new UserSQL();
-		String updateUsername = users.updateUsername(u.userName, u.bio);
+		String updateUsername = users.updateUsername(oldusername, u.userName);
 
 		return updateUsername;
 	}
+
+	// @PostMapping("/updateUsername")
+	// public String updateUsername(@RequestBody String userName)
+	// 		throws JsonParseException, JsonMappingException, IOException {
+		
+	// 	ObjectMapper om = new ObjectMapper();
+	// 	SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+	// 	sm.addDeserializer(User.class, new UserDeserializer());
+	// 	om.registerModule(sm);
+	// 	User u = om.readValue(, User.class);
+	// 	System.out.print(u.toString());
+	// 	System.out.println(u.email.toString());
+	// 	System.out.println(u.userName.toString());
+
+
+	// 	UserSQL users = new UserSQL();
+	// 	String updateUsername = users.updateUsername(u.userName, u.bio);
+
+	// 	return updateUsername;
+	// }
 
 
 	@PostMapping("/saveProfilePic")

@@ -19,6 +19,8 @@ import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
+
+
 //import "../css/Profile.css"
 
 class Profile extends Component{
@@ -46,7 +48,8 @@ class Profile extends Component{
       activeItem: "posts",
       bio: '',
       userName: '',
-      newUsername: '',
+      browser: props.user,
+      profile: props.match.params.profile,
       User: {},
     };
 }
@@ -55,10 +58,10 @@ class Profile extends Component{
     // getting user
     console.log(this.props.match);
     //console.log(match.params)
-    let currentUser = this.props.match.params.profile;
+    let userPage = this.state.profile;
     
-    if (currentUser !== undefined){
-    await this.getUser(currentUser);
+    if (userPage !== undefined){
+    await this.getUser(userPage);
     
     console.log(this.state.User);
     let User = this.state.User;
@@ -138,7 +141,7 @@ handleOpen2() { //Paul Add
     let favoriteDrink = <p/>;
     let pfp;
     //methods
-    if (this.props.profile === currentUser) {
+    if (this.state.profile === this.state.browser) {
         //allow the option to edit profile
         editProfile = 
         <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
@@ -174,7 +177,7 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Grid.Column  
             as={Link}
-            to={{pathname: `/${this.state.user}/posts`}}
+            to={{pathname: `/${this.state.userName}/posts`}}
           >
           {pfp}
 
@@ -203,21 +206,21 @@ handleOpen2() { //Paul Add
             //  this one will be hard to decide how to do 
               name="posts"
               as={Link}
-              to={{pathname: `/${this.state.user}/posts`}}
+              to={{pathname: `/${this.state.userName}/posts`, state: {User: this.state.User} }}
               active={activeItem === "posts"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="likedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.user}/likedDrinks`}}
+              to={{pathname: `/${this.state.userName}/likedDrinks`}}
               active={activeItem === "likedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="dislikedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.user}/dislikedDrinks`}}
+              to={{pathname: `/${this.state.userName}/dislikedDrinks`}}
               active={activeItem === "dislikedDrinks"}
               onClick={this.handleItemClick}
             />
@@ -248,11 +251,11 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="/:user/posts" component={Posts} />
-              <Route exact path="/:user/likedDrinks" component={LikedDrinks}/>
-              <Route exact path="/:user/dislikedDrinks" component={DislikedDrinks}/>
-              <Route exact path="/:user/map" component={Map}/>
-              <Route exact path="/:user/friends" component={Friends}/>
+              <Route exact path="/:userName/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile} match={match}/>} />
+              <Route exact path="/:userName/likedDrinks" component={LikedDrinks}/>
+              <Route exact path="/:userName/dislikedDrinks" component={DislikedDrinks}/>
+              <Route exact path="/:userName/map" component={Map}/>
+              <Route exact path="/:userName/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>
@@ -410,8 +413,8 @@ handleOpen2() { //Paul Add
             userName: this.state.userName,
             password: this.state.password,
             phoneNumber: '',
-            name: this.newUsername,
-            email: '',
+            name: '',
+            email: this.state.email,
             
         })
         }).then(res => res.json()).then((data) => {
