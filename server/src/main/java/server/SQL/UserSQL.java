@@ -352,7 +352,7 @@ public class UserSQL {
 				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
-			System.out.print(query);
+			System.out.println(query);
 
 			int updateResult = smt.executeUpdate(query);
 
@@ -383,13 +383,13 @@ public class UserSQL {
 
 			//DISLIKES AND UN-DISLIKES A DRINK
 			if (toggle.equals("on")) { //liking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				query = "INSERT into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else { //disliking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				query = "INSERT into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
-			System.out.print("QUERY"+query);
+
 
 			int updateResult = smt.executeUpdate(query);
 

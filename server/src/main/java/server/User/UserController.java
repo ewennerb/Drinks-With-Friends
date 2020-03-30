@@ -304,7 +304,6 @@ public class UserController {
 		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
 		DrinkSQL ds = new DrinkSQL();
 
-		
 		users.dislikeDrink(u.userName, drinkId, toggle);
 		return ds.dislikeDrink(drinkId, toggle);
 	}
