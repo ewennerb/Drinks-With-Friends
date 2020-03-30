@@ -94,7 +94,7 @@ export default class Search extends React.Component{
             url = "http://localhost:8080/ingredients/search?s=" + this.state.searchText;
         }
 
-        //Todo: IF this.state.officialOnly add a flag to the URL
+        //Todo: IF this.state.officialOnly set url = "http://localhost:8080/ingredients/searchOfficialDrink?s=" + this.state.searchText;
         console.log(url);
         await fetch(url, {
             method: 'GET',

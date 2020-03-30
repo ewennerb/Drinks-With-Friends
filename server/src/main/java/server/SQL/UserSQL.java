@@ -345,12 +345,12 @@ public class UserSQL {
 
 			//Likes a drink & Un-Likes a Drink
 			if (toggle.equals("on")) { //liking drink
-				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 
 			} else { //disliking drink
-				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
 			System.out.print(query);
 
@@ -383,11 +383,11 @@ public class UserSQL {
 
 			//DISLIKES AND UN-DISLIKES A DRINK
 			if (toggle.equals("on")) { //liking drink
-				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else { //disliking drink
-				query = "replace into test_schema.drink_likes (userName, drinkId, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
 			System.out.print("QUERY"+query);
 
@@ -415,7 +415,7 @@ public class UserSQL {
 
 	public String getLikeStatus(String userName, int drinkId){
 		String query = "";
-		query = "select * from test_schema.drink_likes where username='" + userName + "' AND drinkId='" + drinkId + "'";
+		query = "select * from test_schema.drink_likes where username='" + userName + "' AND drink_id='" + drinkId + "'";
 		System.out.print(query);
 
 		DrinkSQL test = new DrinkSQL();
@@ -431,11 +431,11 @@ public class UserSQL {
 				l = rs.getInt("likes");
 				d = rs.getInt("dislikes");
 				if (l == 1 && d == 0){
-					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Likes drinkId=" + drinkId);
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Likes drink_id=" + drinkId);
 					userLikes = true;
 					userDislikes = false;
 				}else if (l == 0 && d == 1){
-					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Dislikes drinkId=" + drinkId);
+					System.out.print("UserSQL.java:getLikeStatus() - User " + userName + " Dislikes drink_id=" + drinkId);
 					userLikes = false;
 					userDislikes = true;
 				}
