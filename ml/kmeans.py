@@ -28,7 +28,7 @@ class km():
         self.tolerance = tolerance
         data = df.astype(float).values.tolist()
         real_data = {}
-        
+        self.start = [53,86,81,72,104,68,48,57,38,102]
         for d in data:
             temp = d[0]
             #del d[0]
@@ -39,6 +39,7 @@ class km():
         self.cur_score = 0
 
     def set_centroids(self):
+        
         for i in range(self.k):
             d = self.data[rand.randint(0, len(self.data)-1)]
             while d in self.centroids:
@@ -129,4 +130,4 @@ class km():
             center = self.centroids[i]
             self.furthest[i] = max([dist_fct(center, p)] for p in self.classes[i])
 
-
+    

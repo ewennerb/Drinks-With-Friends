@@ -127,11 +127,27 @@ public class DrinkController {
         return out;
     }
 
+	@GetMapping("/searchIngredients")
+	public String searchIngredients(@RequestParam(name = "s") String request) throws JsonProcessingException {
+		DrinkSQL ds = new DrinkSQL();
+		Ingredient[] ingreds = ds.searchIngredients(request);
+		if(ingreds == null)
+			return "{\"results\": \"DNE\"";
+
+		String out =  "{ \"results\": [";
+		for (Ingredient ingredient : ingreds) {
+			out += new ObjectMapper().writeValueAsString(ingredient) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+	}
+
     @GetMapping("/all/{letter}") 
     public String requestAll(@PathVariable String letter) {
         DrinkSQL ds = new DrinkSQL();
         String[] names = ds.getDrinkNamesStartingWith(letter.charAt(0));
-       
+
         String out = "{ \"results\": [";
         if (names.length == 0) {
             return out + "]}";
@@ -141,6 +157,18 @@ public class DrinkController {
             out += "{ \"name\": \"" + names[i] + "\", \"publisher\": \"" + names[i+1]+ "\"},"; 
         }
         
+        out = out.substring(0, out.length()-1) + "] }";
+        return out;
+    }
+
+    @GetMapping("/getUserRecommended/{username}")
+    public String getUserRecommended(@PathVariable String username)  throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinks = ds.getRecommended(username);
+        String out = "{ \"results\": [";
+        for (Drink drink : drinks) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
         out = out.substring(0, out.length()-1) + "] }";
         return out;
     }
@@ -180,6 +208,19 @@ public class DrinkController {
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
         
         
+    }
+
+    @Scheduled(cron = "0 30 7 * * *")
+    public void runTaggingRecommend(){
+        //1 * * * * *
+        
+        try {
+            Process p = Runtime.getRuntime().exec("py ../ml/main.py");
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            System.out.println("Tags updated/ drink recommendation updated");
+        }
     }
 	//TODO merge like drink with user liking drink
 /*	@PostMapping("/like")
