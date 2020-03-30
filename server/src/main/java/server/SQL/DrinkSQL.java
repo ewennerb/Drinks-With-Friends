@@ -438,7 +438,8 @@ public class DrinkSQL {
 	public Drink[] getRecommended(String username){
 		try {
 
-			String query = "Select * FROM test_schema.drink_recommendation dr, test_schema.user u, test_schema.drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
+			String query = "Select d.name, d.publisher, d.stockPhoto, d.description, d.drinkId, d.likes, d.dislikes"+
+			" FROM test_schema.drink_recommendation dr, test_schema.user u, test_schema.drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
