@@ -403,7 +403,7 @@ handleOpen2() { //Paul Add
 
     //username
     if (this.state.userName !== User.userName){
-    await fetch('http://localhost:8080/user/updateUsername', {
+    await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

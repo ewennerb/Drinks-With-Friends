@@ -150,7 +150,6 @@ public class UserController {
 		System.out.println(u.email.toString());
 		System.out.println(u.userName.toString());
 
-
 		UserSQL users = new UserSQL();
 		String updateUsername = users.updateUsername(oldusername, u.userName);
 
