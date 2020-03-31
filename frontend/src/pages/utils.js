@@ -76,6 +76,13 @@ export const postCard = (post) => {
     }else{
         pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} />
     }
+    let text_image;
+    if (post.image === null || post.image === ""){
+        text_image = <div/>
+    }else{
+        text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`} />
+    }
+    console.log(post)
     return(
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
 
@@ -104,7 +111,7 @@ export const postCard = (post) => {
 
             </Segment>
             <CardContent>{post.text}</CardContent>
-            <CardContent>{post.image}</CardContent>
+            <CardContent>{text_image}</CardContent>
         </Card>
     )
 };
