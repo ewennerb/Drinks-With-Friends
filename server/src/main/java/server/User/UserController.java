@@ -78,7 +78,7 @@ public class UserController {
 			return "{\"results\": \"DNE\"";
 		}
 
-		String out =  "{ \"results\": [";
+		String out =  "{ \"results\": [ ";
 		for (User user : users ) {
 			out += new ObjectMapper().writeValueAsString(user) + ",";
 		}

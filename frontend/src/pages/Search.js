@@ -140,7 +140,11 @@ export default class Search extends React.Component{
             },
         }).then(res => res.json()).then(async (data) => {
             if (this.state.searchVal === 'u'){
-                this.setState({results: [data]})
+                // this.setState({results: [data]})
+                this.setState({results: data.results})
+                //if (this.state.searchVal === 'd'){
+                //    this.setState({similarResults: data.similarDrinks})
+               // }
             }else{
 
                 this.setState({results: data.results})
@@ -229,6 +233,7 @@ export default class Search extends React.Component{
                                 )
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
+ 
                                 return (userCard(index, result.userName, result.photo))
                             } else if(this.state.searchVal === 'i'){
                                     return (ingredientCard(index, result))
@@ -261,6 +266,9 @@ export default class Search extends React.Component{
                                     )
                                     // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                                 }else if(this.state.searchVal === 'u') {
+                                    console.log(result);
+                                    console.log("Before return user card");
+                                    console.log(index);
                                     return (userCard(index, result.userName, result.photo))
                                 } else if(this.state.searchVal === 'i'){
                                         return (ingredientCard(index, result))
