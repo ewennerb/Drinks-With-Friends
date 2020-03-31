@@ -558,9 +558,6 @@ export default class ActivityFeed extends React.Component {
                         </GridColumn>
                     </GridRow>
                 </Grid>
-                <Feed>
-                    Bottom Text
-                </Feed>
             </div>
         )
     }
