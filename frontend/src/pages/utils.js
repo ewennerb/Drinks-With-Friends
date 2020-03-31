@@ -78,7 +78,9 @@ export const postCard = (post) => {
     }
     let text_image;
     if (post.image === null || post.image === ""){ 
+
         text_image = <div  data-testid={"user-div-img-0"}/>
+
     }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
     }
