@@ -37,20 +37,22 @@ class LikedDrinks extends Component{
     
     if (userPage != undefined && this.state.Drinks != undefined){
     let Drinks = this.state.Drinks;
-    let likedDrinks = [];
+    //let likedDrinks = [];
+
+    await this.getLikedDrinks(userPage);
+    //console.log(this.state.likedDrinks);
+    let likedDrinks = this.state.likedDrinks;
+    for(let id in likedDrinks) {
+        console.log(id)
+        console.log(likedDrinks[id])
+    }
+    
     //go through the drinks with id and find ones this profile liked
-    // Drinks.map(async (drink) => {
-    //   await this.getLikeStatus(this.state.profile, drink.id);
-    //   //like status should be in state
-    //   console.log(this.state.likeStatus);
-    //   if (this.state.likeStatus == true) {
-    //       //console.log(drink);
-    //       likedDrinks.push(drink);
-    //   }
+    
     
     // }) // end of map
-    //  //end of map
-    // //putting that profiles drinks in state
+     //end of map
+    //putting that profiles drinks in state
     // if (likedDrinks != undefined) {
     //   this.setState({likedDrinks: likedDrinks});
     // }
@@ -99,16 +101,16 @@ class LikedDrinks extends Component{
 
 
 
-  async getLikeStatus(user, drinkId) {
-    await fetch('http://localhost:8080/user/getLikeStatus/'+user+"/"+drinkId, {
+  async getLikedDrinks(user) {
+    await fetch('http://localhost:8080/user/getLikeStatus/'+user+"/", {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { 
-          //console.log(data);
-          this.setState({likeStatus: data});
+          console.log(data);
+          this.setState({likedDrinks: data});
       }).catch(console.log);
   }
 

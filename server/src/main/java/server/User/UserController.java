@@ -5,7 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import server.SQL.UserSQL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import server.SQL.DrinkSQL;
+import server.Drink.Drink;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -310,9 +314,6 @@ public class UserController {
 		return ds.dislikeDrink(drinkId, toggle);
 	}
 
-
-
-
 	@GetMapping("/getLikeStatus/{username}/{drinkId}")
 	public String getLikeStatus(@PathVariable String username, @PathVariable int drinkId)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -329,7 +330,32 @@ public class UserController {
 		UserSQL users = new UserSQL();
 		return users.getLikeStatus(username, drinkId);
 	}
-
+	
+	@GetMapping("/getLikeStatus/{username}")
+	public Map<String,String> getLikeStatus(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+//		
+		DrinkSQL drinks = new DrinkSQL();
+		UserSQL users = new UserSQL();
+		ArrayList<Drink> list = drinks.getAllDrinks(); 
+		ArrayList<String> out = new ArrayList<>();
+		Map<String, String> mp = new HashMap<String, String>();
+		for(int i = 0; i < list.size(); i++) {
+			Drink drink = list.get(i);
+			String str = users.getLikeStatus(username, drink.id);
+			String res = "";
+			for(int j = 0; j < str.length(); j++){
+				if (str.charAt(j) != '\"' && str.charAt(j) != '\\'){
+					res = res + str.charAt(j);
+				}
+			}
+			mp.put(Integer.toString(drink.id), res );
+			//out.add(drink.id, users.getLikeStatus(username, drink.id));
+		}
+		//return users.getLikeStatus(username,);
+		System.out.println(mp.toString());
+		return mp;
+	}
 
 
 //	@PostMapping("/removeLikeDrink/{drinkId}")
