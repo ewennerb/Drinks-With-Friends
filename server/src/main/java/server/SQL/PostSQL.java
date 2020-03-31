@@ -36,6 +36,7 @@ public class PostSQL {
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
+			conn.close();
 
 			return "{ \"status\" : \"ok\" }";	
 
@@ -107,7 +108,7 @@ public class PostSQL {
 			System.out.print(query);
 			
 			int result = smt.executeUpdate(query);
-
+			conn.close();
 			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
