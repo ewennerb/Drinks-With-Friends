@@ -455,8 +455,18 @@ class Profile extends Component{
           console.log("UPDATE USERNAME");
           console.log(data);
           this.setState({response: data});
-          
-          window.location.replace('/');
+          if (this.state.response.password !== this.state.password) {
+            this.setState({msg: "Username or Password is Incorrect" });
+            console.log("You're a shitty hacker")
+            localStorage.setItem('username', '')
+        } else {
+            this.setState({loggedIn: true});
+            console.log("Password is correct");
+            localStorage.setItem('username', this.state.username)
+            localStorage.setItem('is21', true)
+            localStorage.setItem('authorized', true);
+        }
+        window.location.replace('/login');
         }).catch(console.log);
     
     }
