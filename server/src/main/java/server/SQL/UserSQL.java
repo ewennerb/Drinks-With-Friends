@@ -389,9 +389,7 @@ public class UserSQL {
 				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
 				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
-			System.out.println("QUERY ");
-			System.out.println("QUERY "+query);
-			System.out.println("QUERY "+backupQuery);
+
 
 			int updateResult = smt.executeUpdate(query);
 

@@ -86,7 +86,7 @@ public class PostController {
 	}
 
 	@GetMapping("/search")
-    public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+    public String searchPost(@RequestParam(name = "s") String request) throws JsonProcessingException {
         PostSQL us = new PostSQL();
 		Post[] posts = us.searchPost(request);
 		if(posts == null) {
