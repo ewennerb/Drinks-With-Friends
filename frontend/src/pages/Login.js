@@ -356,6 +356,7 @@ class Login extends React.Component {
             console.log("Password is correct");
             localStorage.setItem('username', this.state.username)
             localStorage.setItem('is21', true)
+            localStorage.setItem('authorized', true);
         }
     };
 
