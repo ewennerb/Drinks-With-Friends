@@ -36,7 +36,7 @@ export default class ActivityFeed extends React.Component {
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
         this.state = {
-            user: this.props.user,
+            user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
             modalOpen2: false,
             postText: "",
@@ -61,7 +61,7 @@ export default class ActivityFeed extends React.Component {
 
     componentDidMount(){
         this.setState({
-            user: this.props.user,
+            user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
             description: "",
             drinkName: "",
@@ -208,7 +208,7 @@ export default class ActivityFeed extends React.Component {
         if(this.state.selected){
             photoString = await base64.encode(this.state.fileString);
         }
-
+        
         await fetch('http://localhost:8080/drink/', {
             method: 'POST',
             headers: {

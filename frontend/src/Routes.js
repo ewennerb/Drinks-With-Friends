@@ -47,7 +47,8 @@ export default class Routes extends React.Component {
             loggedIn: false,
         })
         window.location.reload(false);
-        localStorage.setItem('username', '');
+        localStorage.setItem('authorized', false);
+        localStorage.setItem('username', undefined);
         localStorage.setItem('password', '');
         localStorage.setItem('is21', false);
     }
@@ -77,7 +78,8 @@ export default class Routes extends React.Component {
     }
     async componentWillMount(){
         this.state.is21 = localStorage.getItem('is21') === 'true';
-        if (localStorage.getItem('username') === ''){
+        if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
+
             return;
         }
         await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
@@ -102,6 +104,8 @@ export default class Routes extends React.Component {
             await this.getUser(this.state.user);
             let User = this.state.User;
         }
+        
+        
 
     }
     render(){
@@ -145,6 +149,7 @@ export default class Routes extends React.Component {
         }
 
         return (
+            
             <div className="Routes">
                 {/* This is the navigation bar */}
                 <BrowserRouter>
