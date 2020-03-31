@@ -1,6 +1,6 @@
 import React from "react";
 import {Link} from 'react-router-dom';
-import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
@@ -30,6 +30,7 @@ export default class Search extends React.Component{
             accActive: 0,
             done: false,
             results: [],
+            similarResults: [],
             searchable: false,
             openRandomModal: false,
             randomDrink: "",
@@ -46,6 +47,7 @@ export default class Search extends React.Component{
             user: this.props.user,
             done: true,
             results: [],
+            similarResults: [],
             officialOnly: false,
             accActive: 0,
             showSimilar: false,
@@ -142,6 +144,9 @@ export default class Search extends React.Component{
             }else{
 
                 this.setState({results: data.results})
+                if (this.state.searchVal === 'd'){
+                    this.setState({similarResults: data.similarDrinks})
+                }
             }
             console.log("===== Search Results =====");
             console.log(data);
@@ -206,7 +211,88 @@ export default class Search extends React.Component{
         const value = this.state.searchVal;
         const activeIndex = this.state.accActive;
         let showMsg = true;
+        let search;
+        if (!this.state.showSimilar){
+            search =  
+                <div>
+                    {this.state.results === undefined
+                        ? <Header textAlign="center">No Results Found</Header>
+                        : this.state.results.map((result, index) => {
+                            if(this.state.searchVal === 'd'){
+                                console.log(result);
+                                return(
+                                    <DrinkCard
+                                        user={this.state.user}
+                                        index={index}
+                                        drink={result}
+                                    />
+                                )
+                                // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
+                            }else if(this.state.searchVal === 'u') {
+                                return (userCard(index, result.userName, result.photo))
+                            } else if(this.state.searchVal === 'i'){
+                                    return (ingredientCard(index, result))
+                            }
+                            else if (this.state.searchVal === 'p'){
+                                return (
+                                    postCard(result)
+                                )
+                            }
+                        })
+                    }
+                </div>
+        } else {
+            search =  
+                <div>
+                    <div style={{float: "left", padding:"7px"}}>
+                        
+                        {this.state.results === undefined
+                            ? <Header textAlign="center">No Results Found</Header>
 
+                            : this.state.results.map((result, index) => {
+                                if(this.state.searchVal === 'd'){
+                                    console.log(result);
+                                    return(
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                        />
+                                    )
+                                    // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                }else if(this.state.searchVal === 'u') {
+                                    return (userCard(index, result.userName, result.photo))
+                                } else if(this.state.searchVal === 'i'){
+                                        return (ingredientCard(index, result))
+                                }
+                                else if (this.state.searchVal === 'p'){
+                                    return (
+                                        postCard(result)
+                                    )
+                                }
+                            })
+                        }
+                    </div>
+                    <div style={{float: "right", padding:"7px"}}>
+                        {this.state.similarResults === undefined
+                            ? <Header textAlign="center">No Results Found</Header>
+                            : this.state.similarResults.map((result, index) => {
+                                if(this.state.searchVal === 'd'){
+                                    console.log(result);
+                                    return(
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                        />
+                                    )
+                                    // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
+                                }
+                            })
+                        }
+                    </div>
+                </div>
+        }
         if (!this.state.done) {
             return (
                 <div>
@@ -336,37 +422,13 @@ export default class Search extends React.Component{
                                 <br/>
                                 <br/>
 
-                                {this.state.results === undefined
-                                    ? <Header textAlign="center">No Results Found</Header>
-                                    : this.state.results.map((result, index) => {
-                                        if(this.state.searchVal === 'd'){
-                                            console.log(result);
-                                            return(
-                                                <DrinkCard
-                                                    user={this.state.user}
-                                                    index={index}
-                                                    drink={result}
-                                                />
-                                            )
-                                            // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
-                                        }else if(this.state.searchVal === 'u') {
-                                            return (userCard(index, result.userName, result.photo))
-                                        } else if(this.state.searchVal === 'i'){
-                                                return (ingredientCard(index, result))
-                                        }
-                                        else if (this.state.searchVal === 'p'){
-                                            return (
-                                                postCard(result)
-                                            )
-                                        }
-                                    })
-                                }
                                 <br/>
                                 <br/>
                             </Grid.Row>
 
                         </Grid.Column>
                         <Grid.Column width={4}/>
+                        <GridRow>{search}</GridRow>
                     </Grid>
 
                 </div>
