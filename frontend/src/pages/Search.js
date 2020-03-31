@@ -1,10 +1,11 @@
 import React from "react";
 import {Link} from 'react-router-dom';
-import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header} from 'semantic-ui-react'
+import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 
 export default class Search extends React.Component{
 
@@ -12,6 +13,7 @@ export default class Search extends React.Component{
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleOfficialChange = this.handleOfficialChange.bind(this);
+        this.handleSimilarChange = this.handleSimilarChange.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.getDOTD = this.getDOTD.bind(this);
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
@@ -23,7 +25,9 @@ export default class Search extends React.Component{
             response: undefined,
             loaded: false,
             loggedIn: false,
-            officialOnly: true,
+            officialOnly: false,
+            showSimilar: false,
+            accActive: 0,
             done: false,
             results: [],
             searchable: false,
@@ -42,7 +46,9 @@ export default class Search extends React.Component{
             user: this.props.user,
             done: true,
             results: [],
-            officialOnly: true,
+            officialOnly: false,
+            accActive: 0,
+            showSimilar: false,
             searchable: false,
             searchVal: "d",
         })
@@ -57,6 +63,11 @@ export default class Search extends React.Component{
     handleOfficialChange(event){
         console.log(event);
         this.setState({ officialOnly: !this.state.officialOnly })
+    }
+
+    handleSimilarChange(event){
+        console.log(event);
+        this.setState({ showSimilar: !this.state.showSimilar })
     }
 
 
@@ -103,8 +114,8 @@ export default class Search extends React.Component{
 
     async getSearchResults(){
         let url;
-        console.log(this.state.searchVal)
-        console.log(this.state.officialOnly)
+        console.log(this.state.searchVal);
+        console.log(this.state.officialOnly);
         if (this.state.searchVal === 'u'){
             url = "http://localhost:8080/user/" + this.state.searchText;
         }else if(this.state.searchVal === "d"){
@@ -119,8 +130,6 @@ export default class Search extends React.Component{
             url = "http://localhost:8080/drink/searchIngredients?s=" + this.state.searchText;
         }
 
-        //Todo: IF this.state.officialOnly set url = "http://localhost:8080/ingredients/searchOfficialDrink?s=" + this.state.searchText;
-        console.log(url);
         await fetch(url, {
             method: 'GET',
             headers: {
@@ -134,10 +143,11 @@ export default class Search extends React.Component{
 
                 this.setState({results: data.results})
             }
+            console.log("===== Search Results =====");
+            console.log(data);
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
 
-        console.log(this.state.user);
     }
 
     getRandomInt(max) { //Paul Added
@@ -178,16 +188,25 @@ export default class Search extends React.Component{
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
 
-        console.log(this.state.user);
-
     }
+
+
+    handleAcc = (e, titleProps) => {
+        const { index } = titleProps;
+        const { accActive } = this.state;
+        const newIndex = accActive === index ? -1 : index;
+
+        this.setState({ accActive: newIndex })
+    };
 
 
 
 
     render() {
         const value = this.state.searchVal;
-        const officialOnly = this.state.officialOnly;
+        const activeIndex = this.state.accActive;
+        let showMsg = true;
+
         if (!this.state.done) {
             return (
                 <div>
@@ -199,60 +218,95 @@ export default class Search extends React.Component{
                 </div>
             )
         } else {
+
+            if (this.state.user !== undefined){
+                showMsg = false;
+            }
+
             //IF dotd not ready return loader
             return (
                 <div>
                     <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
                         <Grid.Column width={4}/>
-                        <Grid.Column width={8} textAlign="center">
-                            <br/>
-                            <br/>
+                        <Grid.Column width={8} centered>
+                            <Grid.Row textAlign="center">
+                                <br/>
+                                <br/>
 
-                            {/*This is a method from utils.js that renders drink of the day now*/}
-                            {dotdCard(this.state.dotd)}
+                                {/*This is a method from utils.js that renders drink of the day now*/}
+                                {dotdCard(this.state.dotd)}
 
-                            <br/>
-                            <br/>
-                            <Grid.Row centered>
-                                <Form>
-                                    <Form.Group inline>
-                                        <label>Search Options</label>
-                                        <Form.Radio
-                                            label='Drinks'
-                                            value='d'
-                                            checked={value === 'd'}
-                                            onClick={(e) => this.handleSettingsChange(e,'d')}
-                                            data-testid="search-form-drinks"
-                                        />
-                                        <Form.Radio
-                                            label='Ingredients'
-                                            value='i'
-                                            checked={value === 'i'}
-                                            onClick={(e) => this.handleSettingsChange(e,'i')}
-                                            data-testid="search-form-ingredients"
-                                        />
-                                        <Form.Radio
-                                            label='Users'
-                                            value='u'
-                                            checked={value === 'u'}
-                                            onClick={(e) => this.handleSettingsChange(e,'u')}
-                                            data-testid="search-form-users"
-                                        />
-                                        <Form.Radio
-                                            label='Posts'
-                                            value='p'
-                                            checked={value === 'p'}
-                                            onClick={(e) => this.handleSettingsChange(e,'p')}
+                                <br/>
+                                <br/>
+                            </Grid.Row>
 
-                                        />
-                                        <FormCheckbox
-                                            label='Display Official Drinks Only'
-                                            checked={officialOnly}
-                                            onClick={this.handleOfficialChange}
-                                            data-testid="search-form-official"
-                                        />
-                                    </Form.Group>
-                                </Form>
+
+                            <Grid.Row textAlign="left">
+                                <Grid.Column width={16} textAlign="left">
+                                    <Accordion>
+                                        <Accordion.Title
+                                            active={activeIndex === 0}
+                                            index={0}
+                                            onClick={this.handleAcc}
+                                        >
+                                            <Icon name="dropdown"/>
+                                            Search Options
+                                        </Accordion.Title>
+                                        <Accordion.Content active={this.state.accActive}>
+                                            <Form>
+                                                    <Form.Group inline>
+                                                        <label>Search For</label>
+                                                        <Form.Radio
+                                                            label='Drinks'
+                                                            value='d'
+                                                            checked={value === 'd'}
+                                                            onClick={(e) => this.handleSettingsChange(e,'d')}
+                                                            data-testid="search-form-drinks"
+                                                        />
+                                                        <Form.Radio
+                                                            label='Ingredients'
+                                                            value='i'
+                                                            checked={value === 'i'}
+                                                            onClick={(e) => this.handleSettingsChange(e,'i')}
+                                                            data-testid="search-form-ingredients"
+                                                        />
+                                                        <Form.Radio
+                                                            label='Users'
+                                                            value='u'
+                                                            checked={value === 'u'}
+                                                            onClick={(e) => this.handleSettingsChange(e,'u')}
+                                                            data-testid="search-form-users"
+                                                        />
+                                                        <Form.Radio
+                                                            label='Posts'
+                                                            value='p'
+                                                            checked={value === 'p'}
+                                                            onClick={(e) => this.handleSettingsChange(e,'p')}
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group inline>
+                                                        <FormCheckbox
+                                                            label='Display Official Drinks Only'
+                                                            checked={this.state.officialOnly}
+                                                            onClick={this.handleOfficialChange}
+                                                            data-testid="search-form-official"
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group inline>
+                                                        <FormCheckbox
+                                                            label='Show Me Similar Drinks'
+                                                            checked={this.state.showSimilar}
+                                                            onClick={this.handleSimilarChange}
+                                                            data-testid="search-form-similar"
+                                                        />
+                                                    </Form.Group>
+                                            </Form>
+                                        </Accordion.Content>
+                                    </Accordion>
+
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row centered textAlign="center">
                                 <Input
                                     size="huge"
                                     fluid
@@ -270,19 +324,20 @@ export default class Search extends React.Component{
                                 </div>
                                 <br/>
                                 <br/>
-                                <p hidden={this.state.loggedIn}>
-                                    <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
-                                </p>
-                                <br/>
-                                <br/>
-                                <div>
-                                    <Button color="yellow" onClick={this.handleRandomModalOpen} width={8}>
-                                        Random Drink
-                                    </Button>
+                                <div style={{textAlign: "center"}}>
+                                    <div style={{display: "inline-block"}}>
+                                        <p hidden={!showMsg}>
+                                            <Link to='/login'>Log In</Link> - or - <Link to='/register'>Register</Link>
+                                        </p>
+                                    </div>
                                 </div>
-                                
+
+
+                                <br/>
+                                <br/>
+
                                 {this.state.results === undefined
-                                    ? <Header>No Results Found</Header>
+                                    ? <Header textAlign="center">No Results Found</Header>
                                     : this.state.results.map((result, index) => {
                                         if(this.state.searchVal === 'd'){
                                             console.log(result);
@@ -295,7 +350,6 @@ export default class Search extends React.Component{
                                             )
                                             // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                                         }else if(this.state.searchVal === 'u') {
-                                            console.log(result.userName);
                                             return (userCard(index, result.userName, result.photo))
                                         } else if(this.state.searchVal === 'i'){
                                                 return (ingredientCard(index, result))
@@ -307,11 +361,8 @@ export default class Search extends React.Component{
                                         }
                                     })
                                 }
-
-
                                 <br/>
                                 <br/>
-
                             </Grid.Row>
 
                         </Grid.Column>
@@ -323,3 +374,7 @@ export default class Search extends React.Component{
         }
     }
 }
+
+
+
+
