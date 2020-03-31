@@ -19,7 +19,7 @@ class Login extends React.Component {
             modalOpen: false,
             username: '',
             password: '',
-            logged_in: true,
+            loggedIn: true,
             email_reset: '',
             fUser: false, //if forgot username is clicked
             fPass: false, //if forgot password is clicked
@@ -60,14 +60,14 @@ class Login extends React.Component {
             hidden = false;
         }
 
-        if (this.state.logged_in && this.state.user !== undefined){
+        if (this.state.loggedIn && this.state.user !== undefined){
 
-            //Todo: pass back logged_in back to the Routes
-            this.props.passState(this.state.user, this.state.logged_in);
+            //Todo: pass back loggedIn back to the Routes
+            this.props.passState(this.state.user, this.state.loggedIn);
             return (
                 <Redirect to={{
                     pathname: '/',
-                    state: { logged_in: this.state.logged_in, user: this.state.user}
+                    state: { loggedIn: this.state.loggedIn, user: this.state.user}
                 }} />
             )
         }
@@ -326,7 +326,7 @@ class Login extends React.Component {
 //                 console.log('Message Sent')
 //             }
 // });
-        // this.props.passState(this.state.user, this.state.logged_in);
+        // this.props.passState(this.state.user, this.state.loggedIn);
         // return (
         //     <Redirect to={{
         //         pathname: '/ResetPassword',
@@ -350,9 +350,12 @@ class Login extends React.Component {
         if (this.state.response.password !== this.state.password) {
             this.setState({msg: "Username or Password is Incorrect" });
             console.log("You're a shitty hacker")
+            localStorage.setItem('username', '')
         } else {
-            this.setState({logged_in: true, user: this.state.response.userName});
+            this.setState({loggedIn: true, user: this.state.response.userName});
             console.log("Password is correct");
+            localStorage.setItem('username', this.state.username)
+            localStorage.setItem('is21', true)
         }
     };
 

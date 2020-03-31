@@ -87,6 +87,7 @@ export default class Search extends React.Component{
         if (this.state.user === undefined){
             return
         }
+        this.setState({results: []})
         await fetch('http://localhost:8080/drink/getUserRecommended/'+this.state.user, {
             method: 'GET',
             headers: {
@@ -144,7 +145,7 @@ export default class Search extends React.Component{
     }
 
     async handleRandomModalOpen() { //Paul Added
-        this.setState({openRandomModal: true});
+        this.setState({openRandomModal: true, searchVal: 'd'});
 
         await fetch('http://localhost:8080/drink', {
             method: 'GET',
