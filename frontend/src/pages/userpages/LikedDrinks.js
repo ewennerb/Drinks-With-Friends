@@ -10,7 +10,7 @@ import {
 
 } from 'semantic-ui-react'
 import {ingredientCard, postCard} from "../utils";
-import DrinkCard from "../DrinkCard.js";
+import DrinkCard from "../rDrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
 
 class LikedDrinks extends Component{
@@ -39,22 +39,22 @@ class LikedDrinks extends Component{
     let Drinks = this.state.Drinks;
     let likedDrinks = [];
     //go through the drinks with id and find ones this profile liked
-    Drinks.map(async (drink) => {
-      await this.getLikeStatus(this.state.profile, drink.id);
-      //like status should be in state
-      console.log(this.state.likeStatus);
-      if (this.state.likeStatus == true) {
-          //console.log(drink);
-          likedDrinks.push(drink);
-      }
+    // Drinks.map(async (drink) => {
+    //   await this.getLikeStatus(this.state.profile, drink.id);
+    //   //like status should be in state
+    //   console.log(this.state.likeStatus);
+    //   if (this.state.likeStatus == true) {
+    //       //console.log(drink);
+    //       likedDrinks.push(drink);
+    //   }
     
-    }) // end of map
-     //end of map
-    //putting that profiles drinks in state
-    if (likedDrinks != undefined) {
-      this.setState({likedDrinks: likedDrinks});
-    }
-    }//end if userpage !+ undef
+    // }) // end of map
+    //  //end of map
+    // //putting that profiles drinks in state
+    // if (likedDrinks != undefined) {
+    //   this.setState({likedDrinks: likedDrinks});
+    // }
+   }//end if userpage !+ undef
   }
   
 

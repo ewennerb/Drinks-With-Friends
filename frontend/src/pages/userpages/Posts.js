@@ -20,8 +20,8 @@ class Posts extends Component{
   constructor(props) {
     super(props);
     let User = props.User;
-
     this.state = {
+      passState: props.passState,
       userName: User.userName,
       posts: User.posts,
       browser: props.user,
@@ -39,7 +39,7 @@ class Posts extends Component{
     if (userPage != undefined){
     await this.getPosts();
     //should have posts and drinks
-    // console.log(this.state.posts);
+    console.log(this.state.posts);
     let userDrinks =[];
     if (this.state.Drinks != undefined) {
     this.state.Drinks.map((drink) => {
@@ -52,12 +52,10 @@ class Posts extends Component{
     //putting that profiles drinks in state
     this.setState({userDrinks: userDrinks});
     }
-    }
+   }
   }
 
   render(){
-
-    
 
     return (
         <Container  >
@@ -94,6 +92,7 @@ class Posts extends Component{
                         user={this.state.userName}
                         index={index}
                         drink={drink}
+                        passState={this.state.passState}
                       />
                       // rodsDrinkCard ({
                       //   user: this.state.userName,
