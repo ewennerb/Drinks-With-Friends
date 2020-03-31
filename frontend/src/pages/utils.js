@@ -42,8 +42,9 @@ export const dotdCard = (dotd) => {
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
             <Card.Header style={{textAlign: "center"}}>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                <Header textAlign="center" style={{marginTop: "0px"}}>
-                    <NavLink class="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
+                <Header textAlign="center" style={{marginTop: "0px"}}>  
+                    {/* changed class to className cause compiler yelled */}
+                    <NavLink className="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
                         {dotd.name}
                     </NavLink>
                 </Header>
@@ -209,4 +210,4 @@ export const postCardDelete = (post) => {
         </Card>
     )
 };
->>>>>>> 1896743c10e40d2ac118e145e06a8551d28fdbb7
+

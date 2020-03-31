@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import 'semantic-ui-css/semantic.min.css';
-import { BrowserRouter, Route, Switch, Link, useParams} from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link, } from "react-router-dom";
 import {
   Menu,
   Grid,
@@ -11,7 +11,7 @@ import {
   Header,
   Segment,
   Form, 
-  Message,
+  //Message,
   Image,
 } from "semantic-ui-react";
 import LikedDrinks from "./userpages/LikedDrinks.js"
@@ -19,7 +19,7 @@ import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
-
+var base64 = require('base-64');
 
 //import "../css/Profile.css"
 
@@ -29,13 +29,10 @@ class Profile extends Component{
     
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
-    
-    this.handleSubmit = this.handleSubmit.bind(this);
 
+    this.handleSubmit = this.handleSubmit.bind(this);
     // this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
     // this.handleSubmit2 = this.handleSubmit2.bind(this);
-
-
     this.handleBioChange = this.handleBioChange.bind(this);    
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -44,7 +41,7 @@ class Profile extends Component{
     //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
     this.state = {
       modalOpen: false, 
-      modalOpen2: false,
+ 
       activeItem: "posts",
       bio: '',
       userName: '',
@@ -60,23 +57,27 @@ class Profile extends Component{
     //console.log(match.params)
     let userPage = this.state.profile;
     
-    if (userPage !== undefined){
+    if (userPage != undefined){
     await this.getUser(userPage);
-    
-    console.log(this.state.User);
     let User = this.state.User;
+    // while (User == undefined){
+    //   console.log(this.state.User);
+  
+    //   User = this.state.User;
+    // }
+    
 
+    if (User != undefined){
     this.setState({
       modalOpen: false,
-      modalOpen2: false,
       activeItem: "posts",
       userName: User.userName,
       password: User.password,
       bio: User.bio,
+      photo: User.photo,
       profilePhoto: User.profilePhoto,
       email: User.email,
       name: User.name,
-      photo: User.photo,
       favoriteDrink: User.favoriteDrink,
       publishedDrinks: User.publishedDrinks,
       postHistory: User.postHistory,
@@ -84,6 +85,25 @@ class Profile extends Component{
       darkMode: User.darkMode,
     })
     }
+    }
+    //trying to spread teh work between components and avoid too many connections    
+    if (this.state.allDrinks == undefined) {
+      await this.getAllDrinks();
+    }
+    //should have this.state.allDrinks
+    let Drinks = [];
+    if (this.state.Drinks == undefined) {
+      //getting drink because the other objects dont have the ids
+      this.state.allDrinks.map( async (drink) => {
+        // console.log(drink)
+        await this.getDrink(drink.publisher, drink.name);
+        if(this.state.drink != undefined){
+          Drinks.push(this.state.drink)
+        }
+      })
+    }
+    this.setState({Drinks: Drinks})
+    
   }
 
 handleClose() {
@@ -159,15 +179,12 @@ handleOpen2() { //Paul Add
       favoriteDrink = 
       <p>My favorite drink is {this.state.favoriteDrink}</p>
     }
-    if (this.state.profilePhoto === null || this.state.profilePhoto === "" || this.state.profilePhoto ===undefined){
+    if (this.state.profilePhoto === null || this.state.profilePhoto === "" || this.state.profilePhoto == undefined){
       pfp = <Image size="small" src={process.env.PUBLIC_URL + "/nopfp.png"} />
-      
       //what this data-testid={"user-placeholder-img-"}
     } else {
       pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.profilePhoto}`}/>
     }
-
-
 
     return(
       <Container>
@@ -181,11 +198,11 @@ handleOpen2() { //Paul Add
           >
           {pfp}
 
-
           </Grid.Column>
           
           <Grid.Column textAlign="left">
-            <h2>Bio:</h2>
+            <h2>{this.ifNullthenEmpty(this.state.name)}</h2>
+            <h3>&nbsp;{this.ifNullthenEmpty(this.state.userName)}</h3>
             {/* bio */}
             <p>{this.state.bio}</p>
             {/* favorite drink */}
@@ -213,14 +230,14 @@ handleOpen2() { //Paul Add
             <Menu.Item
               name="likedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/likedDrinks`}}
+              to={{pathname: `/${this.state.userName}/likedDrinks`, state: {User: this.state.User}}}
               active={activeItem === "likedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="dislikedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/dislikedDrinks`}}
+              to={{pathname: `/${this.state.userName}/dislikedDrinks`, state: {User: this.state.User}}}
               active={activeItem === "dislikedDrinks"}
               onClick={this.handleItemClick}
             />
@@ -251,11 +268,11 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="/:userName/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile} match={match}/>} />
-              <Route exact path="/:userName/likedDrinks" component={LikedDrinks}/>
-              <Route exact path="/:userName/dislikedDrinks" component={DislikedDrinks}/>
-              <Route exact path="/:userName/map" component={Map}/>
-              <Route exact path="/:userName/friends" component={Friends}/>
+              <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match}/>} />
+              <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match}/>}/>
+              <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match} />}/>
+              <Route exact path="/:profile/map" component={Map}/>
+              <Route exact path="/:profile/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>
@@ -317,8 +334,6 @@ handleOpen2() { //Paul Add
           <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
           Update
           </Button>
-          
-          
           </Segment>
           </Form>
           {/* need to add profile picture and how to store kind of confused */}
@@ -329,8 +344,6 @@ handleOpen2() { //Paul Add
           </Modal>
           </Grid>
       
-    
-          
         </BrowserRouter> 
       </Container> //end container
     )
@@ -342,13 +355,12 @@ handleOpen2() { //Paul Add
     //const value = event;
     //how to convert to 64base or get image data
     let input = document.getElementById(id);
-    console.log(input);
+    //console.log(input);
     let image = input.files[0];
-    console.log(image)
-    let reader = new FileReader();
-    let data = new Blob(image);
-    console.log(data);
-    //this.setState({profilePicture: value})
+    //console.log(image)
+    let imgstring = await base64.encode(image.name);
+    console.log(imgstring);
+    this.setState({photo: imgstring , profilePhoto: imgstring})
   }
   async handleUsernameChange(event) {
     const value = event.target.value;
@@ -399,7 +411,29 @@ handleOpen2() { //Paul Add
 
     //submitting everything from the modal
     let User = this.state.User;
-
+    //profile pic
+    if (this.state.photo != User.photo && this.isValidInput(this.state.photo) && this.state.photo == this.state.profilePhoto){
+      await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            userName: this.state.userName,
+            password: '',
+            phoneNumber: '',
+            name: '',
+            email: '',
+            photo: this.state.photo,
+            profilePhoto: this.state.profilePhoto,
+        })
+        }).then(res => res.json()).then((data) => {
+        console.log("UPDATE PHOTO");
+        console.log(data);
+        this.setState({response: data});
+        }).catch(console.log);
+    }
 
     //username
     if (this.state.userName !== User.userName){
@@ -422,7 +456,8 @@ handleOpen2() { //Paul Add
         console.log(data);
         this.setState({response: data});
         }).catch(console.log);
-      }
+    
+    }
 
     //password
     if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
@@ -445,10 +480,9 @@ handleOpen2() { //Paul Add
       console.log(data);
       this.setState({response: data});
     }).catch(console.log);
-
     //updating password for the remaining fields
 
-    }
+    }// end of if password != User.pass and i svalid
 
     //bio
     if (this.state.bio !== User.bio && this.isValidInput(this.state.bio)) {
@@ -475,18 +509,52 @@ handleOpen2() { //Paul Add
 
     }
 
+    //favoritedrink update
+    if (this.state.favoriteDrink != User.favoriteDrink && this.isValidInput(this.state.favoriteDrink)) {
+      //first search for actual drink with the output
+      // await fetch("http://localhost:8080/drink/search?s=" + this.state.favoriteDrink, {
+      //   method: 'GET',
+      //   headers: {
+      //       'Accept': 'application/json',
+      //       'Content-Type': 'application/json',
+      //   },
+      // }).then(res => res.json()).then( async (data) => {
+      //   console.log("look for existing drink");
+      //   console.log(data);
+      //   this.setState({results: [data]})
+  
+      // }).catch(console.log());
 
-  }; //end of handle submit
+      //search isnt return anything rn so well just upload the state
+      //then upload 
+      
+      await fetch('http://localhost:8080/user/saveFavoriteDrink', {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          userName: this.state.userName,
+          password: '',
+          phoneNumber: '',
+          name: '',
+          email: '',
+          favoriteDrink: this.state.favoriteDrink,
+      })
+      }).then(res => res.json()).then((data) => {
+        console.log("UPDATE Favorite drink");
+        console.log(data);
+        this.setState({response: data});
+      }).catch(console.log);
+     
+    } //end of if state favdrink != userfav drink
 
 
-
-
-
-
-
+    this.forceUpdate();
+  } //end of handle submit
 
   async getUser(name) {
-    
     await fetch('http://localhost:8080/user/'+name, {
       method: 'GET',
       headers: {
@@ -494,11 +562,38 @@ handleOpen2() { //Paul Add
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { //dk tbh
-          console.log(data);
+          //console.log(data);
           
           this.setState({User: data});
       }).catch(console.log);
       
+  }
+  //get all drinks
+  async getAllDrinks(){
+    await fetch('http://localhost:8080/drink/', {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { //dk tbh
+          console.log(data);
+          this.setState({allDrinks: data});
+      }).catch(console.log);
+  }
+  //get individual drink objects
+  async getDrink(owner, dname) {
+    //get all drinks
+    await fetch('http://localhost:8080/drink/'+owner+"?d="+dname, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { 
+          //console.log(data);
+          this.setState({drink: data});
+      }).catch(console.log);
   }
 
   isValidInput(input) {
