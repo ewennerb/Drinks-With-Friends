@@ -9,7 +9,7 @@ import {
     FormGroup, Icon, Message, GridRow, GridColumn
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
+import {dotdCard, ingredientCard, userCard, postCard, postCardDelete} from "./utils";
 var base64 = require('base-64');
 
 
@@ -25,6 +25,7 @@ export default class ActivityFeed extends React.Component {
         this.handleOpenPost = this.handleOpenPost.bind(this);
         this.handleClosePost = this.handleClosePost.bind(this);
         this.handlePostTextChange = this.handlePostTextChange.bind(this);
+        this.setResponse = this.setResponse.bind(this);
 
         this.changeIngredient = this.changeIngredient.bind(this);
         this.createIngredient = this.createIngredient.bind(this);
@@ -58,7 +59,9 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
-            results: []
+            results: [],
+            resultsNoDelete: [],
+            resultsDelete: [],
         };
         this.fileInputRef = React.createRef();
     }
@@ -284,8 +287,22 @@ export default class ActivityFeed extends React.Component {
         }).then(res => res.json()).then((data) => {
             console.log(data);
             this.setState({response: data, modalOpen2: false})
+            window.location.replace('/feed');
         }).catch(console.log);
     };
+
+    async setResponse() {
+        await fetch('http://localhost:8080/post', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(res => res.json()).then((data) => {
+            //console.log(data);
+            this.setState({response: data})
+        }).catch(console.log);
+    }
 
     render(){
 
@@ -439,7 +456,7 @@ export default class ActivityFeed extends React.Component {
 
 
 
-                <Grid style={{ height: '100vh' }} columns={16} centered>
+                <Grid style={{ height: '100vh', overflowY: 'scroll'}} columns={16} centered>
                     <GridRow >
                         <Grid.Column width={4}/>
                         <Grid.Column width={8}>
@@ -460,7 +477,14 @@ export default class ActivityFeed extends React.Component {
                             {this.state.results === undefined
                                 ? <Header textAlign="center">No Results Found</Header>
                                 :this.state.results.map((result, index) => {
-                                    console.log(result)
+                                    //this.setResponse();
+                                    //window.location.replace('/feed');
+                                    if (result.userName == this.state.user) {
+                                        console.log(result);
+                                        return (
+                                            postCardDelete(result)
+                                        )
+                                    }
                                     return (
                                         postCard(result)
                                     )
