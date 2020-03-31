@@ -72,19 +72,21 @@ export const dotdCard = (dotd) => {
 export const postCard = (post) => {
     let pfp;
     if (post.profileImage === null || post.profileImage === ""){
-        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"}/>
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
     }else{
-        pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} />
+        pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
     }
     let text_image;
     if (post.image === null || post.image === ""){ 
-        text_image = <div/>
+
+        text_image = <div  data-testid={"user-div-img-0"}/>
+
     }else{
-        text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`} />
+        text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
     }
     console.log(post)
     return(
-        <Card style={{width: "500px"}} centered data-testid="dotd-card">
+        <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
 
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Link to={(`${post.userName}`)}>
@@ -95,14 +97,14 @@ export const postCard = (post) => {
                 <Grid columns={1}>
                     <GridRow style={{paddingBottom: "0px"}}>
                         <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
-                            <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}}>
+                            <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>
                                 @{post.userName}
                             </p>
                         </Link>
                     </GridRow>
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
-                            <p style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                            <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
                                 {post.name}
                             </p>
                         </Link>
@@ -110,7 +112,7 @@ export const postCard = (post) => {
                 </Grid>
 
             </Segment>
-            <CardContent>{post.text}</CardContent>
+            <CardContent data-testid={"post-text-0"}>{post.text}</CardContent>
             <CardContent>{text_image}</CardContent>
         </Card>
     )

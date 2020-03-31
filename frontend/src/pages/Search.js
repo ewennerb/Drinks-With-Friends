@@ -152,7 +152,7 @@ export default class Search extends React.Component{
             console.log(data);
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
-
+        
     }
 
     getRandomInt(max) { //Paul Added
