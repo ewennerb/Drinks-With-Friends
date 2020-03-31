@@ -50,17 +50,18 @@ public class PostSQL {
 
 	public Post[] getAllPosts(){
 		try{
-			rs = smt.executeQuery("select p.text, p.image, p.userName, p.geolocation, p.date from test_schema.post p");
+			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userName, p.geolocation, p.date from test_schema.post p");
 			ArrayList<Post> post = new ArrayList<>();
 
 			while(rs.next())
 			{
+				int postId = rs.getInt("postId");
 				String text = rs.getString("text");
 				String image = rs.getString("image");
 				String username = rs.getString("userName");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
-				Post p = new Post(0, text, image, username, geolocation, date);
+				Post p = new Post(postId, text, image, username, geolocation, date);
 				post.add(p);
 			}
 			
