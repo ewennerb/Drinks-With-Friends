@@ -190,6 +190,7 @@ export const postCardDelete = (post) => {
         text: "",
         image: "",
         userName: post.userName,
+        userId: 0,
         geolocation: "",
         date: "",
         postId: post.postId

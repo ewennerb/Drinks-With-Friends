@@ -35,7 +35,7 @@ public class PostController {
 		Post p = om.readValue(username, Post.class);
 
 		PostSQL posts = new PostSQL();
-		return posts.insertPost(p.text, p.image, p.userName, p.geolocation, p.date);
+		return posts.insertPost(p.text, p.image, "", p.geolocation, p.date);
 	}
 
 	@GetMapping("")
@@ -92,10 +92,6 @@ public class PostController {
 		if(posts == null) {
 			return "{\"results\": \"DNE\"";
 		}
-		//us = new PostSQL();
-		
-		//String[] post_users = us.getPostUsernames(posts);
-		
 		
 
 		String out =  "{ \"results\": [ ";

@@ -5,27 +5,28 @@ public class Post{
 	public int postId;
 	public String text;
 	public String image;
-	public String userName;
+	public int userId;
 	public String geolocation;
 	public String date;
 	public String profileImage;
 	public String name;
+	public String userName;
 
 	public Post(){
 		this.postId = 0;
 		this.text = "No text";
 		this.image = null;
-		this.userName = null;
+		this.userId = 0;
 		this.geolocation = null;
 		this.date = null;
 	}
 
-	public Post(int postId, String text, String image, String userName, String geolocation, String date)
+	public Post(int postId, String text, String image, int userId, String geolocation, String date)
 	{
 		this.postId = postId;
 		this.text = text;
 		this.image = image;
-		this.userName = userName;
+		this.userId = userId;
 		this.geolocation = geolocation;
 		this.date = date;
 	}
