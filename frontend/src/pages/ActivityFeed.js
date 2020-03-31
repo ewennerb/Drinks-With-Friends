@@ -21,6 +21,9 @@ export default class ActivityFeed extends React.Component {
         this.handleOpen = this.handleOpen.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleFileRead = this.handleFileRead.bind(this);
+        this.handleOpenPost = this.handleOpenPost.bind(this);
+        this.handleClosePost = this.handleClosePost.bind(this);
+        this.handlePostTextChange = this.handlePostTextChange.bind(this);
 
         this.changeIngredient = this.changeIngredient.bind(this);
         this.createIngredient = this.createIngredient.bind(this);
@@ -28,13 +31,17 @@ export default class ActivityFeed extends React.Component {
         this.changeIngredientMeasurement = this.changeIngredientMeasurement.bind(this);
         this.removeIngredient = this.removeIngredient.bind(this);
         this.postDrink = this.postDrink.bind(this);
+        this.postPost = this.postPost.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
         this.state = {
             user: this.props.user,
             modalOpen: false,
+            modalOpen2: false,
+            postText: "",
             postDisabled: true,
+            postDisabled2: true,
             file: {},
             fileString: "",
             fileName: "",
@@ -58,6 +65,7 @@ export default class ActivityFeed extends React.Component {
             modalOpen: false,
             description: "",
             drinkName: "",
+            postText: "",
             ingredients: [
                 {
                     ingredient: "",
@@ -117,12 +125,33 @@ export default class ActivityFeed extends React.Component {
             file: undefined,
             selected: false,
             fileString: "",
-            fileName: ""
+            fileName: "",
+            postText: ""
         });
     }
 
     handleOpen() {
         this.setState({modalOpen: true})
+    }
+
+    handleClosePost() {
+        //Resets everything back to default values if closed or if posted.
+        this.setState({
+            modalOpen2: false,
+            postText: "",
+            fileName: "",
+            fileString: "",
+            file: undefined
+        });
+    }
+
+    handlePostTextChange(event) {
+        this.setState({postText: event.target.value})
+        console.log(event.target.value)
+    }
+
+    handleOpenPost() {
+        this.setState({modalOpen2: true})
     }
 
 
@@ -199,7 +228,38 @@ export default class ActivityFeed extends React.Component {
         }).catch(console.log);
     };
 
+    async postPost(){
+        let photoString = "";
+        if(this.state.selected){
+            photoString = await base64.encode(this.state.fileString);
+        }
 
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        var n = String(mm + '/' + dd + '/' + yyyy);
+        console.log(n);
+
+        await fetch('http://localhost:8080/post/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: this.state.postText,
+                image: photoString,
+                userName: this.state.user,
+                geolocation: " ",
+                date: n
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data, modalOpen2: false})
+        }).catch(console.log);
+    };
 
     render(){
 
@@ -305,11 +365,62 @@ export default class ActivityFeed extends React.Component {
                         </Segment>
                     </Form>
                 </Modal>
+
+
+
+
+                
+                <Modal open={this.state.modalOpen2} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
+                    <Modal.Header>Create a Post</Modal.Header>
+                    <Form size='large'>
+                        <Segment stacked>
+                            <Form>
+                                <Button
+                                    content="Choose File"
+                                    labelPosition="left"
+                                    icon="file"
+                                    onClick={() => this.fileInputRef.current.click()}
+                                />
+                                <input
+                                    ref={this.fileInputRef}
+                                    type="file"
+                                    hidden
+                                    onChange={this.fileChange}
+                                />
+                                <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
+                                <Form.Input
+                                    placeholder='Text for Post'
+                                    content={this.postText}
+                                    onChange={this.handlePostTextChange}
+                                    required={true}
+                                />
+                                <br/>
+                                <br/>
+                                <div className='ui two buttons'>
+                                    <Button color='grey' onClick={this.handleClosePost}>
+                                        Cancel
+                                    </Button>
+                                    <Button color='yellow' disabled={this.state.postText == ""} onClick={() => this.postPost()}>
+                                        Post!
+                                    </Button>
+                                </div>
+                            </Form>
+
+                        </Segment>
+                    </Form>
+                </Modal>
+
+
+
+
                 <Grid style={{ height: '100vh' }} columns={16} centered>
                     <Grid.Column width={4}/>
                     <Grid.Column width={8}>
                         <Button icon="beer" color="yellow" onClick={this.handleOpen}>
-                            Post Something
+                            Create Drink
+                        </Button>
+                        <Button icon="beer" color="yellow" onClick={this.handleOpenPost}>
+                            Create Post
                         </Button>
                     </Grid.Column>
                     <Grid.Column width={4}/>
