@@ -5,7 +5,7 @@ import {
     Segment,
     Button,
     Form,
-    Modal, Header,
+    Modal, Header, FormCheckbox,
     FormGroup, Icon, Message, GridRow, GridColumn
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
@@ -37,7 +37,7 @@ export default class ActivityFeed extends React.Component {
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
         this.getSearchResults = this.getSearchResults.bind(this);
-        
+        this.handleSettingsChange = this.handleSettingsChange.bind(this);
         this.state = {
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
@@ -58,11 +58,23 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
-            results: []
+            results: [],
+            searchVal: 'd'
         };
         this.fileInputRef = React.createRef();
     }
 
+    handleSettingsChange(event, value) {
+        this.setState({ searchVal: value});
+        if (value === 'p') {
+            this.handleClose();
+            this.handleOpenPost();
+        }
+        if (value === 'd') {
+            this.handleClosePost();
+            this.handleOpen();
+        }
+    };
     componentDidMount(){
         this.setState({
             user: this.props.user || localStorage.getItem('username'),
@@ -77,6 +89,7 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
+            value: 'd'
         })
         this.getSearchResults();
     }
@@ -172,7 +185,7 @@ export default class ActivityFeed extends React.Component {
     }
 
     handleOpen() {
-        this.setState({modalOpen: true})
+        this.setState({modalOpen: true, searchVal: 'd'})
     }
 
     handleClosePost() {
@@ -192,7 +205,7 @@ export default class ActivityFeed extends React.Component {
     }
 
     handleOpenPost() {
-        this.setState({modalOpen2: true})
+        this.setState({modalOpen2: true, searchVal: 'p'})
     }
 
 
@@ -303,6 +316,7 @@ export default class ActivityFeed extends React.Component {
     };
 
     render(){
+        const value = this.state.searchVal;
 
         let notUser = <p/>;
         if (this.props.user === "" || this.props.user === undefined){
@@ -327,6 +341,25 @@ export default class ActivityFeed extends React.Component {
             <div>
                 {notUser}
                 <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
+                <Form style={{margin: "auto", marginTop: "15px", height:"10px", width: "auto"}}>
+                    <Form.Group inline>
+                        <label>Create For</label>
+                        <Form.Radio
+                            label='Drinks'
+                            value='d'
+                            checked={value === 'd'}
+                            onClick={(e) => this.handleSettingsChange(e,'d')}
+                            data-testid="search-form-drinks"
+                        />
+                        <Form.Radio
+                            label='Posts'
+                            value='p'
+                            checked={value === 'p'}
+                            onClick={(e) => this.handleSettingsChange(e,'p')}
+                            data-testid="search-form-ingredients"
+                        />
+                    </Form.Group>
+                </Form>
                     <Modal.Header>Create a Drink</Modal.Header>
                     <Form size='large'>
                         <Segment stacked>
@@ -412,6 +445,25 @@ export default class ActivityFeed extends React.Component {
 
                 
                 <Modal open={this.state.modalOpen2} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
+                <Form style={{margin: "auto", marginTop: "15px", height:"10px", width: "auto"}}>
+                    <Form.Group inline>
+                        <label>Create For</label>
+                        <Form.Radio
+                            label='Drinks'
+                            value='d'
+                            checked={value === 'd'}
+                            onClick={(e) => this.handleSettingsChange(e,'d')}
+                            data-testid="search-form-drinks"
+                        />
+                        <Form.Radio
+                            label='Posts'
+                            value='p'
+                            checked={value === 'p'}
+                            onClick={(e) => this.handleSettingsChange(e,'p')}
+                            data-testid="search-form-ingredients"
+                        />
+                    </Form.Group>
+                </Form>
                     <Modal.Header>Create a Post</Modal.Header>
                     <Form size='large'>
                         <Segment stacked>
@@ -459,11 +511,9 @@ export default class ActivityFeed extends React.Component {
                         <Grid.Column width={4}/>
                         <Grid.Column width={8}>
                             <Button icon="beer" color="yellow" onClick={this.handleOpen}>
-                                Create Drink
+                                Create A Post
                             </Button>
-                            <Button icon="beer" color="yellow" onClick={this.handleOpenPost}>
-                                Create Post
-                            </Button>
+                            
                         </Grid.Column>
                         <Grid.Column width={4}/>
                     </GridRow>
