@@ -179,8 +179,7 @@ export default class ActivityFeed extends React.Component {
         if(this.state.selected){
             photoString = await base64.encode(this.state.fileString);
         }
-        console.log(this.state)
-        return
+        
         await fetch('http://localhost:8080/drink/', {
             method: 'POST',
             headers: {
