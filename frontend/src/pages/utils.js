@@ -8,23 +8,32 @@ export const userCard = (index, username, photo) => {
     let pfp;
     if (photo === null || photo === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
-    }else{
+        }else{
         pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
         }
     //Todo: Add photo functionality
+
     return(
         
         <Card centered data-testid={"user-card-" + index.toString()}>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                     {pfp}
+                    </CardContent>
                 <Card.Content>
-        {pfp}
-                    <Card.Header data-testid={"user-name-" + index.toString()}>{username}</Card.Header>
-                    <Card.Meta>date</Card.Meta>
+                   
+                <Card.Header data-testid={"user-name-" + index.toString()}>@{username}</Card.Header>
+                   
                 </Card.Content>
                 <Card.Content extra>
                     <div className='ui two buttons'>
                         <Button basic color='grey'>
-                            View Profile
+                           
+                            <Link style={{textDecoration: "none", color: "grey"}} to={(`${username}`)}>
+                                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
+                                    View Profile
+                            </p>
+                            </Link>
                         </Button>
                         <Button basic color='blue'>
                             Follow
@@ -34,7 +43,7 @@ export const userCard = (index, username, photo) => {
             </Segment>
         </Card>
     )
-        };
+                            };
 
 
 export const dotdCard = (dotd) => {
@@ -43,23 +52,23 @@ export const dotdCard = (dotd) => {
             <Card.Header style={{textAlign: "center"}}>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Header textAlign="center" style={{marginTop: "0px"}}>  
-                    {/* changed class to className cause compiler yelled */}
+                            {/* changed class to className cause compiler yelled */}
                     <NavLink className="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
-                        {dotd.name}
+        {dotd.name}
                     </NavLink>
                 </Header>
                 <Card.Description content={dotd.description} data-testid="dotd-description"/>
                 <br/>
                 <Card.Content>
                     <List bulleted>
-                        {dotd.ingredients.map((ingr, index) => {
-                            // each child in a list should hav a unique key prop
+        {dotd.ingredients.map((ingr, index) => {
+        // each child in a list should hav a unique key prop
                             return (
                                 <List.Item data-testid={"dotd-ingredient-" + index.toString()}>
-                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+        {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                 </List.Item>
                             )
-                        })}
+                    })}
                     </List>
                 </Card.Content>
                 <Card.Meta data-testid="dotd-publisher">{dotd.publisher}</Card.Meta>
@@ -69,7 +78,7 @@ export const dotdCard = (dotd) => {
             </Segment>
         </Card>
     )
-};
+                    };
 
 
 export const postCard = (post) => {
@@ -77,17 +86,17 @@ export const postCard = (post) => {
     let pfp;
     if (post.profileImage === null || post.profileImage === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
-    }else{
+                    }else{
         pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
-    }
+        }
     let text_image;
     if (post.image === null || post.image === ""){ 
 
         text_image = <div  data-testid={"user-div-img-0"}/>
 
-    }else{
+        }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
-    }
+        }
     
     return(
         <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
@@ -95,7 +104,7 @@ export const postCard = (post) => {
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Link to={(`${post.userName}`)}>
                     <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
-                        {pfp}
+        {pfp}
                     </CardContent>
                 </Link>
                 <Grid columns={1}>
@@ -109,7 +118,7 @@ export const postCard = (post) => {
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
                             <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
-                                {post.name}
+        {post.name}
                             </p>
                         </Link>
                     </GridRow>
@@ -120,7 +129,7 @@ export const postCard = (post) => {
             <CardContent>{text_image}</CardContent>
         </Card>
     )
-};
+                        };
 
 
 
@@ -128,12 +137,12 @@ export const ingredientCard = (index, ingrName) => {
     return(
         <Card centered>
             <Card.Header>
-                {ingrName}
+                        {ingrName}
             </Card.Header>
         </Card>
     )
 
-};
+                        };
 
 
 
@@ -142,15 +151,15 @@ export const postCardDelete = (post) => {
     let pfp;
     if (post.profileImage === null || post.profileImage === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
-    }else{
+                        }else{
         pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
-    }
+        }
     let text_image;
     if (post.image === null || post.image === ""){ 
 
         text_image = <div  data-testid={"user-div-img-0"}/>
 
-    }else{
+        }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
     }
     return(
@@ -158,7 +167,7 @@ export const postCardDelete = (post) => {
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Link to={(`${post.userName}`)}>
                     <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
-                        {pfp}
+        {pfp}
                     </CardContent>
                 </Link>
                 <Grid columns={1}>
@@ -172,24 +181,24 @@ export const postCardDelete = (post) => {
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Button color='red' onClick={() =>
                             fetch('http://localhost:8080/post/delete', {
-                                method: 'POST',
-                                headers: {
+        method: 'POST',
+        headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    text: "",
-                                    image: "",
-                                    userName: post.userName,
-                                    geolocation: "",
-                                    date: "",
-                                    postId: post.postId
-                                })
-                            }).then(res => res.json()).then((data) => {
+                        },
+        body: JSON.stringify({
+        text: "",
+        image: "",
+        userName: post.userName,
+        geolocation: "",
+        date: "",
+        postId: post.postId
+                        })
+                        }).then(res => res.json()).then((data) => {
                                 console.log(data);
                                 window.location.replace('/feed');
 
-                            }).catch(console.log)
+                        }).catch(console.log)
 
 
                         }>
@@ -197,7 +206,7 @@ export const postCardDelete = (post) => {
                         </Button>
                         <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
                             <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
-                                {post.name}
+    {post.name}
                             </p>
                         </Link>
                     </GridRow>
@@ -208,4 +217,4 @@ export const postCardDelete = (post) => {
             <CardContent>{text_image}</CardContent>
         </Card>
     )
-};
+    };
