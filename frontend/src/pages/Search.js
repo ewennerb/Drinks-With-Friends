@@ -236,7 +236,14 @@ export default class Search extends React.Component{
  
                                 return (userCard(index, result.userName, result.photo))
                             } else if(this.state.searchVal === 'i'){
-                                    return (ingredientCard(index, result))
+                                //return (ingredientCard(index, result))
+                                return(
+                                    <DrinkCard
+                                        user={this.state.user}
+                                        index={index}
+                                        drink={result}
+                                        />
+                                )
                             }
                             else if (this.state.searchVal === 'p'){
                                 return (
@@ -271,7 +278,14 @@ export default class Search extends React.Component{
                                     console.log(index);
                                     return (userCard(index, result.userName, result.photo))
                                 } else if(this.state.searchVal === 'i'){
-                                        return (ingredientCard(index, result))
+                                    //return (ingredientCard(index, result))
+                                    return(
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                        />
+                                    )
                                 }
                                 else if (this.state.searchVal === 'p'){
                                     return (

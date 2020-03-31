@@ -130,7 +130,9 @@ export const ingredientCard = (index, ingrName) => {
             </Card.Header>
         </Card>
     )
+
 };
+
 
 
 
@@ -207,3 +209,4 @@ export const postCardDelete = (post) => {
         </Card>
     )
 };
+>>>>>>> 1896743c10e40d2ac118e145e06a8551d28fdbb7
