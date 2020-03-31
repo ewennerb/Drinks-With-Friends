@@ -81,6 +81,12 @@ async getDrink(){
             </div>
         )
     }else{
+        let pfp;
+        if (this.state.drink.photo === null || this.state.drink.photo === ""){
+            pfp = <Image floated="left" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} />
+        }else{
+            pfp = <Image floated="left" size="tiny" src={`data:image/jpeg;base64,${this.state.drink.photo}`}/>
+        }
         return(
             <div>
                 <Card style={{width: "500px"}} centered>
@@ -94,11 +100,8 @@ async getDrink(){
                             <h2>{this.state.drink.name}</h2>
                         </Header>
                         <Grid columns="2">
-                            <GridColumn>
-                                <Image 
-                                    floated='left'
-                                    src='https://react.semantic-ui.com/images/avatar/large/molly.png'
-                                />
+                            <GridColumn>                                                                    
+                                    {pfp}                                
                             </GridColumn>
                             <GridColumn>
                                 <h3 style={{textAlign: 'center'}}>Recipe</h3>
