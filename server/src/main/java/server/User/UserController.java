@@ -69,6 +69,8 @@ public class UserController {
 
 	@GetMapping("/searchUsers")
 	public String searchUsers(@RequestParam(name = "s") String request) throws JsonProcessingException {
+		System.out.println("SEARCHING USERS");
+
 		UserSQL us = new UserSQL();
 		User[] users = us.searchUsers(request);
 		
@@ -76,7 +78,7 @@ public class UserController {
 			return "{\"results\": \"DNE\"";
 		}
 
-		String out =  "{ \"results\": [";
+		String out =  "{ \"results\": [ ";
 		for (User user : users ) {
 			out += new ObjectMapper().writeValueAsString(user) + ",";
 		}
