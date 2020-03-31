@@ -89,6 +89,7 @@ export default class Routes extends React.Component {
                 'Content-Type': 'application/json'
             },
         }).then(res => res.json()).then((data) => {
+            console.log('LOGGED ON')
             this.setState({response: data})
         }).catch(console.log);
 
