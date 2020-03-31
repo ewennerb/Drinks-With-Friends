@@ -236,7 +236,14 @@ export default class Search extends React.Component{
  
                                 return (userCard(index, result.userName, result.photo))
                             } else if(this.state.searchVal === 'i'){
-                                    return (ingredientCard(index, result))
+                                //return (ingredientCard(index, result))
+                                return(
+                                    <DrinkCard
+                                        user={this.state.user}
+                                        index={index}
+                                        drink={result}
+                                        />
+                                )
                             }
                             else if (this.state.searchVal === 'p'){
                                 return (
@@ -271,7 +278,14 @@ export default class Search extends React.Component{
                                     console.log(index);
                                     return (userCard(index, result.userName, result.photo))
                                 } else if(this.state.searchVal === 'i'){
-                                        return (ingredientCard(index, result))
+                                    //return (ingredientCard(index, result))
+                                    return(
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                        />
+                                    )
                                 }
                                 else if (this.state.searchVal === 'p'){
                                     return (
@@ -322,7 +336,7 @@ export default class Search extends React.Component{
                 <div>
                     <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
                         <Grid.Column width={4}/>
-                        <Grid.Column width={8} centered>
+                        <Grid.Column width={8} >
                             <Grid.Row textAlign="center">
                                 <br/>
                                 <br/>
@@ -346,7 +360,8 @@ export default class Search extends React.Component{
                                             <Icon name="dropdown"/>
                                             Search Options
                                         </Accordion.Title>
-                                        <Accordion.Content active={this.state.accActive}>
+                                        {/* changed this to a boolean because compiler yelled */}
+                                        <Accordion.Content active={this.state.accActive != 0}>
                                             <Form>
                                                     <Form.Group inline>
                                                         <label>Search For</label>

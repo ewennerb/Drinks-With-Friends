@@ -1,4 +1,4 @@
-import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow} from "semantic-ui-react";
+import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow, Form} from "semantic-ui-react";
 import React from "react";
 import {NavLink, Link} from "react-router-dom";
 
@@ -42,8 +42,9 @@ export const dotdCard = (dotd) => {
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
             <Card.Header style={{textAlign: "center"}}>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                <Header textAlign="center" style={{marginTop: "0px"}}>
-                    <NavLink class="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
+                <Header textAlign="center" style={{marginTop: "0px"}}>  
+                    {/* changed class to className cause compiler yelled */}
+                    <NavLink className="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
                         {dotd.name}
                     </NavLink>
                 </Header>
@@ -52,6 +53,7 @@ export const dotdCard = (dotd) => {
                 <Card.Content>
                     <List bulleted>
                         {dotd.ingredients.map((ingr, index) => {
+                            // each child in a list should hav a unique key prop
                             return (
                                 <List.Item data-testid={"dotd-ingredient-" + index.toString()}>
                                     {ingr.quantity} {ingr.measurement} {ingr.ingredient}
@@ -130,7 +132,9 @@ export const ingredientCard = (index, ingrName) => {
             </Card.Header>
         </Card>
     )
+
 };
+
 
 
 

@@ -55,12 +55,12 @@ public class PostSQL {
 
 			while(rs.next())
 			{
-				int postId = rs.getInt("postId");
 				String text = rs.getString("text");
 				String image = rs.getString("image");
 				String username = rs.getString("userName");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
+				int postId = rs.getInt("postId");
 				Post p = new Post(postId, text, image, username, geolocation, date);
 				post.add(p);
 			}
