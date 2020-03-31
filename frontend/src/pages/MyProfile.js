@@ -78,6 +78,7 @@ class Profile extends Component{
       postHistory: User.postHistory,
       friendsList: User.friendsList,
       darkMode: User.darkMode,
+      browser: localStorage.getItem('username')
     })
     }//end of if user undef
     }//end of if userpage != undefined
@@ -156,6 +157,8 @@ class Profile extends Component{
     let favoriteDrink = <p/>;
     let pfp;
     //methods
+    console.log(this.state)
+    console.log(this.state.profile === this.state.browser)
     if (this.state.profile === this.state.browser) {
         //allow the option to edit profile
         editProfile = 
@@ -454,9 +457,12 @@ class Profile extends Component{
         }).then(res => res.json()).then((data) => {
           console.log("UPDATE USERNAME");
           console.log(data);
-          this.setState({response: data});
-          
-          window.location.replace('/');
+          this.setState({response: data, browser: this.state.userName, profile: this.state.userName});
+          console.log(this.state);
+          localStorage.setItem('username', this.state.userName)
+          localStorage.setItem('is21', true)
+          localStorage.setItem('authorized', true);
+          window.location.replace('/'+this.state.userName);
         }).catch(console.log);
     
     }

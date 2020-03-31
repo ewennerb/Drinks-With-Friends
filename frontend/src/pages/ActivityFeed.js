@@ -9,7 +9,7 @@ import {
     FormGroup, Icon, Message, GridRow, GridColumn
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {dotdCard, ingredientCard, userCard, postCard, postCardDelete} from "./utils";
+import {postCard, postCardDelete} from "./utils";
 var base64 = require('base-64');
 
 
@@ -512,7 +512,7 @@ export default class ActivityFeed extends React.Component {
                                     <Button color='grey' onClick={this.handleClosePost}>
                                         Cancel
                                     </Button>
-                                    <Button color='yellow' disabled={this.state.postText == ""} onClick={() => this.postPost()}>
+                                    <Button color='yellow' disabled={this.state.postText === ""} onClick={() => this.postPost()}>
                                         Post!
                                     </Button>
                                 </div>
@@ -544,7 +544,7 @@ export default class ActivityFeed extends React.Component {
                             {this.state.results === undefined
                                 ? <Header textAlign="center">No Results Found</Header>
                                 :this.state.results.map((result, index) => {
-                                    if (result.userName == this.state.user) {
+                                    if (result.userName === this.state.user) {
                                         console.log(result);
                                         return (
                                             postCardDelete(result)
@@ -558,9 +558,6 @@ export default class ActivityFeed extends React.Component {
                         </GridColumn>
                     </GridRow>
                 </Grid>
-                <Feed>
-                    Bottom Text
-                </Feed>
             </div>
         )
     }
