@@ -130,7 +130,54 @@ public class DrinkController {
         out = out.substring(0, out.length()-1);  //], similar: [sdfsad ] }
         
 		//need conditional flag for similar
-		if ( 1 == 1) {
+		if ( drinks.length != 0 ) {
+			out +=" ], \"similarDrinks\": [";
+			for (Drink drink : outDrink) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+			}
+			out = out.substring(0, out.length()-1) + "] }";
+			return out;
+		} 
+
+		out = out.substring(0, out.length()-1) + "} ], \"similarDrinks\": [] }";
+        return out;
+    }
+
+	@GetMapping("/searchOfficialDrink")
+    public String searchOfficialDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] drinkss = ds.searchDrink(request, 1);
+
+		Drink[] drinks = ds.getSimilarDrinks();
+        if (drinkss == null) {
+            return "{\"results\": \"DNE\"";
+        }
+
+		ArrayList<Drink> similarNoReplicate = new ArrayList<Drink>();
+		
+		for (int x = 0; x < drinks.length; x++){
+			int flag = 0;
+			for (int y = 0; y<drinkss.length; y++){
+				if ( drinks[x].id == drinkss[y].id) {
+					flag=1;
+					break;
+				}
+			}
+			if (flag!=1){
+				similarNoReplicate.add(drinks[x]);
+			}
+		}
+	
+		Drink[] outDrink = new Drink[similarNoReplicate.size()];
+		outDrink = similarNoReplicate.toArray(outDrink);
+
+        String out = "{ \"results\": [";
+        for (Drink drink : drinkss) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1);
+
+		if ( drinks.length != 0 ) {
 			out +=" ], \"similarDrinks\": [";
 			for (Drink drink : outDrink) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
@@ -138,24 +185,7 @@ public class DrinkController {
 			out = out.substring(0, out.length()-1) + "] }";
 			return out;
 		}
-		out = out.substring(0, out.length()-1) + "] }";
-        return out;
-    }
-
-	@GetMapping("/searchOfficialDrink")
-    public String searchOfficialDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
-        DrinkSQL ds = new DrinkSQL();
-        Drink[] drinks = ds.searchDrink(request, 1);
-
-		Drink[] similarDrinks = ds.getSimilarDrinks();
-        if (drinks == null) {
-            return "{\"results\": \"DNE\"";
-        }
-        String out = "{ \"results\": [";
-        for (Drink drink : drinks) {
-            out += new ObjectMapper().writeValueAsString(drink) + ",";
-        }
-        out = out.substring(0, out.length()-1) + "] }";
+		out = out.substring(0, out.length()-1) + "} ], \"similarDrinks\": [] }";
         
         return out;
     }

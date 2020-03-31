@@ -133,12 +133,12 @@ export default class DrinkCard extends React.Component {
                     this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/true" , option);
+                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/false", option);
+                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
             }
         }
@@ -182,7 +182,7 @@ export default class DrinkCard extends React.Component {
                         <Menu.Item position="right">
                             {this.state.dislikes}
                             <FeedLike>
-                                <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("like")} color={dColor}/>
+                                <Icon name="caret down" size="large" onClick={() => this.handleLikeDislike("dislike")} color={dColor}/>
                             </FeedLike>
                         </Menu.Item>
                     </Menu>

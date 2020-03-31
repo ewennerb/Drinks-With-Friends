@@ -177,7 +177,7 @@ public class DrinkSQL {
 		int topResultId = 0;
 		int matchFlag = -1;
 		int mostLikeId = 0;
-		int mostLikes = 0;
+		int mostLikes = -1;
 
 		System.out.println(searchString);
 		try {
@@ -238,11 +238,11 @@ public class DrinkSQL {
 			
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
-				System.out.print("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
+				System.out.println("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
 				topResultDrinkId = topResultId;
 				//similar = getSimilarDrinks(topResultId);
 			} else {
-				System.out.print("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId);
+				System.out.println("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId);
 				topResultDrinkId = mostLikeId;
 				if (mostLikeId == 0) {
 					topResultDrinkId = drink.get(0).id;
@@ -251,10 +251,13 @@ public class DrinkSQL {
 			}
 			
 			//conn.close();
+			System.out.println("OUTPUT: "+drink.get(0).name);
+
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
 			return outDrink;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 
@@ -358,7 +361,7 @@ public class DrinkSQL {
 				finalSorted.add(k);
 			}
 
-			//conn.close();
+			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
 			outDrink = finalSorted.toArray(outDrink);
 			return outDrink;
@@ -506,7 +509,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 
-
+			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
 //			} else if(updateResult == 0) {
@@ -514,6 +517,7 @@ public class DrinkSQL {
 //			}
 
 //			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
@@ -531,6 +535,7 @@ public class DrinkSQL {
 			}else if (toggle.equals("flip")){
 				query = "update test_schema.drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
 			}
+			
 			int updateResult = smt.executeUpdate(query);
 
 			rs = smt.executeQuery("select * from test_schema.drink where drinkId = \""+drinkId+"\"");
@@ -540,7 +545,7 @@ public class DrinkSQL {
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
-
+			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
 //			} else if(updateResult == 0) {
@@ -548,6 +553,7 @@ public class DrinkSQL {
 //			}
 
 //			return "{ \"status\" : \"Error: SQL update failed.\" }";
+			
 		}catch(Exception e){
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
