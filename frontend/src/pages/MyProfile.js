@@ -41,7 +41,6 @@ class Profile extends Component{
     //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
     this.state = {
       modalOpen: false, 
- 
       activeItem: "posts",
       bio: '',
       userName: '',
@@ -61,11 +60,7 @@ class Profile extends Component{
     await this.getUser(userPage);
     let User = this.state.User;
     // while (User == undefined){
-    //   console.log(this.state.User);
-  
-    //   User = this.state.User;
-    // }
-    
+    //   console.log(this.state.
 
     if (User != undefined){
     this.setState({
@@ -84,15 +79,15 @@ class Profile extends Component{
       friendsList: User.friendsList,
       darkMode: User.darkMode,
     })
-    }
-    }
+    }//end of if user undef
+    }//end of if userpage != undefined
     //trying to spread teh work between components and avoid too many connections    
     if (this.state.allDrinks == undefined) {
       await this.getAllDrinks();
     }
     //should have this.state.allDrinks
     let Drinks = [];
-    if (this.state.Drinks == undefined) {
+    if (this.state.Drinks == undefined && this.state.allDrinks != undefined) {
       //getting drink because the other objects dont have the ids
       this.state.allDrinks.map( async (drink) => {
         // console.log(drink)
@@ -104,33 +99,33 @@ class Profile extends Component{
     }
     this.setState({Drinks: Drinks})
     
+  }// end of component did mount
+
+
+  handleClose() {
+    this.setState({
+      modalOpen: false,   
+    })
   }
 
-handleClose() {
-    this.setState(
-        {
-            modalOpen: false,
-            modalOpen2: false
-        }
-    )
-}
-
-handleOpen() {
-    this.setState(
-        {
-            modalOpen: true
-        }
-    )
-}
-handleOpen2() { //Paul Add
-  this.setState({modalOpen2: true})
-}
-  
+  handleOpen() {
+      this.setState({
+      modalOpen: true
+    }) 
+  }
 
   handleItemClick = (e, {name}) => {
     this.setState({ activeItem: name })
     console.log(name)
   }
+ //HOW TO PASS STATE
+  // passState(likedDrinks, dislikedDrinks){
+  //   console.log("trying to pass state");
+  //   this.setState({
+  //       likedDrinks: this.state.likedDrinks.push(likedDrinks),
+  //       dislikedDrinks: this.state.dislikedDrinks.push(dislikedDrinks)
+  //   });
+  // }
 
   render(){
     const { activeItem } = this.state.activeItem
@@ -268,9 +263,13 @@ handleOpen2() { //Paul Add
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
-              <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match}/>} />
-              <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match}/>}/>
-              <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} Drinks={this.state.Drinks} match={match} />}/>
+              <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
+                 Drinks={this.state.Drinks} match={match}  />} />
+              <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
+                  Drinks={this.state.Drinks} match={match}  />}/>
+              <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
+                  Drinks={this.state.Drinks} match={match}  />}/>
+              
               <Route exact path="/:profile/map" component={Map}/>
               <Route exact path="/:profile/friends" component={Friends}/>
             </Switch>
