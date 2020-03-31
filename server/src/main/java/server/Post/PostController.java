@@ -98,7 +98,7 @@ public class PostController {
 		
 		
 
-		String out =  "{ \"results\": [";
+		String out =  "{ \"results\": [ ";
 		for (Post post : posts ) {
 			out += new ObjectMapper().writeValueAsString(post) + ",";
 		}
