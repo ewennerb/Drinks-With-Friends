@@ -177,7 +177,7 @@ public class DrinkSQL {
 		int topResultId = 0;
 		int matchFlag = -1;
 		int mostLikeId = 0;
-		int mostLikes = 0;
+		int mostLikes = -1;
 
 		System.out.println(searchString);
 		try {
@@ -238,11 +238,11 @@ public class DrinkSQL {
 			
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
-				System.out.print("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
+				System.out.println("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
 				topResultDrinkId = topResultId;
 				//similar = getSimilarDrinks(topResultId);
 			} else {
-				System.out.print("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId);
+				System.out.println("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId);
 				topResultDrinkId = mostLikeId;
 				if (mostLikeId == 0) {
 					topResultDrinkId = drink.get(0).id;
@@ -251,10 +251,13 @@ public class DrinkSQL {
 			}
 			
 			//conn.close();
+			System.out.println("OUTPUT: "+drink.get(0).name);
+
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
 			return outDrink;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 

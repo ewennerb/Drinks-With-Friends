@@ -130,15 +130,16 @@ public class DrinkController {
         out = out.substring(0, out.length()-1);  //], similar: [sdfsad ] }
         
 		//need conditional flag for similar
-		if ( 1 == 1) {
+		if ( drinks.length != 0 ) {
 			out +=" ], \"similarDrinks\": [";
 			for (Drink drink : outDrink) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
 			}
 			out = out.substring(0, out.length()-1) + "] }";
 			return out;
-		}
-		out = out.substring(0, out.length()-1) + "] }";
+		} 
+
+		out = out.substring(0, out.length()-1) + "} ], \"similarDrinks\": [] }";
         return out;
     }
 
@@ -176,7 +177,7 @@ public class DrinkController {
         }
         out = out.substring(0, out.length()-1);
 
-		if ( 1 == 1) {
+		if ( drinks.length != 0 ) {
 			out +=" ], \"similarDrinks\": [";
 			for (Drink drink : outDrink) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
@@ -184,7 +185,7 @@ public class DrinkController {
 			out = out.substring(0, out.length()-1) + "] }";
 			return out;
 		}
-		out = out.substring(0, out.length()-1) + "] }";
+		out = out.substring(0, out.length()-1) + "} ], \"similarDrinks\": [] }";
         
         return out;
     }
