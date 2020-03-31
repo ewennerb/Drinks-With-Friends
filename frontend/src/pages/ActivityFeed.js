@@ -97,11 +97,26 @@ export default class ActivityFeed extends React.Component {
         }).then(res => res.json()).then(async (data) => {
             
             this.setState({results: data})
-            
-            console.log("===== Search Results =====");
-            console.log(data);
+            for (let res in data) {
+                let names = {}
+                await fetch("http://localhost:8080/user/"+data[res].userName, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json()).then(async (data) => {
+                    names = data
+                }).catch(err => {
+                    console.log(err)
+                });
+                console.log(names)
+                data[res].name = names.name
+                data[res].profileImage = names.photo
+            }
+            this.setState({results: data})
         }).catch(this.setState({results: []}));
-        
+        console.log(this.state.results)
         
     }
 
@@ -477,8 +492,6 @@ export default class ActivityFeed extends React.Component {
                             {this.state.results === undefined
                                 ? <Header textAlign="center">No Results Found</Header>
                                 :this.state.results.map((result, index) => {
-                                    //this.setResponse();
-                                    //window.location.replace('/feed');
                                     if (result.userName == this.state.user) {
                                         console.log(result);
                                         return (
