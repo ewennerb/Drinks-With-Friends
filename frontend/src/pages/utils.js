@@ -70,7 +70,9 @@ export const dotdCard = (dotd) => {
     )
 };
 
+
 export const postCard = (post) => {
+    
     let pfp;
     if (post.profileImage === null || post.profileImage === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
@@ -85,7 +87,7 @@ export const postCard = (post) => {
     }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
     }
-    console.log(post)
+    
     return(
         <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
 
