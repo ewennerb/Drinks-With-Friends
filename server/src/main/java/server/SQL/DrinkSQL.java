@@ -125,7 +125,7 @@ public class DrinkSQL {
 		}
 	}
 
-	public Ingredient[] searchIngredients(String request) {
+	public Drink[] searchIngredients(String request) {
 		System.out.print("ingredient searching");
 		StringBuilder searchString = new StringBuilder("%" + request + "%");
 		for (int i = 0; i < request.length(); i++) {
@@ -136,29 +136,50 @@ public class DrinkSQL {
 		System.out.println("Search String: "+searchString);
 		try{
 			
-			String query = "select * from test_schema.drink_ingredient where ingredient LIKE \""+searchString+"\"";
+			String query = "SELECT * FROM test_schema.drink d "+
+				"where d.drinkId in (select drink_id from test_schema.drink_ingredient where ingredient like \""+searchString+"\")";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 
-			ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-			while(rs.next())
+			//ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+			ArrayList<Drink> drink = new ArrayList<Drink>();
+			while (rs.next())
 			{
-				//getResults
-				//add to arraylist
-				String username = rs.getString("username");
-				int drinkId = rs.getInt("drink_id");
-				String ingredient = rs.getString("ingredient");
-				String measurement = rs.getString("measurement");
-				String quantity = rs.getString("quantity");
+				int drinkId=rs.getInt("drinkId");
+				String dName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
+				String publisher=rs.getString("publisher");
+				
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM test_schema.drink_ingredient " +
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				if (rs2 != null){
 
-				Ingredient i = new Ingredient(username, drinkId, ingredient, measurement, quantity);
-				ingredients.add(i);
+					while (rs2.next()){
+						ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+					}
+
+				}
+
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
+				drink.add(d);
+
+
 			}
 			conn.close();
 			//add to Array
-			Ingredient[] outList = new Ingredient[ingredients.size()];
-			outList = ingredients.toArray(outList);
-			return outList;
+			Drink[] outDrink = new Drink[drink.size()];
+			outDrink = drink.toArray(outDrink);
+			return outDrink;
 
 		}catch(Exception e){
 			e.printStackTrace();
