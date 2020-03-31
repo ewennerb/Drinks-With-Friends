@@ -69,6 +69,8 @@ public class UserController {
 
 	@GetMapping("/searchUsers")
 	public String searchUsers(@RequestParam(name = "s") String request) throws JsonProcessingException {
+		System.out.println("SEARCHING USERS");
+
 		UserSQL us = new UserSQL();
 		User[] users = us.searchUsers(request);
 		

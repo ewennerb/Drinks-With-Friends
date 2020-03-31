@@ -119,7 +119,7 @@ export default class Search extends React.Component{
         console.log(this.state.searchVal);
         console.log(this.state.officialOnly);
         if (this.state.searchVal === 'u'){
-            url = "http://localhost:8080/user/" + this.state.searchText;
+            url = "http://localhost:8080/user/searchUsers?s=" + this.state.searchText;
         }else if(this.state.searchVal === "d"){
             if(this.state.officialOnly){
                 url = "http://localhost:8080/drink/searchOfficialDrink?s=" + this.state.searchText;
