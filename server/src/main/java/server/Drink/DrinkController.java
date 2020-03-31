@@ -131,7 +131,7 @@ public class DrinkController {
         
 		//need conditional flag for similar
 		if ( drinks.length != 0 ) {
-			out +=" ], \"similarDrinks\": [";
+			out +=" ], \"similarDrinks\": [ ";
 			for (Drink drink : outDrink) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
 			}
@@ -171,7 +171,7 @@ public class DrinkController {
 		Drink[] outDrink = new Drink[similarNoReplicate.size()];
 		outDrink = similarNoReplicate.toArray(outDrink);
 
-        String out = "{ \"results\": [";
+        String out = "{ \"results\": [ ";
         for (Drink drink : drinkss) {
             out += new ObjectMapper().writeValueAsString(drink) + ",";
         }

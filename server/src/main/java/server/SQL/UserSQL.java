@@ -151,6 +151,11 @@ public class UserSQL {
 			conn.close();
 			//System.out.print(all);
 			//System.out.print("INSQL "+user.get(0).userName);
+			for (int x = 0; x < user.size(); x++){
+				System.out.println("INSQL "+user.get(x).userName);
+
+			}
+			
 
 			User[] outUser = new User[user.size()];
 			outUser = user.toArray(outUser);

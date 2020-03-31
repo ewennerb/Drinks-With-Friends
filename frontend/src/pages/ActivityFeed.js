@@ -5,10 +5,11 @@ import {
     Segment,
     Button,
     Form,
-    Modal,
-    FormGroup, Icon, Message
+    Modal, Header,
+    FormGroup, Icon, Message, GridRow, GridColumn
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
+import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
 var base64 = require('base-64');
 
 
@@ -35,6 +36,8 @@ export default class ActivityFeed extends React.Component {
         this.handleNameChange = this.handleNameChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
+        this.getSearchResults = this.getSearchResults.bind(this);
+        
         this.state = {
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
@@ -55,6 +58,7 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
+            results: []
         };
         this.fileInputRef = React.createRef();
     }
@@ -74,6 +78,43 @@ export default class ActivityFeed extends React.Component {
                 }
             ],
         })
+        this.getSearchResults();
+    }
+
+    async getSearchResults(){
+        let url = "http://localhost:8080/post/"
+        
+
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            
+            this.setState({results: data})
+            for (let res in data) {
+                let names = {}
+                await fetch("http://localhost:8080/user/"+data[res].userName, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json()).then(async (data) => {
+                    names = data
+                }).catch(err => {
+                    console.log(err)
+                });
+                console.log(names)
+                data[res].name = names.name
+                data[res].profileImage = names.photo
+            }
+            this.setState({results: data})
+        }).catch(this.setState({results: []}));
+        console.log(this.state.results)
+        
     }
 
     handleFileRead = (e) => {
@@ -414,16 +455,33 @@ export default class ActivityFeed extends React.Component {
 
 
                 <Grid style={{ height: '100vh' }} columns={16} centered>
-                    <Grid.Column width={4}/>
-                    <Grid.Column width={8}>
-                        <Button icon="beer" color="yellow" onClick={this.handleOpen}>
-                            Create Drink
-                        </Button>
-                        <Button icon="beer" color="yellow" onClick={this.handleOpenPost}>
-                            Create Post
-                        </Button>
-                    </Grid.Column>
-                    <Grid.Column width={4}/>
+                    <GridRow >
+                        <Grid.Column width={4}/>
+                        <Grid.Column width={8}>
+                            <Button icon="beer" color="yellow" onClick={this.handleOpen}>
+                                Create Drink
+                            </Button>
+                            <Button icon="beer" color="yellow" onClick={this.handleOpenPost}>
+                                Create Post
+                            </Button>
+                        </Grid.Column>
+                        <Grid.Column width={4}/>
+                    </GridRow>
+                    
+                    <br/>
+                    <br/>
+                    <GridRow>
+                        <GridColumn style={{width: "auto"}}>
+                            {this.state.results === undefined
+                                ? <Header textAlign="center">No Results Found</Header>
+                                :this.state.results.map((result, index) => {
+                                    return (
+                                        postCard(result)
+                                    )
+                                })
+                            }
+                        </GridColumn>
+                    </GridRow>
                 </Grid>
                 <Feed>
                     Bottom Text

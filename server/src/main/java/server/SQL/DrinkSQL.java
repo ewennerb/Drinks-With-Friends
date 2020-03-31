@@ -242,16 +242,17 @@ public class DrinkSQL {
 				topResultDrinkId = topResultId;
 				//similar = getSimilarDrinks(topResultId);
 			} else {
-				System.out.println("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId);
+				System.out.println("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId+" and drink size: "+drink.size());
 				topResultDrinkId = mostLikeId;
-				if (mostLikeId == 0) {
+				if (mostLikeId == 0 && drink.size() != 0) {
 					topResultDrinkId = drink.get(0).id;
+					System.out.println("OUTPUT: "+drink.get(0).name);
 				}
 				//similar = getSimilarDrinks(mostLikeId);
 			}
 			
 			//conn.close();
-			System.out.println("OUTPUT: "+drink.get(0).name);
+			
 
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
