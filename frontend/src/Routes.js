@@ -97,16 +97,13 @@ export default class Routes extends React.Component {
         
     }
     /*Rod added this trying to figure out other user's profiles */
-    async componentDidMount() {
-        //capital U is the object :^)
-        if (this.state.loggedIn && this.state.user !== undefined){
-            await this.getUser(this.state.user);
-            let User = this.state.User;
-        }
-        
-        
-
-    }
+    // async componentDidMount() {
+    //     //capital U is the object :^)
+    //     if (this.state.loggedIn && this.state.user !== undefined){
+    //         await this.getUser(this.state.user);
+    //         let User = this.state.User;
+    //     }
+    // }
     render(){
         let logOrProfile;
         let logOrRegister;
@@ -221,7 +218,6 @@ export default class Routes extends React.Component {
                                             name={"My Profile"}
                                             active={activeItem === 'My Profile'}
                                             onClick={this.handlePageJump}
-                                      
                                             position="right"
                                         />
                                         <Menu.Item
@@ -230,7 +226,7 @@ export default class Routes extends React.Component {
                                             name={"All"}
                                             active={activeItem === 'My Profile'}
                                             onClick={this.handlePageJump}
-                                            borderless
+                                            // compiler didnt like borderless
                                             position="right"
                                         />
                                         {logOrRegister}
@@ -248,7 +244,7 @@ export default class Routes extends React.Component {
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
                                         <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>  
-                                        {/* it doenst like this^ stackoverflow says componentdidmount for sideeffects */}
+                                        {/* it doenst like this^ stackoverflow says componentdidmount for "sideeffects" */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
@@ -269,7 +265,6 @@ export default class Routes extends React.Component {
 
         );
     } //end render
-
 
 
     // rod added this to get user from username if logged in to have userobject available in routesstate
