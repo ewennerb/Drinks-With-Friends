@@ -47,6 +47,9 @@ export default class Routes extends React.Component {
             loggedIn: false,
         })
         window.location.reload(false);
+        localStorage.setItem('username', '');
+        localStorage.setItem('password', '');
+        localStorage.setItem('is21', false);
     }
 
     handlePageJump(e, { name }){
@@ -65,14 +68,33 @@ export default class Routes extends React.Component {
     }
 
 
-    passState(user, logged_in){
+    passState(user, loggedIn){
         console.log("Doing Generate");
         this.setState({
             user: user,
-            logged_in: logged_in
+            loggedIn: loggedIn
         });
     }
+    async componentWillMount(){
+        this.state.is21 = localStorage.getItem('is21') === 'true';
+        if (localStorage.getItem('username') === ''){
+            return;
+        }
+        await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json()).then((data) => {
+            console.log(data)
+            this.setState({response: data})
+        }).catch(console.log);
 
+        
+        this.setState({loggedIn: true, user: localStorage.getItem('username')});
+        
+    }
     /*Rod added this trying to figure out other user's profiles */
     async componentDidMount() {
         //capital U is the object :^)
