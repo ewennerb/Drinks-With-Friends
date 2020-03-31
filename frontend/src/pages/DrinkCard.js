@@ -1,5 +1,6 @@
 import React from "react";
 import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
+import {NavLink, Link} from "react-router-dom";
 
 
 export default class DrinkCard extends React.Component {
@@ -212,8 +213,9 @@ export default class DrinkCard extends React.Component {
                 <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
                     {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
                     <Card.Content>
-                        <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>{drink.name}</Card.Header>
-                        <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}>{drink.publisher}</Card.Meta>
+                        
+                        <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}> <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link></Card.Header>
+                        <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
                     </Card.Content>
                     <Card.Content textAlign="left">
                         {drinkPic}

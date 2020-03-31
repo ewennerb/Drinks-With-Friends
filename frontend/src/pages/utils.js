@@ -77,7 +77,7 @@ export const postCard = (post) => {
         pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} />
     }
     let text_image;
-    if (post.image === null || post.image === ""){
+    if (post.image === null || post.image === ""){ 
         text_image = <div/>
     }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`} />

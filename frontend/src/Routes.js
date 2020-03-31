@@ -102,6 +102,8 @@ export default class Routes extends React.Component {
             await this.getUser(this.state.user);
             let User = this.state.User;
         }
+        
+        
 
     }
     render(){
@@ -145,6 +147,7 @@ export default class Routes extends React.Component {
         }
 
         return (
+            
             <div className="Routes">
                 {/* This is the navigation bar */}
                 <BrowserRouter>
