@@ -325,6 +325,7 @@ class Profile extends Component{
           {/* favorite drink change input */}
           <Form.Input
           fluid icon='beer'
+          placeholder='My Favorite Drink Is:'
           iconPosition='left'
           value={this.ifNullthenEmpty(this.state.favoriteDrink)}
           onChange={this.handleFavoriteDrinkChange}
@@ -451,9 +452,11 @@ class Profile extends Component{
             
         })
         }).then(res => res.json()).then((data) => {
-        console.log("UPDATE USERNAME");
-        console.log(data);
-        this.setState({response: data});
+          console.log("UPDATE USERNAME");
+          console.log(data);
+          this.setState({response: data});
+          
+          window.location.replace('/');
         }).catch(console.log);
     
     }
@@ -506,6 +509,7 @@ class Profile extends Component{
       this.setState({response: data});
     }).catch(console.log);
 
+    this.setState({modalOpen: false});
     }
 
     //favoritedrink update
