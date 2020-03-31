@@ -40,7 +40,7 @@ export const userCard = (index, username, photo) => {
 export const dotdCard = (dotd) => {
     return(
         <Card style={{width: "500px"}} centered data-testid="dotd-card">
-            <Card.Header>Today's Drink of the Day</Card.Header>
+            <Card.Header style={{textAlign: "center"}}>Today's Drink of the Day</Card.Header>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                 <Header textAlign="center" style={{marginTop: "0px"}}>
                     <NavLink class="drinklink" to={(`/${dotd.publisher}/drink/${dotd.name}`)} data-testid="dotd-name">
