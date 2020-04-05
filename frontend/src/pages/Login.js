@@ -64,6 +64,8 @@ class Login extends React.Component {
 
             //Todo: pass back loggedIn back to the Routes
             this.props.passState(this.state.user, this.state.loggedIn);
+            // localStorage.setItem("username", this.state.user)
+            // localStorage.setItem("authorized", "true")
             return (
                 <Redirect to={{
                     pathname: '/',
