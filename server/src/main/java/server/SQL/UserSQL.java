@@ -463,4 +463,48 @@ public class UserSQL {
 		}
 
 	}
+//rod
+	public ArrayList<Drink> getLikedDrinks(String userName) {
+		String query = "";
+		query = "select * from test_schema.drink_likes where userName='" + userName + "' AND likes="+1;
+		System.out.println(query);
+		ArrayList<Drink> drinks = new ArrayList<>();
+		DrinkSQL ds = new DrinkSQL();
+		Drink drink;
+		try{
+			rs = smt.executeQuery(query);
+			while (rs.next()){
+				int drinkId = rs.getInt("drink_id");
+				drink = ds.getDrink(drinkId);
+				drinks.add(drink);
+			}
+			conn.close();
+			return drinks;
+		} catch (Exception e) {
+			System.out.print("oof");
+		}
+		return null;
+	}
+	public ArrayList<Drink> getDislikedDrinks(String userName) {
+		String query = "";
+		query = "select * from test_schema.drink_likes where userName='" + userName + "' AND dislikes="+1;
+		System.out.println(query);
+		ArrayList<Drink> drinks = new ArrayList<>();
+		DrinkSQL ds = new DrinkSQL();
+		Drink drink;
+		try{
+			rs = smt.executeQuery(query);
+			while (rs.next()){
+				int drinkId = rs.getInt("drink_id");
+				drink = ds.getDrink(drinkId);
+				System.out.println(drink);
+				drinks.add(drink);
+			}
+			conn.close();
+			return drinks;
+		} catch (Exception e) {
+			System.out.print("oof");
+		}
+		return null;
+	}
 }
