@@ -76,10 +76,29 @@ export default class Routes extends React.Component {
             loggedIn: loggedIn
         });
     }
-    async componentWillMount(){
+    // async componentWillMount(){
+    //     this.state.is21 = localStorage.getItem('is21') === 'true';
+    //     if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
+    //         return;
+    //     }
+    //     await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+    //         method: 'GET',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json'
+    //         },
+    //     }).then(res => res.json()).then((data) => {
+    //         console.log('LOGGED ON')
+    //         this.setState({response: data})
+    //     }).catch(console.log);
+    //     this.setState({loggedIn: true, user: localStorage.getItem('username')});
+    // }
+    //rod changed it to component did mount bc it kept sayingwill mount is whats the word defected
+    async componentDidMount(){
+        //console.log("componentdid mount")
         this.state.is21 = localStorage.getItem('is21') === 'true';
         if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
-
+            console.log("return ")
             return;
         }
         await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
@@ -90,12 +109,13 @@ export default class Routes extends React.Component {
             },
         }).then(res => res.json()).then((data) => {
             console.log('LOGGED ON')
-            this.setState({response: data})
+            this.setState({response: data,
+                          UserObject: data,
+                          loggedIn: true,
+                         user: localStorage.getItem("username") ,
+                })
         }).catch(console.log);
 
-        
-        this.setState({loggedIn: true, user: localStorage.getItem('username')});
-        
     }
     /*Rod added this trying to figure out other user's profiles */
     // async componentDidMount() {
@@ -252,7 +272,8 @@ export default class Routes extends React.Component {
                                         {/* im so sorry for fucking up the username and user i shouldve fixed it way earlier */}
                                         <Route path="/:username/drink/:name" component={Drink}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
-                                        <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}/>}/>
+                                        <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}
+                                                                                    UserObject={this.state.UserObject}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
                                         
 
