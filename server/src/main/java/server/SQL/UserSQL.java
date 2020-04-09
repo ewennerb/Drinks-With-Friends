@@ -264,17 +264,48 @@ public class UserSQL {
 		try{
 
 			String query = "update test_schema.user set username = \""+newUsername+"\""+" where userName = \""+userName+"\"";
-			int updateResult = smt.executeUpdate(query);
-			if(updateResult == 1){
+			int updateResultUser = smt.executeUpdate(query);
+
+			if (updateResultUser == 0) {
+				//System.out.print("****** IS 0");
+				return "{ \"status\" : \"Error: SQL user update failed.\"}";
+			}
+
+			String query1 = "update test_schema.drink set publisher = \""+newUsername+"\""+" where publisher = \""+userName+"\"";
+			int updateResultDrink = smt.executeUpdate(query1);
+
+			if (updateResultDrink == 0) {
+				//System.out.print("****** IS 0");
+			//	return "{ \"status\" : \"Error: SQL drink update failed.\"}";
+			}
+
+			String query2 =  "update test_schema.drink_ingredient set username = \""+newUsername+"\""+" where username = \""+userName+"\"";
+			int updateResultDrinkIngr = smt.executeUpdate(query2);
+
+			if (updateResultDrinkIngr == 0) {
+				//System.out.print("****** IS 0");
+			//	return "{ \"status\" : \"Error: SQL drink ingr update failed.\"}";
+			}
+
+			String query3 =  "update test_schema.drink_likes set userName = \""+newUsername+"\""+" where userName = \""+userName+"\"";
+			int updateResultDrinkLikes = smt.executeUpdate(query3);
+
+			if (updateResultDrinkLikes == 0) {
+				//System.out.print("****** IS 0");
+			//	return "{ \"status\" : \"Error: SQL drink likes update failed.\"}";
+			}
+
+
+			/*if(updateResultUser == 1){
 				//System.out.print("********* ITS !");
 				return "{ \"status\" : \"ok\" }";
-			}else if (updateResult == 0) {
+			}else if (updateResultUser == 0) {
 				//System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
-			}
+			}*/
 			
-			return "{ \"status\" : \"Error: SQL update failed.\" }";
-			
+			//return "{ \"status\" : \"Error: SQL update failed.\" }";
+			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed updating password.");
