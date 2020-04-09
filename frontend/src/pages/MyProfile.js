@@ -79,7 +79,7 @@ class Profile extends Component{
     }
     //end of if user undef
     // }//end of if userpage != undefined
-  
+
     
   }// end of component did mount
 

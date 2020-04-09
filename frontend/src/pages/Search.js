@@ -147,10 +147,41 @@ export default class Search extends React.Component{
                // }
             }else{
 
-                this.setState({results: data.results})
+                console.log(data)
                 if (this.state.searchVal === 'd'){
-                    this.setState({similarResults: data.similarDrinks})
+                    if (this.state.showSimilar){
+                        this.setState({similarResults: data.similarDrinks})
+                    }
+                    this.setState({results: data.results})
+
+                } else if (this.state.searchVal === 'p'){
+                    this.setState({results: data.results})
+                    
+                    for (let res in data.results) {
+                        console.log(data.results[res].userName)
+                        let names = {}
+                        await fetch("http://localhost:8080/user/"+data.results[res].userName, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                        }).then(res => res.json()).then(async (data2) => {
+                            names = data2
+                            console.log(data2)
+                        }).catch(err => {
+                            console.log(err)
+                        });
+                        data.results[res].profileImage = names.photo
+                        
+                    }
+                    this.setState({results: data.results})
+
+                    
+                } else {
+                    this.setState({results: data.results})
                 }
+                
             }
             console.log("===== Search Results =====");
             console.log(data);

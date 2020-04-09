@@ -366,6 +366,7 @@ public class UserSQL {
 
 			int updateResult = smt.executeUpdate(query);
 
+			conn.close();
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
@@ -375,7 +376,6 @@ public class UserSQL {
 				}
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
-
 //			return "{ \"status\" : \"Error: SQL update failed.\" }";
 		}catch(Exception e){
 			e.printStackTrace();
@@ -407,7 +407,7 @@ public class UserSQL {
 
 
 			int updateResult = smt.executeUpdate(query);
-
+			conn.close();
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {

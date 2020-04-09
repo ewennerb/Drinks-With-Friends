@@ -24,7 +24,7 @@ public class PostSerializer extends StdSerializer<Post> {
 		gen.writeNumberField("postId", value.postId);
 		gen.writeStringField("text", value.text);
 		gen.writeStringField("image", value.image);
-		gen.writeStringField("userName", value.userName);
+		gen.writeNumberField("userId", value.userId);
 		gen.writeStringField("geolocation", value.geolocation);
 		gen.writeStringField("date", value.date);
 		gen.writeEndObject();
