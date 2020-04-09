@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import 'semantic-ui-css/semantic.min.css';
-import { BrowserRouter, Route, Switch, Link, } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link, Redirect, } from "react-router-dom";
 import {
   Menu,
   Grid,
@@ -43,25 +43,19 @@ class Profile extends Component{
       modalOpen: false, 
       activeItem: "posts",
       bio: '',
-      userName: '',
-      browser: props.user,
+      userName: localStorage.getItem("username"),
+      // browser: props.user,
       profile: props.match.params.profile,
-      User: {},
+      User: props.UserObject,
     };
 }
 
   async componentDidMount(){
     // getting user
-    console.log(this.props.match);
-    //console.log(match.params)
-    let userPage = this.state.profile;
+    // let userPage = this.state.profile;
     
-    if (userPage != undefined){
-    await this.getUser(userPage);
+    // if (userPage != undefined){
     let User = this.state.User;
-    // while (User == undefined){
-    //   console.log(this.state.
-
     if (User != undefined){
     this.setState({
       modalOpen: false,
@@ -80,25 +74,12 @@ class Profile extends Component{
       darkMode: User.darkMode,
       browser: localStorage.getItem('username')
     })
-    }//end of if user undef
-    }//end of if userpage != undefined
-    //trying to spread teh work between components and avoid too many connections    
-    if (this.state.allDrinks == undefined) {
-      await this.getAllDrinks();
+    } else {
+      await this.getUser(this.state.profile)
     }
-    //should have this.state.allDrinks
-    let Drinks = [];
-    if (this.state.Drinks == undefined && this.state.allDrinks != undefined) {
-      //getting drink because the other objects dont have the ids
-      this.state.allDrinks.map( async (drink) => {
-        // console.log(drink)
-        await this.getDrink(drink.publisher, drink.name);
-        if(this.state.drink != undefined){
-          Drinks.push(this.state.drink)
-        }
-      })
-    }
-    this.setState({Drinks: Drinks})
+    //end of if user undef
+    // }//end of if userpage != undefined
+  
     
   }// end of component did mount
 
@@ -150,7 +131,7 @@ class Profile extends Component{
     //       </Modal>
     // }
 
-    let currentUser = this.state.userName;
+    let currentUser = localStorage.getItem("username");
 
     //vars
     let editProfile = <p/>;
@@ -221,21 +202,21 @@ class Profile extends Component{
             //  this one will be hard to decide how to do 
               name="posts"
               as={Link}
-              to={{pathname: `/${this.state.userName}/posts`, state: {User: this.state.User} }}
+              to={{pathname: `/${this.state.userName}/posts` }}
               active={activeItem === "posts"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="likedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/likedDrinks`, state: {User: this.state.User}}}
+              to={{pathname: `/${this.state.userName}/likedDrinks`}}
               active={activeItem === "likedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="dislikedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/dislikedDrinks`, state: {User: this.state.User}}}
+              to={{pathname: `/${this.state.userName}/dislikedDrinks`}}
               active={activeItem === "dislikedDrinks"}
               onClick={this.handleItemClick}
             />
@@ -266,6 +247,8 @@ class Profile extends Component{
           <Grid.Row>
           <Segment basic placeholder>
             <Switch>
+              {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
+                 Drinks={this.state.Drinks} match={match}  />} /> */}
               <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
                  Drinks={this.state.Drinks} match={match}  />} />
               <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
@@ -462,7 +445,7 @@ class Profile extends Component{
           localStorage.setItem('username', this.state.userName)
           localStorage.setItem('is21', true)
           localStorage.setItem('authorized', true);
-          window.location.replace('/'+this.state.userName);
+          //window.location.replace('/'+this.state.userName);
         }).catch(console.log);
     
     }

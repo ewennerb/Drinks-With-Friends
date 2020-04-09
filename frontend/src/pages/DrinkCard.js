@@ -229,10 +229,10 @@ export default class DrinkCard extends React.Component {
                             <br/>
                             <p><strong>Ingredients: </strong></p>
                             <Card.Content>
-                                <List bulleted>
+                                <List bulleted > 
                                     {drink.ingredients.map((ingr, idx) => {
                                         return (
-                                            <p data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
+                                            <p key={idx} data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
                                                 {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                             </p>
                                         )

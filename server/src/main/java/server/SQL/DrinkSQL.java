@@ -582,6 +582,47 @@ public class DrinkSQL {
 		}
 //		return("\nSomething has gone wrong in DrinkSQL.java:dislikeDrink()\n");
 	}
+//rod adition test
+	public Drink getDrink(int drinkId){
+		try {
+			Drink drink = new Drink();
+			String query = "select * from test_schema.drink where drinkId = "+ drinkId ;
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+			// Drink drink = new Drink();
+			while (rs.next()) {
+			//int drinkId=rs.getInt("drinkId");
+			String drinkName=rs.getString("name");
+			String stockPhoto=rs.getString("stockPhoto");
+			String description=rs.getString("description");
+			String owner=rs.getString("publisher");
+			int likes=rs.getInt("likes");
+			int dislikes=rs.getInt("dislikes");
+
+			String query_ingreds = "SELECT quantity, measurement, ingredient " +
+				"FROM test_schema.drink_ingredient " +
+				"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+			//System.out.println(query_ingreds);
+			Statement smt2 = conn.createStatement();
+			ResultSet rs2 = smt2.executeQuery(query_ingreds);
+			ArrayList<Ingredient> ii = new ArrayList<>();
+			Ingredient[] ingreds;
+			while (rs2.next()){
+				ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+			}
+
+			ingreds = new Ingredient[ii.size()];
+			ingreds = ii.toArray(ingreds);
+			drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
+			//System.out.println(drink);
+			}
+			// conn.close();
+			return drink;
+		}catch(Exception e){
+			return null;
+		}
+	}
+
 
 //	public String removeLikeDrink(int drinkId, int flag){
 //		try{
