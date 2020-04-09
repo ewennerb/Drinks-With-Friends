@@ -30,9 +30,9 @@ public class PostSQL {
 	public String insertPost(String text, String image, String username, String geolocation, String date){
 		try{
 			String query = "insert into test_schema.post "+
-				"(text, image, userName, geolocation, date) "+
+				"(text, image, userId, geolocation, date) "+
 				"values "+
-				"(\""+text+"\", \""+image+"\", \""+username+"\", \""+geolocation+"\", \""+date+"\")";
+				"(\""+text+"\", \""+image+"\", (select userId from test_schema.user where userName = \""+geolocation+"\"), \""+geolocation+"\", \""+date+"\")";
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
@@ -50,18 +50,18 @@ public class PostSQL {
 
 	public Post[] getAllPosts(){
 		try{
-			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userName, p.geolocation, p.date from test_schema.post p");
+			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from test_schema.post p, test_schema.user u WHERE u.userId = p.userId");
 			ArrayList<Post> post = new ArrayList<>();
 
 			while(rs.next())
 			{
 				String text = rs.getString("text");
 				String image = rs.getString("image");
-				String username = rs.getString("userName");
+				int userId = rs.getInt("userId");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
 				int postId = rs.getInt("postId");
-				Post p = new Post(postId, text, image, username, geolocation, date);
+				Post p = new Post(postId, text, image, userId, geolocation, date, rs.getString("username"));
 				post.add(p);
 			}
 			
@@ -77,9 +77,9 @@ public class PostSQL {
 		}
 	}
 
-	public ArrayList<Post> getUserPosts(String userName){
+	public ArrayList<Post> getUserPosts(String username){
 		try{
-			rs = smt.executeQuery("select * from test_schema.post where userName = \""+userName+"\"");
+			rs = smt.executeQuery("select * from test_schema.post p, test_schema.user u where u.userName = \""+username+"\" AND u.userId = p.userId" );
 			ArrayList<Post> post = new ArrayList<Post>();
 
 			while(rs.next())
@@ -87,12 +87,12 @@ public class PostSQL {
 				int postId = rs.getInt("postId");
 				String text = rs.getString("text");
 				String image = rs.getString("image");
-				String username = rs.getString("userName");
+				int queryuserId = rs.getInt("userId");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
 			
 
-				Post p = new Post(postId, text, image, username, geolocation, date);
+				Post p = new Post(postId, text, image, queryuserId, geolocation, date, "");
 				post.add(p);
 			}
 			conn.close();
@@ -121,18 +121,19 @@ public class PostSQL {
 
 	public Post[] searchPost(String search) {
 		try{
-			String query = "SELECT p.text, p.image, p.userName, p.geolocation, p.date, u.profilePhoto, u.name FROM test_schema.post p, test_schema.user u WHERE p.text LIKE '%" + search +"%' AND u.userName = p.userName";
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM test_schema.post p, test_schema.user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
 			
 			rs = smt.executeQuery(query);
 			ArrayList<Post> post = new ArrayList<>(); 
 			while(rs.next()) {
+				int id = rs.getInt("postId");
 				String text = rs.getString("text");
 				String image = rs.getString("image");
-				String username = rs.getString("userName");
+				int userId = rs.getInt("userId");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
-				Post p = new Post(0, text, image, username, geolocation, date);
-				p.profileImage = rs.getString("profilePhoto");
+				Post p = new Post(id, text, image, userId, geolocation, date, rs.getString("userName"));
+				//p.profileImage = rs.getString("profilePhoto");
 				p.name = rs.getString("name");
 				post.add(p);
 			}
@@ -147,35 +148,6 @@ public class PostSQL {
 			return null;
 		}
 	}
-	public String[] getPostUsernames(Post[] posts) {
-		
-		try{
-			ArrayList<String> outPost = new ArrayList<>();
-			String query = "";
-			for (Post p: posts){
-				query = "";
-				query += "SELECT u.userName, p.postId "+
-					"FROM test_schema.user u, test_schema.post p "+
-					"WHERE u.userName = '" + p.userName+"' AND p.userName = u.userName" ;
-				
-				Statement smt2 = conn.createStatement();
-				rs = smt2.executeQuery(query);
-				while(rs.next()){
-					outPost.add(rs.getString("userName") + "::" + rs.getString("postId"));
-					System.out.println(rs.getString("userName") + " " + rs.getString("postId"));
-				}
-			}
-			conn.close();
-			String[] out_names = new String[outPost.size()];
-			out_names = outPost.toArray(out_names);
-
-			return out_names;
-			
-		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println("Error searching post to db");
-			return null;
-		}
-	}
+	
 
 }

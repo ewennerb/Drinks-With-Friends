@@ -100,7 +100,7 @@ export default class ActivityFeed extends React.Component {
     }
 
     async getSearchResults(){
-        let url = "http://localhost:8080/post/"
+        let url = "http://localhost:8080/post/search?s="
         
 
         await fetch(url, {
@@ -111,25 +111,28 @@ export default class ActivityFeed extends React.Component {
             },
         }).then(res => res.json()).then(async (data) => {
             
-            this.setState({results: data})
-            for (let res in data) {
+            this.setState({results: data.results})
+                    
+            for (let res in data.results) {
+                console.log(data.results[res].userName)
                 let names = {}
-                await fetch("http://localhost:8080/user/"+data[res].userName, {
+                await fetch("http://localhost:8080/user/"+data.results[res].userName, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                     },
-                }).then(res => res.json()).then(async (data) => {
-                    names = data
+                }).then(res => res.json()).then(async (data2) => {
+                    names = data2
+                    console.log(data2)
                 }).catch(err => {
                     console.log(err)
                 });
-                console.log(names)
-                data[res].name = names.name
-                data[res].profileImage = names.photo
+                data.results[res].profileImage = names.photo
+                
             }
-            this.setState({results: data})
+            this.setState({results: data.results})
+
         }).catch(this.setState({results: []}));
         console.log(this.state.results)
         
@@ -299,7 +302,7 @@ export default class ActivityFeed extends React.Component {
         var yyyy = today.getFullYear();
 
         var n = String(mm + '/' + dd + '/' + yyyy);
-        console.log(n);
+        console.log(n, this.state.user);
 
         await fetch('http://localhost:8080/post/', {
             method: 'POST',
@@ -310,9 +313,10 @@ export default class ActivityFeed extends React.Component {
             body: JSON.stringify({
                 text: this.state.postText,
                 image: photoString,
-                userName: this.state.user,
+                userId: 0,
                 geolocation: " ",
-                date: n
+                date: n,
+                userName: this.state.user,
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);

@@ -151,15 +151,15 @@ export const postCardDelete = (post) => {
     let pfp;
     if (post.profileImage === null || post.profileImage === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
-                        }else{
+    }else{
         pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
-        }
+    }
     let text_image;
     if (post.image === null || post.image === ""){ 
 
         text_image = <div  data-testid={"user-div-img-0"}/>
 
-        }else{
+    }else{
         text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
 
     }
@@ -192,6 +192,7 @@ export const postCardDelete = (post) => {
         text: "",
         image: "",
         userName: post.userName,
+        userId: 0,
         geolocation: "",
         date: "",
         postId: post.postId

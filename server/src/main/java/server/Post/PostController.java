@@ -26,7 +26,6 @@ public class PostController {
 	@PostMapping("/")
 	public String insertPost(@RequestBody String username)
 			throws JsonParseException, JsonMappingException, IOException {
-
 		ObjectMapper om = new ObjectMapper();
 		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(Post.class, new PostDeserializer());
@@ -35,7 +34,7 @@ public class PostController {
 		Post p = om.readValue(username, Post.class);
 
 		PostSQL posts = new PostSQL();
-		return posts.insertPost(p.text, p.image, p.userName, p.geolocation, p.date);
+		return posts.insertPost(p.text, p.image, "", p.geolocation, p.date);
 	}
 
 	@GetMapping("")
@@ -92,10 +91,6 @@ public class PostController {
 		if(posts == null) {
 			return "{\"results\": \"DNE\"";
 		}
-		//us = new PostSQL();
-		
-		//String[] post_users = us.getPostUsernames(posts);
-		
 		
 
 		String out =  "{ \"results\": [ ";
