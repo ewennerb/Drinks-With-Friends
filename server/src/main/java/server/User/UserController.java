@@ -162,6 +162,7 @@ public class UserController {
 
 		UserSQL users = new UserSQL();
 		String updateUsername = users.updateUsername(oldusername, u.userName);
+		System.out.println("Update username results: "+updateUsername);
 
 		return updateUsername;
 	}
