@@ -147,9 +147,13 @@ export default class Search extends React.Component{
                // }
             }else{
 
-                
+                console.log(data)
                 if (this.state.searchVal === 'd'){
-                    this.setState({similarResults: data.similarDrinks})
+                    if (this.state.showSimilar){
+                        this.setState({similarResults: data.similarDrinks})
+                    }
+                    this.setState({results: data.results})
+
                 } else if (this.state.searchVal === 'p'){
                     this.setState({results: data.results})
                     

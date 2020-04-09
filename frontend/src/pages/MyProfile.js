@@ -88,6 +88,7 @@ class Profile extends Component{
     }
     //should have this.state.allDrinks
     let Drinks = [];
+    /*
     if (this.state.Drinks == undefined && this.state.allDrinks != undefined) {
       //getting drink because the other objects dont have the ids
       this.state.allDrinks.map( async (drink) => {
@@ -97,8 +98,9 @@ class Profile extends Component{
           Drinks.push(this.state.drink)
         }
       })
-    }
+    }*/
     this.setState({Drinks: Drinks})
+
     
   }// end of component did mount
 

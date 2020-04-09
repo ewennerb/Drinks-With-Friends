@@ -30,9 +30,9 @@ public class PostSQL {
 	public String insertPost(String text, String image, String username, String geolocation, String date){
 		try{
 			String query = "insert into test_schema.post "+
-				"(text, image, userName, geolocation, date) "+
+				"(text, image, userId, geolocation, date) "+
 				"values "+
-				"(\""+text+"\", \""+image+"\", \""+username+"\", \""+geolocation+"\", \""+date+"\")";
+				"(\""+text+"\", \""+image+"\", (select userId from test_schema.user where userName = \""+geolocation+"\"), \""+geolocation+"\", \""+date+"\")";
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
@@ -61,8 +61,7 @@ public class PostSQL {
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
 				int postId = rs.getInt("postId");
-				Post p = new Post(postId, text, image, userId, geolocation, date);
-				p.userName = rs.getString("username");
+				Post p = new Post(postId, text, image, userId, geolocation, date, rs.getString("username"));
 				post.add(p);
 			}
 			
@@ -93,7 +92,7 @@ public class PostSQL {
 				String date = rs.getString("date");
 			
 
-				Post p = new Post(postId, text, image, queryuserId, geolocation, date);
+				Post p = new Post(postId, text, image, queryuserId, geolocation, date, "");
 				post.add(p);
 			}
 			conn.close();
@@ -133,10 +132,9 @@ public class PostSQL {
 				int userId = rs.getInt("userId");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
-				Post p = new Post(id, text, image, userId, geolocation, date);
+				Post p = new Post(id, text, image, userId, geolocation, date, rs.getString("userName"));
 				//p.profileImage = rs.getString("profilePhoto");
 				p.name = rs.getString("name");
-				p.userName = rs.getString("userName");
 				post.add(p);
 			}
 			conn.close();

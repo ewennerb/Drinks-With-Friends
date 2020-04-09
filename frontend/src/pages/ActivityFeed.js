@@ -302,7 +302,7 @@ export default class ActivityFeed extends React.Component {
         var yyyy = today.getFullYear();
 
         var n = String(mm + '/' + dd + '/' + yyyy);
-        console.log(n);
+        console.log(n, this.state.user);
 
         await fetch('http://localhost:8080/post/', {
             method: 'POST',
@@ -313,9 +313,10 @@ export default class ActivityFeed extends React.Component {
             body: JSON.stringify({
                 text: this.state.postText,
                 image: photoString,
-                userName: this.state.user,
+                userId: 0,
                 geolocation: " ",
-                date: n
+                date: n,
+                userName: this.state.user,
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);

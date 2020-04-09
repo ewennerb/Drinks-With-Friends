@@ -26,7 +26,6 @@ public class PostController {
 	@PostMapping("/")
 	public String insertPost(@RequestBody String username)
 			throws JsonParseException, JsonMappingException, IOException {
-
 		ObjectMapper om = new ObjectMapper();
 		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(Post.class, new PostDeserializer());

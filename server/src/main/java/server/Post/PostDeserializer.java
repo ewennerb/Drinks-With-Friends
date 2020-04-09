@@ -36,6 +36,7 @@ public class PostDeserializer extends StdDeserializer<Post> {
 			node.get("text").asText(),
 			node.get("image").asText(),
 			node.get("userId").asInt(),
+			node.get("userName").asText(),
 			node.get("geolocation").asText(),
 			node.get("date").asText()
 		);
