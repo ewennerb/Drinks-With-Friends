@@ -18,6 +18,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+// import com.fasterxml.jackson.databind.util.JSONPObject;
+// //rod added
+// import com.fasterxml.jackson.databind.JsonNode;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path="/user")
@@ -331,31 +335,64 @@ public class UserController {
 		return users.getLikeStatus(username, drinkId);
 	}
 	
-	@GetMapping("/getLikeStatus/{username}")
-	public Map<String,String> getLikeStatus(@PathVariable String username)
+	@GetMapping("/getLikedDrinks/{username}")
+	public ArrayList<Drink> getLikeDrinks(@PathVariable String username)
 			throws JsonParseException, JsonMappingException, IOException {
-//		
-		DrinkSQL drinks = new DrinkSQL();
+
+		//ObjectMapper om = new ObjectMapper();
+		// DrinkSQL drinks = new DrinkSQL();
 		UserSQL users = new UserSQL();
-		ArrayList<Drink> list = drinks.getAllDrinks(); 
-		ArrayList<String> out = new ArrayList<>();
-		Map<String, String> mp = new HashMap<String, String>();
-		for(int i = 0; i < list.size(); i++) {
-			Drink drink = list.get(i);
-			String str = users.getLikeStatus(username, drink.id);
-			String res = "";
-			for(int j = 0; j < str.length(); j++){
-				if (str.charAt(j) != '\"' && str.charAt(j) != '\\'){
-					res = res + str.charAt(j);
-				}
-			}
-			mp.put(Integer.toString(drink.id), res );
-			//out.add(drink.id, users.getLikeStatus(username, drink.id));
-		}
+		return users.getLikedDrinks(username);
+		// users.getLikedDrinks(username);
+		//ArrayList<Drink> list = drinks.getAllDrinks(); 
+		// ArrayList<String> out = new ArrayList<>();
+		// Map<String, String> mp = new HashMap<String, String>();
+
+		// for(int i = 0; i < list.size(); i++) {
+		// 	Drink drink = list.get(i);
+		// 	String str = users.getLikeStatus(username, drink.id);
+		// 	JsonNode jsonnode = om.readTree(str);
+		// 	String status = jsonnode.get("isLiked").asText();
+		// 	if (status.equals("true")){
+				
+		// 		mp.put(Integer.toString(drink.id), om.writeValueAsString(drink) );
+		// 	}
+		// 	//mp.put(Integer.toString(drink.id), jsonnode.get("isLiked").asText() );
+		// 	//out.add(drink.id, users.getLikeStatus(username, drink.id));
+		// }
 		//return users.getLikeStatus(username,);
-		System.out.println(mp.toString());
-		return mp;
+		//System.out.println(mp.toString());
+		// return mp;
 	}
+	@GetMapping("/getDislikedDrinks/{username}")
+	public ArrayList<Drink> getDislikeDrinks(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		// ObjectMapper om = new ObjectMapper();
+		// DrinkSQL drinks = new DrinkSQL();
+		UserSQL users = new UserSQL();
+		return users.getDislikedDrinks(username);
+		// ArrayList<Drink> list = drinks.getAllDrinks(); 
+		
+		// ArrayList<String> out = new ArrayList<>();
+		// Map<String, String> mp = new HashMap<String, String>();
+		// for(int i = 0; i < list.size(); i++) {
+		// 	Drink drink = list.get(i);
+		// 	String str = users.getLikeStatus(username, drink.id);
+		// 	JsonNode jsonnode = om.readTree(str);
+		// 	String status = jsonnode.get("isDisliked").asText();
+		// 	if (status.equals("true")){
+		// 		mp.put(Integer.toString(drink.id), om.writeValueAsString(drink) );
+		// 	}
+			//mp.put(Integer.toString(drink.id), jsonnode.get("isLiked").asText() );
+			//out.add(drink.id, users.getLikeStatus(username, drink.id));
+		//return users.getLikeStatus(username,);
+		//System.out.println(mp.toString());
+		
+	}
+	
+	
+	
 
 
 //	@PostMapping("/removeLikeDrink/{drinkId}")

@@ -61,11 +61,11 @@ export const dotdCard = (dotd) => {
                 <br/>
                 <Card.Content>
                     <List bulleted>
-        {dotd.ingredients.map((ingr, index) => {
-        // each child in a list should hav a unique key prop
+                     {dotd.ingredients.map((ingr, index) => {
+                        // each child in a list should hav a unique key prop
                             return (
-                                <List.Item data-testid={"dotd-ingredient-" + index.toString()}>
-        {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                <List.Item key={index} data-testid={"dotd-ingredient-" + index.toString()}>
+                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                 </List.Item>
                             )
                     })}

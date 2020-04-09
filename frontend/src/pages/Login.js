@@ -61,15 +61,19 @@ class Login extends React.Component {
         }
 
         if (this.state.loggedIn && this.state.user !== undefined){
-
             //Todo: pass back loggedIn back to the Routes
-            this.props.passState(this.state.user, this.state.loggedIn);
-            return (
-                <Redirect to={{
-                    pathname: '/',
-                    state: { loggedIn: this.state.loggedIn, user: this.state.user}
-                }} />
-            )
+            //this.props.passState(this.state.user, this.state.loggedIn);
+            localStorage.setItem("username", this.state.user)
+            localStorage.setItem("authorized", "true")
+            
+            window.location.href = "/"
+            //window.location.reload(false)
+            // return (
+            //     <Redirect to={{
+            //         pathname: '/',
+            //         state: { loggedIn: this.state.loggedIn, user: this.state.user}
+            //     }} />
+            // )
         }
 
         return (

@@ -20,39 +20,39 @@ class Posts extends Component{
   constructor(props) {
     super(props);
     let User = props.User;
+
     this.state = {
-      passState: props.passState,
-      userName: User.userName,
-      posts: User.posts,
+      // userName: User.userName,
+      // posts: User.posts,
       browser: props.user,
       profile: props.match.params.profile,
       User: User,
       // allDrinks: props.allDrinks,
-      Drinks: props.Drinks,
+      // Drinks: props.Drinks,
     };
 
   }
   async componentDidMount(){
     //console.log(match.params)
-    let userPage = this.state.profile;
+  //   let userPage = this.state.profile;
     
-    if (userPage != undefined){
-    await this.getPosts();
-    //should have posts and drinks
-    console.log(this.state.posts);
-    let userDrinks =[];
-    if (this.state.Drinks != undefined) {
-    this.state.Drinks.map((drink) => {
-      // console.log(index)
-      if (drink.publisher === userPage){
-            console.log(drink);
-            userDrinks.push(drink);
-      }
-    })
-    //putting that profiles drinks in state
-    this.setState({userDrinks: userDrinks});
-    }
-   }
+  //   if (userPage != undefined){
+  //   await this.getPosts();
+  //   //should have posts and drinks
+  //   console.log(this.state.posts);
+  //   let userDrinks =[];
+  //   if (this.state.Drinks != undefined) {
+  //   this.state.Drinks.map((drink) => {
+  //     // console.log(index)
+  //     if (drink.publisher === userPage){
+  //           console.log(drink);
+  //           userDrinks.push(drink);
+  //     }
+  //   })
+  //   //putting that profiles drinks in state
+  //   this.setState({userDrinks: userDrinks});
+  //   }
+  //  }
   }
 
   render(){
