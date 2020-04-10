@@ -11,22 +11,27 @@ public class UserSQL {
 	private Connection conn;
 	Statement smt;
 	ResultSet rs;
+	private String database;
 
 	public UserSQL(){
 		url = "jdbc:mysql://localhost:3306/";
+		url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
 
 		try{
-		conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+		conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
 		smt = conn.createStatement();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		database = "test_schema";
+		database = "heroku_01bb44a8d7ed741";
 
 	}
 
 	public ArrayList<User> getAllUsers(){
 		try{
-			rs = smt.executeQuery("select * from test_schema.user");
+			rs = smt.executeQuery("select * from "+ this.database+".user");
 			String all = "User Info:<br>";
 			ArrayList<User> user = new ArrayList<User>();
 
@@ -69,7 +74,7 @@ public class UserSQL {
 	public User getUser(String name){
 		try{
 	
-			String query = "select * from test_schema.user where userName = \""+name+"\"";
+			String query = "select * from "+ this.database+".user where userName = \""+name+"\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			//String returnUser = "User: "+name+"<br>";
@@ -119,7 +124,7 @@ public class UserSQL {
 		}
 		System.out.println(searchString);
 		try{
-			String query = "Select * FROM test_schema.user WHERE userName LIKE \"" + searchString + "\"";
+			String query = "Select * FROM "+ this.database+".user WHERE userName LIKE \"" + searchString + "\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<User> user = new ArrayList<User>();
@@ -169,7 +174,7 @@ public class UserSQL {
 
 	public boolean checkUniqueUserName(String userName){
 		try{
-			String query = "select userName from test_schema.user where userName = \""+userName+"\"";
+			String query = "select userName from "+ this.database+".user where userName = \""+userName+"\"";
 			rs=smt.executeQuery(query);
 
 			String dbName = " ";
@@ -193,7 +198,7 @@ public class UserSQL {
 	//userName doesUserEmailExists or null
 	public String doesUserEmailExist(String email){
 		try{
-			String query = "select userName from test_schema.user where email = \""+email+"\"";
+			String query = "select userName from "+ this.database+".user where email = \""+email+"\"";
 			rs=smt.executeQuery(query);
 
 			String dbEmail = "";
@@ -218,7 +223,7 @@ public class UserSQL {
 				return "{ \"status\" : \"Error: user already exists.\"}";
 			}
 			//if unique then can insert User
-			String query = "insert into test_schema.user "+ 
+			String query = "insert into "+ this.database+".user "+ 
 				"(userName, password, name, email, phoneNumber) "+
 				"values "+ 
 				"(\""+userName+"\", \""+password+"\", \""+name+"\", \""+email+"\", \""+phoneNumber+"\")";
@@ -240,7 +245,7 @@ public class UserSQL {
 	public String updatePassword(String userName, String newPass){
 		try{
 
-			String query = "update test_schema.user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
+			String query = "update "+ this.database+".user set password = \""+newPass+"\""+" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
 			if(updateResult == 1){
 				//System.out.print("********* ITS !");
@@ -263,7 +268,7 @@ public class UserSQL {
 	public String updateUsername(String userName, String newUsername){
 		try{
 
-			String query = "update test_schema.user set username = \""+newUsername+"\""+" where userName = \""+userName+"\"";
+			String query = "update "+ this.database+".user set username = \""+newUsername+"\""+" where userName = \""+userName+"\"";
 			int updateResultUser = smt.executeUpdate(query);
 
 			if (updateResultUser == 0) {
@@ -271,7 +276,7 @@ public class UserSQL {
 				return "{ \"status\" : \"Error: SQL user update failed.\"}";
 			}
 
-			String query1 = "update test_schema.drink set publisher = \""+newUsername+"\""+" where publisher = \""+userName+"\"";
+			String query1 = "update "+ this.database+".drink set publisher = \""+newUsername+"\""+" where publisher = \""+userName+"\"";
 			int updateResultDrink = smt.executeUpdate(query1);
 
 			if (updateResultDrink == 0) {
@@ -279,7 +284,7 @@ public class UserSQL {
 			//	return "{ \"status\" : \"Error: SQL drink update failed.\"}";
 			}
 
-			String query2 =  "update test_schema.drink_ingredient set username = \""+newUsername+"\""+" where username = \""+userName+"\"";
+			String query2 =  "update "+ this.database+".drink_ingredient set username = \""+newUsername+"\""+" where username = \""+userName+"\"";
 			int updateResultDrinkIngr = smt.executeUpdate(query2);
 
 			if (updateResultDrinkIngr == 0) {
@@ -287,7 +292,7 @@ public class UserSQL {
 			//	return "{ \"status\" : \"Error: SQL drink ingr update failed.\"}";
 			}
 
-			String query3 =  "update test_schema.drink_likes set userName = \""+newUsername+"\""+" where userName = \""+userName+"\"";
+			String query3 =  "update "+ this.database+".drink_likes set userName = \""+newUsername+"\""+" where userName = \""+userName+"\"";
 			int updateResultDrinkLikes = smt.executeUpdate(query3);
 
 			if (updateResultDrinkLikes == 0) {
@@ -317,7 +322,7 @@ public class UserSQL {
 	public String insertProfilePhoto(String userName, String profilePhotoPath){
 		try{
 		
-			String query = "update test_schema.user set profilePhoto = \""+profilePhotoPath+"\" where userName = \""+userName+"\"";
+			String query = "update "+ this.database+".user set profilePhoto = \""+profilePhotoPath+"\" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
 
 			if(updateResult == 1){
@@ -336,7 +341,7 @@ public class UserSQL {
 
 	public String updateBio(String userName, String bio){
 		try{
-			String query = "update test_schema.user set bio = \""+bio+"\" where userName = \""+userName+"\"";
+			String query = "update "+ this.database+".user set bio = \""+bio+"\" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
 
 			if (updateResult == 1) {
@@ -355,7 +360,7 @@ public class UserSQL {
 
 	public String updateFavoriteDrink(String userName, String favDrink){
 		try{
-			String query = "update test_schema.user set favoriteDrink = \""+favDrink+"\" where userName = \""+userName+"\"";
+			String query = "update "+ this.database+".user set favoriteDrink = \""+favDrink+"\" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
 
 			if ( updateResult == 1 ) {
@@ -381,17 +386,17 @@ public class UserSQL {
 
 			//Likes a drink & Un-Likes a Drink
 			if (toggle.equals("on")) { //liking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 
 			} else if ( toggle.equals("flip") ) {
 				System.out.println("FLIPPPPP");
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 1, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 
 			} else { //disliking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
 			System.out.println(query);
 
@@ -424,16 +429,16 @@ public class UserSQL {
 
 			//DISLIKES AND UN-DISLIKES A DRINK
 			if (toggle.equals("on")) { //liking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drinkId = \""+drinkId+"\"";
 			} else if ( toggle.equals("flip") ) {
 				System.out.println("FLIPPPPP");
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 0, dislikes = 1 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 
 			} else { //disliking drink
-				query = "replace into test_schema.drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
-				backupQuery = "update test_schema.drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
+				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '0')";
+				backupQuery = "update "+ this.database+".drink_likes set likes = 0, dislikes = 0 where userName = \""+userName+"\" and drink_id = \""+drinkId+"\"";
 			}
 
 
@@ -461,7 +466,7 @@ public class UserSQL {
 
 	public String getLikeStatus(String userName, int drinkId){
 		String query = "";
-		query = "select * from test_schema.drink_likes where username='" + userName + "' AND drink_id='" + drinkId + "'";
+		query = "select * from "+ this.database+".drink_likes where username='" + userName + "' AND drink_id='" + drinkId + "'";
 		System.out.print(query);
 
 		DrinkSQL test = new DrinkSQL();
@@ -497,7 +502,7 @@ public class UserSQL {
 //rod
 	public ArrayList<Drink> getLikedDrinks(String userName) {
 		String query = "";
-		query = "select * from test_schema.drink_likes where userName='" + userName + "' AND likes="+1;
+		query = "select * from "+ this.database+".drink_likes where userName='" + userName + "' AND likes="+1;
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
 		DrinkSQL ds = new DrinkSQL();
@@ -518,7 +523,7 @@ public class UserSQL {
 	}
 	public ArrayList<Drink> getDislikedDrinks(String userName) {
 		String query = "";
-		query = "select * from test_schema.drink_likes where userName='" + userName + "' AND dislikes="+1;
+		query = "select * from "+ this.database+".drink_likes where userName='" + userName + "' AND dislikes="+1;
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
 		DrinkSQL ds = new DrinkSQL();

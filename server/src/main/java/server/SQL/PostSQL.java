@@ -15,24 +15,29 @@ public class PostSQL {
 	private Connection conn;
 	Statement smt;
 	ResultSet rs;
+	private String database;
 
 	public PostSQL(){
 		url = "jdbc:mysql://localhost:3306/";
+		url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
 
 		try{
-		conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-		smt = conn.createStatement();
+			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+			conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
+			smt = conn.createStatement();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		database = "test_schema";
+		database = "heroku_01bb44a8d7ed741";
 	}
 
 	public String insertPost(String text, String image, String username, String geolocation, String date){
 		try{
-			String query = "insert into test_schema.post "+
+			String query = "insert into "+ this.database+".post "+
 				"(text, image, userId, geolocation, date) "+
 				"values "+
-				"(\""+text+"\", \""+image+"\", (select userId from test_schema.user where userName = \""+geolocation+"\"), \""+geolocation+"\", \""+date+"\")";
+				"(\""+text+"\", \""+image+"\", (select userId from "+ this.database+".user where userName = \""+geolocation+"\"), \""+geolocation+"\", \""+date+"\")";
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
@@ -50,7 +55,7 @@ public class PostSQL {
 
 	public Post[] getAllPosts(){
 		try{
-			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from test_schema.post p, test_schema.user u WHERE u.userId = p.userId");
+			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from "+ this.database+".post p, "+ this.database+".user u WHERE u.userId = p.userId");
 			ArrayList<Post> post = new ArrayList<>();
 
 			while(rs.next())
@@ -79,7 +84,7 @@ public class PostSQL {
 
 	public ArrayList<Post> getUserPosts(String username){
 		try{
-			rs = smt.executeQuery("select * from test_schema.post p, test_schema.user u where u.userName = \""+username+"\" AND u.userId = p.userId" );
+			rs = smt.executeQuery("select * from "+ this.database+".post p, "+ this.database+".user u where u.userName = \""+username+"\" AND u.userId = p.userId" );
 			ArrayList<Post> post = new ArrayList<Post>();
 
 			while(rs.next())
@@ -105,7 +110,7 @@ public class PostSQL {
 
 	public String deletePost(int postId){
 		try{
-			String query = "delete from test_schema.post where postId = \""+postId+"\"";
+			String query = "delete from "+ this.database+".post where postId = \""+postId+"\"";
 			System.out.print(query);
 			
 			int result = smt.executeUpdate(query);
@@ -121,7 +126,7 @@ public class PostSQL {
 
 	public Post[] searchPost(String search) {
 		try{
-			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM test_schema.post p, test_schema.user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
 			
 			rs = smt.executeQuery(query);
 			ArrayList<Post> post = new ArrayList<>(); 

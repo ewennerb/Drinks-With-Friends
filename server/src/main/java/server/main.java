@@ -9,12 +9,14 @@ import java.sql.*;
 public class main {
 
     @RequestMapping("/")
-	@CrossOrigin(origins = "http://localhost:3000")
+	//@CrossOrigin(origins = "http://localhost:3000") 	//test
+	@CrossOrigin(origins = "http://localhost:3000")		//deployment
     String home() {
 	
 	try{
-		String url = "jdbc:mysql://localhost:3306/";
-		Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+		//String url = "jdbc:mysql://localhost:3306/";	//test
+		String url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
+		Connection conn = DriverManager.getConnection(url, "b222c9ba444ad7", "f701e5a8"); //deployment
 		Statement smt = conn.createStatement();
 		ResultSet rs = smt.executeQuery("select * from test_schema.user");
 		String all="UserName\n\nPassword<br>";
