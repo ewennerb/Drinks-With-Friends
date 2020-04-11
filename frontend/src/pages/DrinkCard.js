@@ -167,6 +167,7 @@ export default class DrinkCard extends React.Component {
         let {user, drink, index, ready} = this.state;
         let drinkPic, likes;
         if(ready){
+            console.log(user);
             if (user !== undefined) {
 
                 let lColor = this.likeColor();
