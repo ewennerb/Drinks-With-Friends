@@ -10,7 +10,7 @@ import {
 
 } from 'semantic-ui-react'
 import {ingredientCard, postCard} from "../utils";
-import DrinkCard from "../rDrinkCard.js";
+import DrinkCard from "../DrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
 
 class LikedDrinks extends Component{
@@ -25,16 +25,19 @@ class LikedDrinks extends Component{
     browser: props.user,
     profile: props.match.params.profile,
     User: User,
+    likedDrinks: props.likedDrinks,
     // Drinks: props.Drinks,
     };
   }
 
   async componentDidMount(){
-    if (this.state.User != undefined){
-      this.getLikedDrinks(this.state.profile);
-      console.log(this.state.likedDrinks)
+    // if (this.state.User != undefined){
+    //   if (this.state.likedDrinks == undefined){
+    //   this.getLikedDrinks(this.state.profile);
+    //   console.log(this.state.likedDrinks)
+    //   }
 
-    }
+    // }
     // let userPage = this.state.profile;
     
     // if (userPage != undefined && this.state.Drinks != undefined){
@@ -77,14 +80,15 @@ class LikedDrinks extends Component{
                <Header>{this.state.profile}'s Liked Drinks</Header>
             </Segment>
             <br/>
-            {/* {(likedDrinks === undefined || this.state.likedDrinks.length < 1)
+            {(likedDrinks === undefined || this.state.likedDrinks.length < 1)
               ? <Header>No Liked Drinks Found</Header>
               : likedDrinks.map((drink, index) => {
                   return(
                     <DrinkCard
-                    user={this.state.userName}
+                    user={this.state.profile}
                     index={index}
                     drink={drink}
+                    key={index}
                     />
                     // rodsDrinkCard ({
                     //   user: this.state.userName,
@@ -93,7 +97,7 @@ class LikedDrinks extends Component{
                     // })
                   )
               })
-            } */}
+            }
             <br/>
           </Grid.Row>
         </Grid.Column>
@@ -114,14 +118,10 @@ class LikedDrinks extends Component{
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { 
-          //console.log(JSON.parse(data));
+          console.log((data));
           //JSON.parse
-          let likedDrinks = [];
-          for (let [key, value] of Object.entries(data)){
-            console.log(key + " " + value)
-            likedDrinks.push(JSON.parse(value));
-          }
-          this.setState({likedDrinks: likedDrinks});
+          // let likedDrinks = [];
+          this.setState({likedDrinks: data});
       }).catch(console.log);
   }
 
