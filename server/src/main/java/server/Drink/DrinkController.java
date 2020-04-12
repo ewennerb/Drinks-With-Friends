@@ -99,7 +99,7 @@ public class DrinkController {
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
-
+        ds = new DrinkSQL();
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";

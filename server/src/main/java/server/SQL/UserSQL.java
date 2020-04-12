@@ -15,17 +15,17 @@ public class UserSQL {
 
 	public UserSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
+		//url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
 
 		try{
-		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-		conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
+		conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+		//conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
 		smt = conn.createStatement();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		database = "test_schema";
-		database = "heroku_01bb44a8d7ed741";
+		//database = "heroku_01bb44a8d7ed741";
 
 	}
 

@@ -19,17 +19,17 @@ public class PostSQL {
 
 	public PostSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
+		//url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
 
 		try{
-			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-			conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
+			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+			//conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
 			smt = conn.createStatement();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		database = "test_schema";
-		database = "heroku_01bb44a8d7ed741";
+		//database = "heroku_01bb44a8d7ed741";
 	}
 
 	public String insertPost(String text, String image, String username, String geolocation, String date){
@@ -126,7 +126,7 @@ public class PostSQL {
 
 	public Post[] searchPost(String search) {
 		try{
-			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
+			String query = "SELECT p.postId, p.text, p.drinkImage as image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
 			
 			rs = smt.executeQuery(query);
 			ArrayList<Post> post = new ArrayList<>(); 

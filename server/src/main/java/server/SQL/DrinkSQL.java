@@ -2,7 +2,15 @@ package server.SQL;
 import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
+
+import javax.sql.*;
+
 import java.util.*;
+
+import com.mysql.cj.jdbc.MysqlDataSource;
+import com.mysql.jdbc.*;
+
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ch.qos.logback.core.rolling.helper.RenameUtil;
 import server.Drink.Drink;
@@ -18,33 +26,46 @@ public class DrinkSQL {
 	ResultSet rs;
 	int topResultDrinkId = 0;
 	private String database;
-
+	
 
 	public DrinkSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
+		url = "mysql://gzgsvv5r3zidpv57:xf590wkdp1qeejrj@b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/"; 	//deployment
+		MysqlDataSource ds = new MysqlDataSource();
+		ds.setURL("jdbc:"+url);
+		ds.setPassword("xf590wkdp1qeejrj");
+		ds.setUser("gzgsvv5r3zidpv57");
+		ds.setDatabaseName("hiqietg4casioadz");
+		DriverManagerDataSource dmds = new DriverManagerDataSource();
+		
+		dmds.setPassword("xf590wkdp1qeejrj");
+		dmds.setUsername("gzgsvv5r3zidpv57");
+		dmds.setSchema("hiqietg4casioadz");
+		dmds.setUrl("jdbc:"+url);
 		try{
 		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-		//conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
-		conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/heroku_01bb44a8d7ed741?user=b6576e130e8d5a&password=3c708746&reconnect=true");
-		smt = conn.createStatement();
+		
+		//conn = DriverManager.getConnection(url);
+			conn = dmds.getConnection();
+			smt = conn.createStatement();
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		database = "test_schema";
-		database = "heroku_01bb44a8d7ed741";
+		database = "hiqietg4casioadz";
 
 
 	}
 
 
 	public ArrayList<Drink> getAllDrinks(){
+		ArrayList<Drink> drink = new ArrayList<Drink>();
 		try{
 			//String url = "jdbc:mysql://localhost:3306/";
 			//Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 			//Statement smt = conn.createStatement();
 			rs = smt.executeQuery("select * from "+ this.database+".drink");
-			ArrayList<Drink> drink = new ArrayList<Drink>();
 
 			while (rs.next())
 			{
@@ -55,12 +76,13 @@ public class DrinkSQL {
 				int likes=rs.getInt("likes");
 				int dislikes=rs.getInt("dislikes");
 				String publisher=rs.getString("publisher");
-
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\""; // to get only official drinks set publisher to DrinksWithFriends or Null
+
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -70,20 +92,46 @@ public class DrinkSQL {
 					}
 
 				}
+				rs2.close();
+				smt2.close();
+				if (!(rs2.isClosed() || smt2.isClosed())){
+					System.out.println("ingredient all is not closed");
+				}
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
 				drink.add(d);
 
 
+				
 			}
+			rs.close();
+			smt.close();
 			conn.close();
-			return drink;
+			if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+				System.out.println("drink all is not closed");
+				System.out.println("	rs: " + rs.isClosed());
+				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	conn: " + conn.isClosed());
+			}
 
-		}catch(Exception e){
+		}catch(SQLException e){
 			e.printStackTrace();
-			return null;
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+				if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+					System.out.println("drink all exception is not closed");
+					System.out.println("	rs: " + rs.isClosed());
+					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	conn: " + conn.isClosed());
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
 		}
+		return drink;
 	}
 
 	public Drink getDrink(String drinkName, String owner){
@@ -113,19 +161,44 @@ public class DrinkSQL {
 				while (rs2.next()){
 					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
 				}
-
+				rs2.close();
+				smt2.close();
+				if (!(rs2.isClosed() || smt2.isClosed())){
+					System.out.println("ingredient find is not closed");
+				}
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
 				System.out.println(drink);
 
 			}
-
+			rs.close();
+			smt.close();
 			conn.close();
+			if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+				System.out.println("drink find is not closed");
+				System.out.println("	rs: " + rs.isClosed());
+				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	conn: " + conn.isClosed());
+			}
 			return drink;
 
 
-		}catch(Exception e){
+		}catch(SQLException e){
+			e.printStackTrace();
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+				if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+					System.out.println("drink find exception is not closed");
+					System.out.println("	rs: " + rs.isClosed());
+					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	conn: " + conn.isClosed());
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
 			return null;
 		}
 	}
@@ -180,6 +253,7 @@ public class DrinkSQL {
 
 
 			}
+			rs.close();
 			conn.close();
 			//add to Array
 			Drink[] outDrink = new Drink[drink.size()];
@@ -262,6 +336,8 @@ public class DrinkSQL {
 
 			}
 			
+			rs.close();
+			conn.close();
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
 				System.out.println("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
@@ -277,7 +353,7 @@ public class DrinkSQL {
 				//similar = getSimilarDrinks(mostLikeId);
 			}
 			
-			//conn.close();
+			
 			
 
 			Drink[] outDrink = new Drink[drink.size()];
@@ -387,6 +463,7 @@ public class DrinkSQL {
 			for(Drink k:keys){
 				finalSorted.add(k);
 			}
+			rs.close();
 
 			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
@@ -431,12 +508,13 @@ public class DrinkSQL {
 					return false;
 				}
 			}
-
+			rs.close();
+			conn.close();
+			
 		} catch (Exception e) {
 			System.out.println("fail");
 			e.printStackTrace();
 		}
-
 		return true;
 	}
 
@@ -506,7 +584,7 @@ public class DrinkSQL {
 
 
 			}
-			
+			rs.close();
 			conn.close();
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
@@ -535,7 +613,7 @@ public class DrinkSQL {
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
-
+			rs.close();
 			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -572,6 +650,7 @@ public class DrinkSQL {
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
+			rs.close();
 			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -597,31 +676,33 @@ public class DrinkSQL {
 			// Drink drink = new Drink();
 			while (rs.next()) {
 			//int drinkId=rs.getInt("drinkId");
-			String drinkName=rs.getString("name");
-			String stockPhoto=rs.getString("stockPhoto");
-			String description=rs.getString("description");
-			String owner=rs.getString("publisher");
-			int likes=rs.getInt("likes");
-			int dislikes=rs.getInt("dislikes");
+				String drinkName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				String owner=rs.getString("publisher");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
 
-			String query_ingreds = "SELECT quantity, measurement, ingredient " +
-				"FROM "+ this.database+".drink_ingredient " +
-				"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
-			//System.out.println(query_ingreds);
-			Statement smt2 = conn.createStatement();
-			ResultSet rs2 = smt2.executeQuery(query_ingreds);
-			ArrayList<Ingredient> ii = new ArrayList<>();
-			Ingredient[] ingreds;
-			while (rs2.next()){
-				ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
-			}
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+				//System.out.println(query_ingreds);
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				while (rs2.next()){
+					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+				}
 
-			ingreds = new Ingredient[ii.size()];
-			ingreds = ii.toArray(ingreds);
-			drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
-			//System.out.println(drink);
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
+				rs2.close();
+				//System.out.println(drink);
 			}
-			// conn.close();
+			rs.close();
+			conn.close();
 			return drink;
 		}catch(Exception e){
 			return null;
