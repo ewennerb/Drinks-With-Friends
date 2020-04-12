@@ -36,17 +36,12 @@ public class DrinkSQL {
 		ds.setPassword("xf590wkdp1qeejrj");
 		ds.setUser("gzgsvv5r3zidpv57");
 		ds.setDatabaseName("hiqietg4casioadz");
-		DriverManagerDataSource dmds = new DriverManagerDataSource();
 		
-		dmds.setPassword("xf590wkdp1qeejrj");
-		dmds.setUsername("gzgsvv5r3zidpv57");
-		dmds.setSchema("hiqietg4casioadz");
-		dmds.setUrl("jdbc:"+url);
 		try{
 		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 		
 		//conn = DriverManager.getConnection(url);
-			conn = dmds.getConnection();
+			conn = ds.getConnection();
 			smt = conn.createStatement();
 			
 		}catch(Exception e){
