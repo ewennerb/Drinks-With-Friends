@@ -251,8 +251,8 @@ class postCardEditandDelete extends Component{
             text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
         }
 
-        console.log(post.name)
-        console.log(post.username)
+        console.log(post.name);
+        console.log(post.username);
 
     return(
         <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
