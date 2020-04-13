@@ -161,10 +161,14 @@ public class UserController {
 		System.out.println(u.userName.toString());
 
 		UserSQL users = new UserSQL();
-		String updateUsername = users.updateUsername(oldusername, u.userName);
-		System.out.println("Update username results: "+updateUsername);
-
-		return updateUsername;
+		if ( users.checkUniqueUserName(u.userName) ) {
+			String updateUsername = users.updateUsername(oldusername, u.userName);
+			System.out.println("Update username results: "+updateUsername);
+			return updateUsername;
+		} else {
+		    System.out.println("{ \"status\" : \"Error: Username not unique.\"}");
+			return "{ \"status\" : \"Error: Username not unique.\"}";
+		}
 	}
 
 	// @PostMapping("/updateUsername")
