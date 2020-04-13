@@ -9,7 +9,6 @@ import java.util.*;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import com.mysql.jdbc.*;
-import org.apache.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
