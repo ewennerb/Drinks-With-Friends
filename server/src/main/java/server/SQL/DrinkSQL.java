@@ -1,6 +1,6 @@
 package server.SQL;
 
-import java.io.Console;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -9,12 +9,8 @@ import org.apache.commons.dbcp2.*;
 
 import java.util.*;
 
-
-import ch.qos.logback.core.Context;
 import server.Drink.Drink;
 import server.Drink.Ingredient;
-
-
 
 public class DrinkSQL {
 
