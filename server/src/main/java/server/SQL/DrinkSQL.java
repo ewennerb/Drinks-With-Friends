@@ -33,7 +33,7 @@ public class DrinkSQL {
 	public DrinkSQL(){
 		url = "jdbc:mysql://localhost:3306/";
 		url = "mysql://gzgsvv5r3zidpv57:xf590wkdp1qeejrj@b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz?autoReconnectForPools=true"; 	//deployment
-		MysqlDataSource ds = new MysqlDataSource();
+		//MysqlDataSource ds = new MysqlDataSource();
 		
 		/*
 		ds.setURL("jdbc:"+url);
