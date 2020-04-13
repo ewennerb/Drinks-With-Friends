@@ -28,9 +28,6 @@ public class DrinkController {
     DrinkController() {
         this.oldDOTD = new ArrayList<>();
         randomDOTD();
-        randomDOTD();
-        randomDOTD();
-        randomDOTD();
     }
 
     @GetMapping("")
