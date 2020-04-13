@@ -171,6 +171,13 @@ public class UserController {
 		}
 	}
 
+	@PostMapping("/follow/{followUser}")
+	public String follow(@PathVariable String followUser, @RequestBody String followingUser)
+			throws JsonParseException. JsonMappingException, IOException {
+			
+		return "TEST";
+	}
+
 	// @PostMapping("/updateUsername")
 	// public String updateUsername(@RequestBody String userName)
 	// 		throws JsonParseException, JsonMappingException, IOException {
