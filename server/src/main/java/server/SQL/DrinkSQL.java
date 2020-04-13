@@ -25,12 +25,12 @@ public class DrinkSQL {
 
 	public DrinkSQL() {
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		//url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
 		
 		
 		try{
-			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
-			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 			
 			smt = conn.createStatement();
 			
@@ -39,7 +39,7 @@ public class DrinkSQL {
 			
 		}
 		database = "test_schema";		//development
-		database = "hiqietg4casioadz";	//production
+		//database = "hiqietg4casioadz";	//production
 
 
 	}
@@ -702,6 +702,7 @@ public class DrinkSQL {
 			}
 			return drink;
 		}catch(Exception e){
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -714,6 +715,117 @@ public class DrinkSQL {
 		return this.conn;
 	}
 
+
+	public Drink[] getTopLikedDrinks(){
+		try {
+		//get 15 most likeDrink
+		String query = "SELECT * FROM test_schema.drink ORDER BY likes DESC LIMIT 15";
+		System.out.println(query);
+
+		rs = smt.executeQuery(query);
+
+		ArrayList<Drink> drink = new ArrayList<Drink>();
+		while (rs.next()) {
+			int drinkId=rs.getInt("drinkId");
+			String dName=rs.getString("name");
+			String stockPhoto=rs.getString("stockPhoto");
+			String description=rs.getString("description");
+			int likes=rs.getInt("likes");
+			int dislikes=rs.getInt("dislikes");
+			String publisher=rs.getString("publisher");
+				
+			String query_ingreds = "SELECT quantity, measurement, ingredient " +
+				"FROM test_schema.drink_ingredient " +
+				"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+			Statement smt2 = conn.createStatement();
+			ResultSet rs2 = smt2.executeQuery(query_ingreds);
+			ArrayList<Ingredient> ii = new ArrayList<>();
+			Ingredient[] ingreds;
+			if (rs2 != null){
+
+				while (rs2.next()){
+					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+				}
+
+			}
+
+			ingreds = new Ingredient[ii.size()];
+			ingreds = ii.toArray(ingreds);
+			Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
+			drink.add(d);
+
+		}
+
+		//remove drinks with 0 likesi n list
+		ArrayList<Drink> retList = new ArrayList<Drink>();
+		for (int x = 0; x<drink.size(); x++) {
+			if (drink.get(x).likes != 0) {
+				System.out.println("Returning: "+drink.get(x).name);
+				retList.add(drink.get(x));
+			}
+		}
+
+
+		conn.close();
+		//add to Array
+		Drink[] outDrink = new Drink[retList.size()];
+		outDrink = retList.toArray(outDrink);
+		return outDrink;
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/*
+	
+			String query = "SELECT * FROM test_schema.drink d "+
+				"where d.drinkId in (select drink_id from test_schema.drink_ingredient where ingredient like \""+searchString+"\")";
+			System.out.println(query);
+			rs = smt.executeQuery(query);
+
+			//ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+			ArrayList<Drink> drink = new ArrayList<Drink>();
+			while (rs.next())
+			{
+				int drinkId=rs.getInt("drinkId");
+				String dName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
+				String publisher=rs.getString("publisher");
+				
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM test_schema.drink_ingredient " +
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				if (rs2 != null){
+
+					while (rs2.next()){
+						ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+					}
+
+				}
+
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
+				drink.add(d);
+
+
+			}
+			conn.close();
+			//add to Array
+			Drink[] outDrink = new Drink[drink.size()];
+			outDrink = drink.toArray(outDrink);
+			return outDrink;
+*/
 
 //	public String removeLikeDrink(int drinkId, int flag){
 //		try{

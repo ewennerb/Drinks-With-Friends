@@ -28,9 +28,6 @@ public class DrinkController {
     DrinkController() {
         this.oldDOTD = new ArrayList<>();
         randomDOTD();
-        randomDOTD();
-        randomDOTD();
-        randomDOTD();
     }
 
     @GetMapping("")
@@ -205,6 +202,24 @@ public class DrinkController {
 		String out =  "{ \"results\": [ ";
 		for (Drink ingredient : ingreds) {
 			out += new ObjectMapper().writeValueAsString(ingredient) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+	}
+
+	@GetMapping("/mostLiked")
+	public String getMostLikesDrinks() throws JsonProcessingException {
+		DrinkSQL ds = new DrinkSQL();
+		Drink[] mostLikedDrinks = ds.getTopLikedDrinks();
+		
+		if (mostLikedDrinks == null) {
+			return "{\"results\": \"DNE\"";
+		}
+
+		String out = "{ \"results\": [ ";
+		for (Drink d : mostLikedDrinks) {
+			out += new ObjectMapper().writeValueAsString(d) + ",";
 		}
 		out = out.substring(0, out.length()-1) + "] }";
 
