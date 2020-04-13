@@ -1,14 +1,16 @@
 package server.SQL;
-import java.io.Console;
+
+
 import java.sql.*;
 import java.util.ArrayList;
+
+
+import org.apache.commons.dbcp2.*;
+
 import java.util.*;
 
-import ch.qos.logback.core.rolling.helper.RenameUtil;
 import server.Drink.Drink;
 import server.Drink.Ingredient;
-
-
 
 public class DrinkSQL {
 
@@ -17,29 +19,39 @@ public class DrinkSQL {
 	Statement smt;
 	ResultSet rs;
 	int topResultDrinkId = 0;
+	private String database;
+	BasicDataSource bds;
+	
 
-
-	public DrinkSQL(){
+	public DrinkSQL() {
 		url = "jdbc:mysql://localhost:3306/";
-
+		//url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		
+		
 		try{
-		conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-		smt = conn.createStatement();
+			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+			
+			smt = conn.createStatement();
+			
 		}catch(Exception e){
 			e.printStackTrace();
+			
 		}
+		database = "test_schema";		//development
+		//database = "hiqietg4casioadz";	//production
 
 
 	}
 
 
 	public ArrayList<Drink> getAllDrinks(){
+		ArrayList<Drink> drink = new ArrayList<Drink>();
 		try{
 			//String url = "jdbc:mysql://localhost:3306/";
 			//Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 			//Statement smt = conn.createStatement();
-			rs = smt.executeQuery("select * from test_schema.drink");
-			ArrayList<Drink> drink = new ArrayList<Drink>();
+			rs = smt.executeQuery("select * from "+ this.database+".drink");
 
 			while (rs.next())
 			{
@@ -50,12 +62,13 @@ public class DrinkSQL {
 				int likes=rs.getInt("likes");
 				int dislikes=rs.getInt("dislikes");
 				String publisher=rs.getString("publisher");
-
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\""; // to get only official drinks set publisher to DrinksWithFriends or Null
+
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -65,26 +78,53 @@ public class DrinkSQL {
 					}
 
 				}
+				rs2.close();
+				smt2.close();
+				if (!(rs2.isClosed() && smt2.isClosed())){
+					System.out.println("ingredient all is not closed");
+				}
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
 				drink.add(d);
 
 
+				
 			}
+			rs.close();
+			smt.close();
+			
 			conn.close();
-			return drink;
+			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+				System.out.println("drink all is not closed");
+				System.out.println("	rs: " + rs.isClosed());
+				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	conn: " + conn.isClosed());
+			}
 
 		}catch(Exception e){
 			e.printStackTrace();
-			return null;
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+					System.out.println("drink all exception is not closed");
+					System.out.println("	rs: " + rs.isClosed());
+					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	conn: " + conn.isClosed());
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
 		}
+		return drink;
 	}
 
 	public Drink getDrink(String drinkName, String owner){
 		try{
 
-			String query = "select * from test_schema.drink where name = \""+drinkName+"\" AND publisher = \"" + owner+"\"";
+			String query = "select * from "+ this.database+".drink where name = \""+drinkName+"\" AND publisher = \"" + owner+"\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			Drink drink = new Drink();
@@ -98,7 +138,7 @@ public class DrinkSQL {
 				int dislikes=rs.getInt("dislikes");
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
 				System.out.println(query_ingreds);
 				Statement smt2 = conn.createStatement();
@@ -108,19 +148,45 @@ public class DrinkSQL {
 				while (rs2.next()){
 					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
 				}
-
+				rs2.close();
+				smt2.close();
+				if (!(rs2.isClosed() && smt2.isClosed())){
+					System.out.println("ingredient find is not closed");
+				}
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
 				System.out.println(drink);
 
 			}
-
+			rs.close();
+			smt.close();
 			conn.close();
+			
+			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+				System.out.println("drink find is not closed");
+				System.out.println("	rs: " + rs.isClosed());
+				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	conn: " + conn.isClosed());
+			}
 			return drink;
 
 
 		}catch(Exception e){
+			e.printStackTrace();
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+					System.out.println("drink find exception is not closed");
+					System.out.println("	rs: " + rs.isClosed());
+					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	conn: " + conn.isClosed());
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
 			return null;
 		}
 	}
@@ -136,8 +202,8 @@ public class DrinkSQL {
 		System.out.println("Search String: "+searchString);
 		try{
 			
-			String query = "SELECT * FROM test_schema.drink d "+
-				"where d.drinkId in (select drink_id from test_schema.drink_ingredient where ingredient like \""+searchString+"\")";
+			String query = "SELECT * FROM "+ this.database+".drink d "+
+				"where d.drinkId in (select drink_id from "+ this.database+".drink_ingredient where ingredient like \""+searchString+"\")";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 
@@ -154,7 +220,7 @@ public class DrinkSQL {
 				String publisher=rs.getString("publisher");
 				
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
@@ -167,7 +233,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -175,6 +242,7 @@ public class DrinkSQL {
 
 
 			}
+			rs.close();
 			conn.close();
 			//add to Array
 			Drink[] outDrink = new Drink[drink.size()];
@@ -205,9 +273,9 @@ public class DrinkSQL {
 	
 			String query = "";
 			if ( flag == 0 )
-				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\"";
+				query = "Select * FROM "+ this.database+".drink WHERE name LIKE \"" + searchString + "\"";
 			else if ( flag == 1 )
-				query = "Select * FROM test_schema.drink WHERE name LIKE \"" + searchString + "\" and publisher = \"IBA_Official\"";
+				query = "Select * FROM "+ this.database+".drink WHERE name LIKE \"" + searchString + "\" and publisher = \"IBA_Official\"";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
@@ -235,7 +303,7 @@ public class DrinkSQL {
 				}
 				
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
@@ -248,7 +316,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -257,13 +326,16 @@ public class DrinkSQL {
 
 			}
 			
+			rs.close();
+			smt.close();
+			conn.close();
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
 				System.out.println("Perfect match detected!!!!!!!!!!!!!!!!!!!!!!\nDrinkID: "+topResultId);
 				topResultDrinkId = topResultId;
 				//similar = getSimilarDrinks(topResultId);
 			} else {
-				System.out.println("No perfect match: mostliked: "+mostLikes+" amd id: "+mostLikeId+" and drink size: "+drink.size());
+				System.out.println("No perfect match: mostliked: "+mostLikes+" and id: "+mostLikeId+" and drink size: "+drink.size());
 				topResultDrinkId = mostLikeId;
 				if (mostLikeId == 0 && drink.size() != 0) {
 					topResultDrinkId = drink.get(0).id;
@@ -272,7 +344,7 @@ public class DrinkSQL {
 				//similar = getSimilarDrinks(mostLikeId);
 			}
 			
-			//conn.close();
+			
 			
 
 			Drink[] outDrink = new Drink[drink.size()];
@@ -290,8 +362,8 @@ public class DrinkSQL {
 
 		try{
 			String query = "SELECT d.drinkId, d.name, d.stockPhoto, d.description, d.likes, d.dislikes, d.publisher "+
-				"FROM test_schema.drink d, test_schema.drink_tags dt "+
-				"where tag_id in (select tag_id from test_schema.drink_tags dt2 where dt2.drink_id = \""+topResultDrinkId+"\") "+
+				"FROM "+ this.database+".drink d, "+ this.database+".drink_tags dt "+
+				"where tag_id in (select tag_id from "+ this.database+".drink_tags dt2 where dt2.drink_id = \""+topResultDrinkId+"\") "+
 				"and d.drinkId = dt.drink_id";
 
 			System.out.println(query);
@@ -308,7 +380,7 @@ public class DrinkSQL {
 				String publisher=rs.getString("publisher");
 	
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
@@ -321,7 +393,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -382,7 +455,8 @@ public class DrinkSQL {
 			for(Drink k:keys){
 				finalSorted.add(k);
 			}
-
+			rs.close();
+			smt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
 			outDrink = finalSorted.toArray(outDrink);
@@ -397,7 +471,7 @@ public class DrinkSQL {
 		System.out.println("inserting");
 		try {
 			//check if user already added dirnk
-			String query = "INSERT into test_schema.drink "+
+			String query = "INSERT into "+ this.database+".drink "+
 				"(name, stockphoto, description, likes, dislikes, publisher) "+
 				"VALUES "+
 				"(\""+d.name+"\", \""+d.photo+"\", \""+d.description+"\", "+0+", "+0+ ", \"" + d.publisher+"\")";
@@ -416,7 +490,7 @@ public class DrinkSQL {
 			for (Ingredient i : d.ingredients) {
 
 				query = "";
-				query += "INSERT INTO test_schema.drink_ingredient (username, drink_id, ingredient, measurement, quantity) "+
+				query += "INSERT INTO "+ this.database+".drink_ingredient (username, drink_id, ingredient, measurement, quantity) "+
 				"VALUES "+
 				"(\""+d.publisher+"\", \""+id+"\", \""+i.ingredient+"\", \"" + i.measurement+"\", \""+ i.quantity+"\");";
 				Statement smt2 = conn.createStatement();
@@ -425,13 +499,15 @@ public class DrinkSQL {
 					System.out.println("add ingredients fail");
 					return false;
 				}
+				smt2.close();
 			}
-
+			smt.close();
+			conn.close();
+			
 		} catch (Exception e) {
 			System.out.println("fail");
 			e.printStackTrace();
 		}
-
 		return true;
 	}
 
@@ -441,7 +517,7 @@ public class DrinkSQL {
 
 		try {
 			String query = "SELECT DISTINCT d.name, d.publisher " +
-			"FROM test_schema.drink d "+
+			"FROM "+ this.database+".drink d "+
 			"WHERE d.name like \""+let+"%\" " + 
 			"ORDER BY d.name ASC";
 
@@ -464,7 +540,7 @@ public class DrinkSQL {
 		try {
 
 			String query = "Select d.name, d.publisher, d.stockPhoto, d.description, d.drinkId, d.likes, d.dislikes"+
-			" FROM test_schema.drink_recommendation dr, test_schema.user u, test_schema.drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
+			" FROM "+ this.database+".drink_recommendation dr, "+ this.database+".user u, "+ this.database+".drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			ArrayList<Drink> drink = new ArrayList<Drink>();
@@ -480,7 +556,7 @@ public class DrinkSQL {
 				String publisher=rs.getString("publisher");
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
@@ -493,6 +569,8 @@ public class DrinkSQL {
 					}
 
 				}
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -501,7 +579,8 @@ public class DrinkSQL {
 
 
 			}
-			
+			rs.close();
+			smt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
@@ -515,22 +594,23 @@ public class DrinkSQL {
 		String query = "";
 		try{
 			if (toggle.equals("on")){
-				query = "update test_schema.drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
 			}else if (toggle.equals("off")){
-				query = "update test_schema.drink set likes = likes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes - 1 where drinkId = \""+drinkId+"\"";
 			}else if (toggle.equals("flip")){
-				query = "update test_schema.drink set likes = likes + 1, dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes + 1, dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
 			}
 			int updateResult = smt.executeUpdate(query);
 
-			rs = smt.executeQuery("select * from test_schema.drink where drinkId = \""+drinkId+"\"");
+			rs = smt.executeQuery("select * from "+ this.database+".drink where drinkId = \""+drinkId+"\"");
 			int updatedLikes = -1;
 			int updatedDislikes = -1;
 			while (rs.next()){
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
-
+			rs.close();
+			smt.close();
 			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -551,22 +631,24 @@ public class DrinkSQL {
 		String query = "";
 		try{
 			if(toggle.equals("on")){
-				query = "update test_schema.drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
 			}else if (toggle.equals("off")){
-				query = "update test_schema.drink set dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
 			}else if (toggle.equals("flip")){
-				query = "update test_schema.drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
 			}
 			
 			int updateResult = smt.executeUpdate(query);
 
-			rs = smt.executeQuery("select * from test_schema.drink where drinkId = \""+drinkId+"\"");
+			rs = smt.executeQuery("select * from "+ this.database+".drink where drinkId = \""+drinkId+"\"");
 			int updatedLikes = -1;
 			int updatedDislikes = -1;
 			while (rs.next()){
 				updatedLikes = rs.getInt("likes");
 				updatedDislikes = rs.getInt("dislikes");
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -586,42 +668,51 @@ public class DrinkSQL {
 	public Drink getDrink(int drinkId){
 		try {
 			Drink drink = new Drink();
-			String query = "select * from test_schema.drink where drinkId = "+ drinkId ;
+			String query = "select * from "+ this.database+".drink where drinkId = "+ drinkId ;
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			// Drink drink = new Drink();
 			while (rs.next()) {
 			//int drinkId=rs.getInt("drinkId");
-			String drinkName=rs.getString("name");
-			String stockPhoto=rs.getString("stockPhoto");
-			String description=rs.getString("description");
-			String owner=rs.getString("publisher");
-			int likes=rs.getInt("likes");
-			int dislikes=rs.getInt("dislikes");
+				String drinkName=rs.getString("name");
+				String stockPhoto=rs.getString("stockPhoto");
+				String description=rs.getString("description");
+				String owner=rs.getString("publisher");
+				int likes=rs.getInt("likes");
+				int dislikes=rs.getInt("dislikes");
 
-			String query_ingreds = "SELECT quantity, measurement, ingredient " +
-				"FROM test_schema.drink_ingredient " +
-				"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
-			//System.out.println(query_ingreds);
-			Statement smt2 = conn.createStatement();
-			ResultSet rs2 = smt2.executeQuery(query_ingreds);
-			ArrayList<Ingredient> ii = new ArrayList<>();
-			Ingredient[] ingreds;
-			while (rs2.next()){
-				ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
-			}
+				String query_ingreds = "SELECT quantity, measurement, ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
+					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+				//System.out.println(query_ingreds);
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				ArrayList<Ingredient> ii = new ArrayList<>();
+				Ingredient[] ingreds;
+				while (rs2.next()){
+					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
+				}
 
-			ingreds = new Ingredient[ii.size()];
-			ingreds = ii.toArray(ingreds);
-			drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
-			//System.out.println(drink);
+				ingreds = new Ingredient[ii.size()];
+				ingreds = ii.toArray(ingreds);
+				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
+				rs2.close();
+				smt2.close();
+				//System.out.println(drink);
 			}
-			// conn.close();
 			return drink;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public Statement getSmt(){
+		return this.smt;
+	}
+	
+	public Connection getConn(){
+		return this.conn;
 	}
 
 
@@ -741,9 +832,9 @@ public class DrinkSQL {
 //			String query = "";
 //
 //			if (flag==1)
-//				query = "update test_schema.drink set likes = likes - 1 where likes > 0 and drinkId = \""+drinkId+"\"";
+//				query = "update "+ this.database+".drink set likes = likes - 1 where likes > 0 and drinkId = \""+drinkId+"\"";
 //			else if (flag==-1)
-//				query = "update test_schema.drink set dislikes = dislikes - 1 where dislikes > 0 and drinkId = \""+drinkId+"\"";
+//				query = "update "+ this.database+".drink set dislikes = dislikes - 1 where dislikes > 0 and drinkId = \""+drinkId+"\"";
 //
 //			int updateResult = smt.executeUpdate(query);
 //
