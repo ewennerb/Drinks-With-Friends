@@ -17,7 +17,8 @@ import {
     Segment,
     Form,
     Button,
-    Header, Checkbox
+    Header, Checkbox,
+    Popup
 } from "semantic-ui-react"
 import Drink from "./pages/Drink";
 
@@ -129,6 +130,7 @@ export default class Routes extends React.Component {
     render(){
         let logOrProfile;
         let logOrRegister;
+        let notifBell;
         const { activeItem } = this.state;
         if (this.state.user !== undefined){
              logOrProfile = <Menu.Item
@@ -139,6 +141,21 @@ export default class Routes extends React.Component {
                 size="large"
                 content={this.state.user}
             />;
+
+             //Todo: Need to figure out how to get notifications and display them here
+             //Todo: Need to figure out what
+             notifBell = <Menu.Item>
+                 <Popup
+                     trigger={<Icon.Group>
+                         <Icon name='bell outline'/>
+                         <Icon name="circle" color="yellow" corner/>
+                         </Icon.Group>}
+                     content="You have no notifications. Go fuck urself"
+                     position="bottom center"
+                 />
+             </Menu.Item>;
+
+
              logOrRegister = <Menu.Item
                  as={Link}
                  to={{pathname: '/'}}
@@ -200,6 +217,7 @@ export default class Routes extends React.Component {
                                 content="Drinks with Friends"
                             />
                             {logOrProfile}
+                            {notifBell}
                             <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
                                 <Icon name="sidebar"/>Menu
                             </Menu.Item>
