@@ -50,6 +50,7 @@ public class DrinkSQL {
 		bds.setUrl("jdbc:"+url);
 		bds.setUsername("xf590wkdp1qeejrj");
 		bds.setPassword("gzgsvv5r3zidpv57");
+		bds.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		
 		try{
 		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
