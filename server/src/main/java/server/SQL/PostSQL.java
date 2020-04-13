@@ -19,17 +19,21 @@ public class PostSQL {
 
 	public PostSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		//url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
-
+		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		
 		try{
-			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-			//conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
+			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+		
 			smt = conn.createStatement();
+			
 		}catch(Exception e){
 			e.printStackTrace();
+			
 		}
-		database = "test_schema";
-		//database = "heroku_01bb44a8d7ed741";
+		database = "test_schema";		//development
+		database = "hiqietg4casioadz";	//production
+
 	}
 
 	public String insertPost(String text, String image, String username, String geolocation, String date){
@@ -41,6 +45,7 @@ public class PostSQL {
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
+			smt.close();
 			conn.close();
 
 			return "{ \"status\" : \"ok\" }";	
@@ -69,7 +74,8 @@ public class PostSQL {
 				Post p = new Post(postId, text, image, userId, geolocation, date, rs.getString("username"));
 				post.add(p);
 			}
-			
+			rs.close();
+			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
 			outPost = post.toArray(outPost);
@@ -100,6 +106,8 @@ public class PostSQL {
 				Post p = new Post(postId, text, image, queryuserId, geolocation, date, "");
 				post.add(p);
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			return post;
 		}catch(Exception e){
@@ -114,6 +122,7 @@ public class PostSQL {
 			System.out.print(query);
 			
 			int result = smt.executeUpdate(query);
+			smt.close();
 			conn.close();
 			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
@@ -142,6 +151,8 @@ public class PostSQL {
 				p.name = rs.getString("name");
 				post.add(p);
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
 			outPost = post.toArray(outPost);

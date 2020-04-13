@@ -15,17 +15,21 @@ public class UserSQL {
 
 	public UserSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		//url = "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net"; 	//deployment
-
+		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		
 		try{
-		conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
-		//conn = DriverManager.getConnection(url, "b6576e130e8d5a", "3c708746");
-		smt = conn.createStatement();
+			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+		
+			smt = conn.createStatement();
+			
 		}catch(Exception e){
 			e.printStackTrace();
+			
 		}
-		database = "test_schema";
-		//database = "heroku_01bb44a8d7ed741";
+		database = "test_schema";		//development
+		database = "hiqietg4casioadz";	//production
+
 
 	}
 
@@ -60,6 +64,8 @@ public class UserSQL {
 				all+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
 				all+="<br>";
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			System.out.println(all);
 			return user;
@@ -103,7 +109,8 @@ public class UserSQL {
 				//returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
 				//returnUser+="<br>";
 			}
-
+			rs.close();
+			smt.close();
 			conn.close();
 			//System.out.println(returnUser);
 			return u;
@@ -153,6 +160,8 @@ public class UserSQL {
 				//all+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+photo+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
 				//all+="<br>";
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			//System.out.print(all);
 			//System.out.print("INSQL "+user.get(0).userName);
@@ -181,6 +190,8 @@ public class UserSQL {
 			while (rs.next()) {
 				dbName= rs.getString("userName");
 			}
+			
+			rs.close();
 			if (userName.equals(dbName)){
 				System.out.println("Username not unique.");
 				return false;
@@ -188,7 +199,7 @@ public class UserSQL {
 				System.out.println("Username is unique.");
 				return true;
 			}
-		}catch(Exception e){
+		}catch(SQLException e){
 			e.printStackTrace();
 			System.out.println("Failed query");
 			return false;
@@ -206,6 +217,9 @@ public class UserSQL {
 				dbEmail = rs.getString("userName"); 
 			}
 			System.out.println("dbEmail "+dbEmail);
+			rs.close();
+			smt.close();
+			conn.close();
 			return dbEmail;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -231,6 +245,8 @@ public class UserSQL {
 
 			int insertResult = smt.executeUpdate(query);
 
+			smt.close();
+			conn.close();
 			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
 			e.printStackTrace();
@@ -254,6 +270,8 @@ public class UserSQL {
 				//System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
+			smt.close();
+			conn.close();
 			
 			return "{ \"status\" : \"Error: SQL update failed.\" }";
 			
@@ -309,6 +327,8 @@ public class UserSQL {
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}*/
 			
+			smt.close();
+			conn.close();
 			//return "{ \"status\" : \"Error: SQL update failed.\" }";
 			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
@@ -330,6 +350,8 @@ public class UserSQL {
 			} else if (updateResult == 0) {
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
+			smt.close();
+			conn.close();
 			
 			return "{ \"status\" : \"Error: SQL update failed.\" }";
 
@@ -343,6 +365,8 @@ public class UserSQL {
 		try{
 			String query = "update "+ this.database+".user set bio = \""+bio+"\" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
+			smt.close();
+			conn.close();
 
 			if (updateResult == 1) {
 				return "{ \"status\" : \"ok\" }";
@@ -362,6 +386,9 @@ public class UserSQL {
 		try{
 			String query = "update "+ this.database+".user set favoriteDrink = \""+favDrink+"\" where userName = \""+userName+"\"";
 			int updateResult = smt.executeUpdate(query);
+			
+			smt.close();
+			conn.close();
 
 			if ( updateResult == 1 ) {
 				return "{ \"status\" : \"ok\" }";
@@ -382,8 +409,6 @@ public class UserSQL {
 			String query = "";
 			String backupQuery = "";
 
-			DrinkSQL test = new DrinkSQL();
-
 			//Likes a drink & Un-Likes a Drink
 			if (toggle.equals("on")) { //liking drink
 				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '1', '0')";
@@ -401,12 +426,16 @@ public class UserSQL {
 			System.out.println(query);
 
 			int updateResult = smt.executeUpdate(query);
-
-			conn.close();
+			
 			if ( updateResult == 1 ) {
+				smt.close();
+				conn.close();
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
+				
 				updateResult = smt.executeUpdate(backupQuery);
+				smt.close();
+				conn.close();
 				if (updateResult == 1){
 					return "{ \"status\" : \"ok\" }";
 				}
@@ -425,8 +454,7 @@ public class UserSQL {
 			String query = "";
 			String backupQuery = "";
 
-			DrinkSQL test = new DrinkSQL();
-
+			
 			//DISLIKES AND UN-DISLIKES A DRINK
 			if (toggle.equals("on")) { //liking drink
 				query = "replace into "+ this.database+".drink_likes (userName, drink_id, likes, dislikes) values ('" + userName + "', '" + drinkId + "', '0', '1')";
@@ -443,11 +471,14 @@ public class UserSQL {
 
 
 			int updateResult = smt.executeUpdate(query);
-			conn.close();
 			if ( updateResult == 1 ) {
+				smt.close();
+				conn.close();
 				return "{ \"status\" : \"ok\" }";
 			} else if(updateResult == 0) {
 				updateResult = smt.executeUpdate(backupQuery);
+				smt.close();
+				conn.close();
 				if (updateResult == 1){
 					return "{ \"status\" : \"ok\" }";
 				}
@@ -469,7 +500,6 @@ public class UserSQL {
 		query = "select * from "+ this.database+".drink_likes where username='" + userName + "' AND drink_id='" + drinkId + "'";
 		System.out.print(query);
 
-		DrinkSQL test = new DrinkSQL();
 		boolean userLikes = false;
 		boolean userDislikes = false;
 
@@ -491,6 +521,9 @@ public class UserSQL {
 					userDislikes = true;
 				}
 			}
+			rs.close();
+			smt.close();
+			conn.close(); 
 			return "{\"isLiked\": " + userLikes + ", \"isDisliked\": " + userDislikes + "}";
 		}catch(Exception e){
 			System.out.print("Didn't exist in DB, so the user hasn't liked it.");
@@ -505,15 +538,22 @@ public class UserSQL {
 		query = "select * from "+ this.database+".drink_likes where userName='" + userName + "' AND likes="+1;
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
-		DrinkSQL ds = new DrinkSQL();
+		
 		Drink drink;
 		try{
+			smt.close();
+			conn.close();
+			DrinkSQL ds = new DrinkSQL();
+			conn = ds.getConn();
+			smt = ds.getSmt();
 			rs = smt.executeQuery(query);
 			while (rs.next()){
 				int drinkId = rs.getInt("drink_id");
-				drink = ds.getDrink(drinkId);
+				drink = ds.getDrink(drinkId); 
 				drinks.add(drink);
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			return drinks;
 		} catch (Exception e) {
@@ -526,16 +566,22 @@ public class UserSQL {
 		query = "select * from "+ this.database+".drink_likes where userName='" + userName + "' AND dislikes="+1;
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
-		DrinkSQL ds = new DrinkSQL();
+		
 		Drink drink;
 		try{
+			smt.close();
+			conn.close();
+			DrinkSQL ds = new DrinkSQL();
+			conn = ds.getConn();
+			smt = ds.getSmt();
 			rs = smt.executeQuery(query);
 			while (rs.next()){
 				int drinkId = rs.getInt("drink_id");
-				drink = ds.getDrink(drinkId);
-				System.out.println(drink);
+				drink = ds.getDrink(drinkId); 
 				drinks.add(drink);
 			}
+			rs.close();
+			smt.close();
 			conn.close();
 			return drinks;
 		} catch (Exception e) {

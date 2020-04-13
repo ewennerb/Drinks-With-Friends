@@ -1,19 +1,16 @@
 package server.SQL;
+
 import java.io.Console;
 import java.sql.*;
 import java.util.ArrayList;
 
-import javax.sql.*;
+
+import org.apache.commons.dbcp2.*;
 
 import java.util.*;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
-import com.mysql.jdbc.*;
-import org.apache.*;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import ch.qos.logback.core.rolling.helper.RenameUtil;
+import ch.qos.logback.core.Context;
 import server.Drink.Drink;
 import server.Drink.Ingredient;
 
@@ -30,33 +27,14 @@ public class DrinkSQL {
 	BasicDataSource bds;
 	
 
-	public DrinkSQL(){
+	public DrinkSQL() {
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//deployment
-		//MysqlDataSource ds = new MysqlDataSource();
+		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
 		
-		/*
-		ds.setURL("jdbc:"+url);
-		ds.setPassword("xf590wkdp1qeejrj");
-		ds.setUser("gzgsvv5r3zidpv57");
-		ds.setDatabaseName("hiqietg4casioadz");
 		
-		BasicDataSource bds = new BasicDataSource();
-		bds.setUrl("jdbc:"+url);
-		bds.setUsername("xf590wkdp1qeejrj");
-		bds.setPassword("gzgsvv5r3zidpv57");
-		
-		this.bds = new BasicDataSource();
-		bds.setUrl("jdbc:"+url);
-		bds.setUsername("xf590wkdp1qeejrj");
-		bds.setPassword("gzgsvv5r3zidpv57");
-		bds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		*/
 		try{
-			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj");
-		
-			//conn = DriverManager.getConnection(url);
-			//conn = bds.getConnection();
+			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 			
 			smt = conn.createStatement();
 			
@@ -64,8 +42,8 @@ public class DrinkSQL {
 			e.printStackTrace();
 			
 		}
-		database = "test_schema";
-		database = "hiqietg4casioadz";
+		database = "test_schema";		//development
+		database = "hiqietg4casioadz";	//production
 
 
 	}
@@ -259,7 +237,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -341,7 +320,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -351,6 +331,7 @@ public class DrinkSQL {
 			}
 			
 			rs.close();
+			smt.close();
 			conn.close();
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
@@ -416,7 +397,8 @@ public class DrinkSQL {
 					}
 
 				}
-
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -478,7 +460,7 @@ public class DrinkSQL {
 				finalSorted.add(k);
 			}
 			rs.close();
-
+			smt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
 			outDrink = finalSorted.toArray(outDrink);
@@ -521,8 +503,9 @@ public class DrinkSQL {
 					System.out.println("add ingredients fail");
 					return false;
 				}
+				smt2.close();
 			}
-			rs.close();
+			smt.close();
 			conn.close();
 			
 		} catch (Exception e) {
@@ -590,6 +573,8 @@ public class DrinkSQL {
 					}
 
 				}
+				rs2.close();
+				smt2.close();
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				Drink d = new Drink(drinkId, dName, description,  ingreds, stockPhoto, likes, dislikes, publisher);
@@ -599,6 +584,7 @@ public class DrinkSQL {
 
 			}
 			rs.close();
+			smt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
@@ -628,6 +614,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 			rs.close();
+			smt.close();
 			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -665,6 +652,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 			rs.close();
+			smt.close();
 			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -713,14 +701,21 @@ public class DrinkSQL {
 				ingreds = ii.toArray(ingreds);
 				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
 				rs2.close();
+				smt2.close();
 				//System.out.println(drink);
 			}
-			rs.close();
-			conn.close();
 			return drink;
 		}catch(Exception e){
 			return null;
 		}
+	}
+
+	public Statement getSmt(){
+		return this.smt;
+	}
+	
+	public Connection getConn(){
+		return this.conn;
 	}
 
 
