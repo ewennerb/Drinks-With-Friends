@@ -9,7 +9,8 @@ import java.util.*;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import com.mysql.jdbc.*;
-
+import org.apache.*;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ch.qos.logback.core.rolling.helper.RenameUtil;
@@ -26,26 +27,41 @@ public class DrinkSQL {
 	ResultSet rs;
 	int topResultDrinkId = 0;
 	private String database;
+	BasicDataSource bds;
 	
 
 	public DrinkSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "mysql://gzgsvv5r3zidpv57:xf590wkdp1qeejrj@b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/"; 	//deployment
+		url = "mysql://gzgsvv5r3zidpv57:xf590wkdp1qeejrj@b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz?autoReconnectForPools=true"; 	//deployment
 		MysqlDataSource ds = new MysqlDataSource();
+		
+		/*
 		ds.setURL("jdbc:"+url);
 		ds.setPassword("xf590wkdp1qeejrj");
 		ds.setUser("gzgsvv5r3zidpv57");
 		ds.setDatabaseName("hiqietg4casioadz");
 		
+		BasicDataSource bds = new BasicDataSource();
+		bds.setUrl("jdbc:"+url);
+		bds.setUsername("xf590wkdp1qeejrj");
+		bds.setPassword("gzgsvv5r3zidpv57");
+		*/
+		this.bds = new BasicDataSource();
+		bds.setUrl("jdbc:"+url);
+		bds.setUsername("xf590wkdp1qeejrj");
+		bds.setPassword("gzgsvv5r3zidpv57");
+		
 		try{
 		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 		
 		//conn = DriverManager.getConnection(url);
-			conn = ds.getConnection();
+			conn = bds.getConnection();
+			
 			smt = conn.createStatement();
 			
 		}catch(Exception e){
 			e.printStackTrace();
+			
 		}
 		database = "test_schema";
 		database = "hiqietg4casioadz";
@@ -89,7 +105,7 @@ public class DrinkSQL {
 				}
 				rs2.close();
 				smt2.close();
-				if (!(rs2.isClosed() || smt2.isClosed())){
+				if (!(rs2.isClosed() && smt2.isClosed())){
 					System.out.println("ingredient all is not closed");
 				}
 				ingreds = new Ingredient[ii.size()];
@@ -102,21 +118,25 @@ public class DrinkSQL {
 			}
 			rs.close();
 			smt.close();
+			
 			conn.close();
-			if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+			this.bds.evict();
+			this.bds.close();
+			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 				System.out.println("drink all is not closed");
 				System.out.println("	rs: " + rs.isClosed());
 				System.out.println("	smt: " + smt.isClosed());
 				System.out.println("	conn: " + conn.isClosed());
 			}
 
-		}catch(SQLException e){
+		}catch(Exception e){
 			e.printStackTrace();
 			try {
 				rs.close();
 				smt.close();
 				conn.close();
-				if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+				bds.close();
+				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 					System.out.println("drink all exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
 					System.out.println("	smt: " + smt.isClosed());
@@ -158,7 +178,7 @@ public class DrinkSQL {
 				}
 				rs2.close();
 				smt2.close();
-				if (!(rs2.isClosed() || smt2.isClosed())){
+				if (!(rs2.isClosed() && smt2.isClosed())){
 					System.out.println("ingredient find is not closed");
 				}
 				ingreds = new Ingredient[ii.size()];
@@ -170,7 +190,10 @@ public class DrinkSQL {
 			rs.close();
 			smt.close();
 			conn.close();
-			if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+			bds.evict();
+			
+			bds.close();
+			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 				System.out.println("drink find is not closed");
 				System.out.println("	rs: " + rs.isClosed());
 				System.out.println("	smt: " + smt.isClosed());
@@ -179,13 +202,14 @@ public class DrinkSQL {
 			return drink;
 
 
-		}catch(SQLException e){
+		}catch(Exception e){
 			e.printStackTrace();
 			try {
 				rs.close();
 				smt.close();
 				conn.close();
-				if (!(rs.isClosed() || smt.isClosed() || conn.isClosed())){
+				bds.close();
+				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 					System.out.println("drink find exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
 					System.out.println("	smt: " + smt.isClosed());
