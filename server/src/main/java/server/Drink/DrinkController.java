@@ -208,6 +208,24 @@ public class DrinkController {
 		return out;
 	}
 
+	@GetMapping("/mostLiked")
+	public String getMostLikesDrinks() throws JsonProcessingException {
+		DrinkSQL ds = new DrinkSQL();
+		Drink[] mostLikedDrinks = ds.getTopLikedDrinks();
+		
+		if (mostLikedDrinks == null) {
+			return "{\"results\": \"DNE\"";
+		}
+
+		String out = "{ \"results\": [ ";
+		for (Drink d : mostLikedDrinks) {
+			out += new ObjectMapper().writeValueAsString(d) + ",";
+		}
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+	}
+
     @GetMapping("/all/{letter}") 
     public String requestAll(@PathVariable String letter) {
         DrinkSQL ds = new DrinkSQL();
