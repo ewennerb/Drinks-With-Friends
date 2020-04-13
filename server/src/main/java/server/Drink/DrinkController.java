@@ -99,7 +99,8 @@ public class DrinkController {
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
-
+        
+        ds = new DrinkSQL();
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";
@@ -138,8 +139,9 @@ public class DrinkController {
 			out = out.substring(0, out.length()-1) + "] }";
 			return out;
 		} 
-
+        
 		out = out.substring(0, out.length()-1) + "} ], \"similarDrinks\": [] }";
+        
         return out;
     }
 
@@ -296,7 +298,8 @@ public class DrinkController {
         //1 * * * * *
         
         try {
-            Process p = Runtime.getRuntime().exec("py ../ml/main.py");
+            Process p = Runtime.getRuntime().exec("py ../ml/main.py 1"); //production
+            //Process p = Runtime.getRuntime().exec("py ../ml/main.py 0"); //development
         } catch (Exception e) {
             System.out.println(e);
         } finally {
