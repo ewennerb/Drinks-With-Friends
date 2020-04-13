@@ -32,7 +32,7 @@ public class DrinkSQL {
 
 	public DrinkSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "mysql://gzgsvv5r3zidpv57:xf590wkdp1qeejrj@b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz?autoReconnectForPools=true"; 	//deployment
+		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//deployment
 		//MysqlDataSource ds = new MysqlDataSource();
 		
 		/*
@@ -45,18 +45,18 @@ public class DrinkSQL {
 		bds.setUrl("jdbc:"+url);
 		bds.setUsername("xf590wkdp1qeejrj");
 		bds.setPassword("gzgsvv5r3zidpv57");
-		*/
+		
 		this.bds = new BasicDataSource();
 		bds.setUrl("jdbc:"+url);
 		bds.setUsername("xf590wkdp1qeejrj");
 		bds.setPassword("gzgsvv5r3zidpv57");
 		bds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		
+		*/
 		try{
-		//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
+			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj");
 		
-		//conn = DriverManager.getConnection(url);
-			conn = bds.getConnection();
+			//conn = DriverManager.getConnection(url);
+			//conn = bds.getConnection();
 			
 			smt = conn.createStatement();
 			
@@ -121,8 +121,6 @@ public class DrinkSQL {
 			smt.close();
 			
 			conn.close();
-			this.bds.evict();
-			this.bds.close();
 			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 				System.out.println("drink all is not closed");
 				System.out.println("	rs: " + rs.isClosed());
@@ -136,7 +134,6 @@ public class DrinkSQL {
 				rs.close();
 				smt.close();
 				conn.close();
-				bds.close();
 				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 					System.out.println("drink all exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
@@ -191,9 +188,7 @@ public class DrinkSQL {
 			rs.close();
 			smt.close();
 			conn.close();
-			bds.evict();
 			
-			bds.close();
 			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 				System.out.println("drink find is not closed");
 				System.out.println("	rs: " + rs.isClosed());
@@ -209,7 +204,6 @@ public class DrinkSQL {
 				rs.close();
 				smt.close();
 				conn.close();
-				bds.close();
 				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
 					System.out.println("drink find exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
