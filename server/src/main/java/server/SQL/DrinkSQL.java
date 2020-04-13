@@ -9,13 +9,6 @@ import org.apache.commons.dbcp2.*;
 
 import java.util.*;
 
-<<<<<<< HEAD
-import com.mysql.cj.jdbc.MysqlDataSource;
-import com.mysql.jdbc.*;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-=======
->>>>>>> busst
 
 import ch.qos.logback.core.Context;
 import server.Drink.Drink;
