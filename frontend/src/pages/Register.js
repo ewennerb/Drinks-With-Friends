@@ -38,7 +38,7 @@ export default class Register extends React.Component {
     //Queries the account creation API endpoint when the button is pressed.
     async handleSubmit() {
         //Todo - This 'Fetch' method will query the API on submission of the form
-        await fetch('http://localhost:8080/user/', {
+        await fetch(config.url.API_URL + '/user/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

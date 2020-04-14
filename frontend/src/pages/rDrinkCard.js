@@ -28,7 +28,7 @@ export default class rDrinkCard extends React.Component {
     async componentDidMount() {
         let userData;
 
-        await fetch("http://localhost:8080/user/" + this.props.user, {
+        await fetch(config.url.API_URL + "/user/" + this.props.user, {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -46,7 +46,7 @@ export default class rDrinkCard extends React.Component {
                 user = undefined;
             }else{
                 user = data;
-                await fetch("http://localhost:8080/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
+                await fetch(config.url.API_URL + "/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -118,10 +118,10 @@ export default class rDrinkCard extends React.Component {
             if (!this.state.isLiked) {
                 //If disliked and like gets hit, flip
                 if (this.state.isDisliked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/on", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/on", option);
                 }
                 //tryinng to give liked drinks to profile
                 this.passState({
@@ -131,7 +131,7 @@ export default class rDrinkCard extends React.Component {
 
                 this.setState({isLiked: true, isDisliked: false})
             } else {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
                 //removelike
                 this.passState({
@@ -145,10 +145,10 @@ export default class rDrinkCard extends React.Component {
             if(!this.state.isDisliked) {
                 //If liked and dislike gets hit, flip
                 if (this.state.isLiked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
                 //dislike
@@ -159,7 +159,7 @@ export default class rDrinkCard extends React.Component {
 
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
                 //remove dislike
                 this.passState("",{

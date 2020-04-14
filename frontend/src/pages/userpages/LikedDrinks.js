@@ -107,7 +107,7 @@ class LikedDrinks extends Component{
 
 
   async getLikedDrinks(user) {
-    await fetch('http://localhost:8080/user/getLikedDrinks/'+user, {
+    await fetch(config.url.API_URL + '/user/getLikedDrinks/'+user, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',

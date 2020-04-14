@@ -118,7 +118,7 @@ class Posts extends Component{
     let userName = this.state.userName;
     if (this.isValidInput(userName)){
     
-      await fetch('http://localhost:8080/post/'+userName, {
+      await fetch(config.url.API_URL + '/post/'+userName, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',

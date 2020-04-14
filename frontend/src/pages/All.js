@@ -29,7 +29,7 @@ class All extends Component{
   }
   
   async handleSearch(letter) {
-    await fetch('http://localhost:8080/drink/all/' + letter, {
+    await fetch(config.url.API_URL + '/drink/all/' + letter, {
               method: 'GET',
               headers: {
                   'Accept': 'application/json',

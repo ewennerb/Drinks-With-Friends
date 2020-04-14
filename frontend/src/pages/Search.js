@@ -84,7 +84,6 @@ export default class Search extends React.Component{
 
     //Fetches the Drink of the Day
     async getDOTD(){
-        //await fetch('http://localhost:8080/drink/dotd', {
         await fetch(config.url.API_URL + '/drink/dotd', {
             method: 'GET',
             headers: {
@@ -103,7 +102,7 @@ export default class Search extends React.Component{
             return
         }
         this.setState({results: []})
-        await fetch('http://localhost:8080/drink/getUserRecommended/'+this.state.user, {
+        await fetch(config.url.API_URL + '/drink/getUserRecommended/'+this.state.user, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -121,17 +120,17 @@ export default class Search extends React.Component{
         console.log(this.state.searchVal);
         console.log(this.state.officialOnly);
         if (this.state.searchVal === 'u'){
-            url = "http://localhost:8080/user/searchUsers?s=" + this.state.searchText;
+            url = config.url.API_URL + "/user/searchUsers?s=" + this.state.searchText;
         }else if(this.state.searchVal === "d"){
             if(this.state.officialOnly){
-                url = "http://localhost:8080/drink/searchOfficialDrink?s=" + this.state.searchText;
+                url = config.url.API_URL + "/drink/searchOfficialDrink?s=" + this.state.searchText;
             }else{
-                url = "http://localhost:8080/drink/search?s=" + this.state.searchText;
+                url = config.url.API_URL + "/drink/search?s=" + this.state.searchText;
             }
         }else if(this.state.searchVal === "p"){
-            url = "http://localhost:8080/post/search?s=" + this.state.searchText;
+            url = config.url.API_URL + "/post/search?s=" + this.state.searchText;
         }else if(this.state.searchVal === "i"){
-            url = "http://localhost:8080/drink/searchIngredients?s=" + this.state.searchText;
+            url = config.url.API_URL + "/drink/searchIngredients?s=" + this.state.searchText;
         }
 
         await fetch(url, {
@@ -162,7 +161,7 @@ export default class Search extends React.Component{
                     for (let res in data.results) {
                         console.log(data.results[res].userName)
                         let names = {}
-                        await fetch("http://localhost:8080/user/"+data.results[res].userName, {
+                        await fetch(config.url.API_URL + "/user/"+data.results[res].userName, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
@@ -199,7 +198,7 @@ export default class Search extends React.Component{
     async handleRandomModalOpen() { //Paul Added
         this.setState({openRandomModal: true, searchVal: 'd'});
 
-        await fetch('http://localhost:8080/drink', {
+        await fetch(config.url.API_URL + '/drink', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -219,7 +218,7 @@ export default class Search extends React.Component{
 
 
         //searches the drink
-        await fetch("http://localhost:8080/drink/search?s=" + randomDrink.name, {
+        await fetch(config.url.API_URL + "/drink/search?s=" + randomDrink.name, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

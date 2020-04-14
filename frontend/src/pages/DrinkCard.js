@@ -25,7 +25,7 @@ export default class DrinkCard extends React.Component {
     async componentDidMount() {
         let userData;
 
-        await fetch("http://localhost:8080/user/" + this.props.user, {
+        await fetch(config.url.API_URL + "/user/" + this.props.user, {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -43,7 +43,7 @@ export default class DrinkCard extends React.Component {
                 user = undefined;
             }else{
                 user = data;
-                await fetch("http://localhost:8080/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
+                await fetch(config.url.API_URL + "/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',

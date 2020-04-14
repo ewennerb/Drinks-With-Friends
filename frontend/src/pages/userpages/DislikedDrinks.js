@@ -100,7 +100,7 @@ class DislikedDrinks extends Component{
   }
 
   async getLikeStatus(user, drinkId) {
-    await fetch('http://localhost:8080/user/getLikeStatus/'+user+"/"+drinkId, {
+    await fetch(config.url.API_URL + '/user/getLikeStatus/'+user+"/"+drinkId, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',

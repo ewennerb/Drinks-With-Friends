@@ -8,7 +8,7 @@ import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
 import ResetPassword from "./pages/ResetPassword";
-
+import {config} from './config/config'
 
 import {
     Menu,
@@ -101,7 +101,7 @@ export default class Routes extends React.Component {
             console.log("return ")
             return;
         }
-        await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+        await fetch(config.url.API_URL + '/user/' + localStorage.getItem('username'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
