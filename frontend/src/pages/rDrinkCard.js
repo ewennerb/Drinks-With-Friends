@@ -2,6 +2,7 @@ import React from "react";
 import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
 
+import {config} from '../config/config'
 
 export default class rDrinkCard extends React.Component {
     constructor(props) {

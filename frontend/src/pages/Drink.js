@@ -18,7 +18,7 @@ import {
 import {Link, Router} from 'react-router-dom';
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import "../css/Drink.css"
-
+import {config} from '../config/config'
 
 
 

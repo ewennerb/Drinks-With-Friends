@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 // import {PhoneInput} from 'react-phone-input-2';
 import 'react-phone-input-2/lib/semantic-ui.css'
+import {config} from '../config/config'
 
 
 

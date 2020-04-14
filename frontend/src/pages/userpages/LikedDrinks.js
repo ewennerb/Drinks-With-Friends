@@ -12,7 +12,7 @@ import {
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../rDrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
-
+import {config} from '../../config/config'
 class LikedDrinks extends Component{
   constructor(props){
   super(props)

@@ -13,7 +13,7 @@ import {
 
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
-
+import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
 
 class Posts extends Component{

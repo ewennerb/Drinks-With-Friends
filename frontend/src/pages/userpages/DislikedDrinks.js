@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import {config} from '../../config/config'
 import {
   Feed,
   Container,

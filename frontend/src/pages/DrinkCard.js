@@ -1,7 +1,7 @@
 import React from "react";
 import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
-
+import {config} from '../config/config'
 
 export default class DrinkCard extends React.Component {
     constructor(props) {
@@ -116,30 +116,30 @@ export default class DrinkCard extends React.Component {
             if (!this.state.isLiked) {
                 //If disliked and like gets hit, flip
                 if (this.state.isDisliked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/on", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/on", option);
                 }
 
                 this.setState({isLiked: true, isDisliked: false})
             } else {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
             }
         }else{
             if(!this.state.isDisliked) {
                 //If liked and dislike gets hit, flip
                 if (this.state.isLiked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
             }
         }

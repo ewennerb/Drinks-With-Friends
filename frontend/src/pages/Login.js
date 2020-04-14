@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
-
+import {config} from '../config/config'
 class Login extends React.Component {
     constructor(props) {
         super(props);

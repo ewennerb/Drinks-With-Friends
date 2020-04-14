@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {postCard, postCardDelete} from "./utils";
+import {config} from '../config/config'
 var base64 = require('base-64');
 
 

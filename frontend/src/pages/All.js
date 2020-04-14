@@ -7,7 +7,7 @@ import {
   GridRow,
 } from "semantic-ui-react";
 
-
+import {config} from '../config/config'
 import "../css/All.css"
 import { NavLink } from "react-router-dom/esm/react-router-dom";
 
