@@ -100,7 +100,9 @@ public class DrinkController {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
         
+		int topId = ds.topResultDrinkId;
         ds = new DrinkSQL();
+		ds.topResultDrinkId = topId;
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";

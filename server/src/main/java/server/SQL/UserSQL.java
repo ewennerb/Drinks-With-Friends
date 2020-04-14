@@ -589,4 +589,88 @@ public class UserSQL {
 		}
 		return null;
 	}
+
+	public String followUser(String followedUser, String followingUser) {
+		try{
+			String query = "insert into "+ this.database+".user_followers (userId, followingUserId) values ( (select userId from "+ this.database+".user where userName = \""+followedUser+"\"), (select userId from "+ this.database+".user where userName = \""+followingUser+"\") )";
+			
+			int updateResult = smt.executeUpdate(query);
+			
+			smt.close();
+			conn.close();
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String unfollowUser(String followedUser, String followingUser) {
+		try {
+			String query = "delete from "+ this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+followedUser+"\") and followingUserId = (select userId from "+ this.database+".user where userName = \""+followingUser+"\")";
+			
+			int updateResult = smt.executeUpdate(query);
+			
+			smt.close();
+			conn.close();
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public User[] flagFollowedUsers(User[] users, String activeUserName) {
+		
+
+		try{
+			String query = "select userId from "+this.database+".user_followers where followingUserId = (select userId from "+ this.database+".user where userName = \""+activeUserName+"\")";
+			System.out.println("Follower query: "+query);
+
+			rs=smt.executeQuery(query);
+
+			ArrayList<Integer> followList = new ArrayList<Integer>();
+
+			while (rs.next()) {
+				followList.add(rs.getInt("userId")); 
+			}
+
+			//System.out.println("followList "+followList.get(0));
+		
+
+			for(int x = 0; x < users.length; x++) {
+				for(int y=0; y<followList.size(); y++){
+					if (users[x].userId == followList.get(y) ) {
+						users[x].followedFlag = 1;
+						break;
+					}
+				}
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+			
+			return users;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
