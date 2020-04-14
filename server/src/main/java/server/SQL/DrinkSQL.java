@@ -18,7 +18,7 @@ public class DrinkSQL {
 	private Connection conn;
 	Statement smt;
 	ResultSet rs;
-	int topResultDrinkId = 0;
+	public int topResultDrinkId = 0;
 	private String database;
 	BasicDataSource bds;
 	

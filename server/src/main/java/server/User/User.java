@@ -19,6 +19,7 @@ public class User{
 	public String dateCreated;
 	public String lastLogin;
 	public int darkMode;
+	public int followedFlag;
 
 	public User(){
 		this.userId = 0;

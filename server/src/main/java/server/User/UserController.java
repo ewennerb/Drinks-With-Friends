@@ -76,12 +76,20 @@ public class UserController {
     }
 
 	@GetMapping("/searchUsers")
-	public String searchUsers(@RequestParam(name = "s") String request) throws JsonProcessingException {
+	public String searchUsers(@RequestParam(name = "s") String request, @RequestParam(name = "u") String username) throws JsonProcessingException, IOException {
 		System.out.println("SEARCHING USERS");
+
+		/*ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(username, User.class);*/
 
 		UserSQL us = new UserSQL();
 		User[] users = us.searchUsers(request);
-		
+		us = new UserSQL();
+		users = us.flagFollowedUsers(users, username);
+
 		if(users == null) {
 			return "{\"results\": \"DNE\"";
 		}
@@ -171,12 +179,38 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("/follow/{followUser}")
-	public String follow(@PathVariable String followUser, @RequestBody String followingUser)
-			throws JsonParseException. JsonMappingException, IOException {
+	@PostMapping("/follow/{followedUser}")
+	public String follow(@PathVariable String followedUser, @RequestBody String followingUser)
+			throws JsonParseException, JsonMappingException, IOException {
 			
-		return "TEST";
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(followingUser, User.class);
+
+		System.out.println("Followed user: "+followedUser+", Folowwing user: "+u.userName);
+
+		UserSQL users = new UserSQL();
+		return users.followUser(followedUser, u.userName);
 	}
+
+	@PostMapping("/unfollow/{followedUser}")
+	public String unfollow(@PathVariable String followedUser, @RequestBody String followingUser)
+			throws JsonParseException, JsonMappingException, IOException {
+			
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(followingUser, User.class);
+
+		System.out.println("unFollowed user: "+followedUser+", unFolowwing user: "+u.userName);
+
+		UserSQL users = new UserSQL();
+		return users.unfollowUser(followedUser, u.userName);
+	}
+
 
 	// @PostMapping("/updateUsername")
 	// public String updateUsername(@RequestBody String userName)
