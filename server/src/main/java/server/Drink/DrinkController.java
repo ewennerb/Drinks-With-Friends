@@ -18,7 +18,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
 @RequestMapping(path="/drink")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")             //development
+@CrossOrigin(origins = "https://fiveo-clocksomewhere.firebaseapp.com/")     //production
 @EnableScheduling
 public class DrinkController {
 
@@ -99,8 +100,9 @@ public class DrinkController {
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
-        
+        int topId = ds.topResultDrinkId;
         ds = new DrinkSQL();
+        ds.topResultDrinkId = topId;
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";

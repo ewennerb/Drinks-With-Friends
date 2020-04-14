@@ -89,7 +89,9 @@ public class UserController {
 		String out =  "{ \"results\": [ ";
 		for (User user : users ) {
 			out += new ObjectMapper().writeValueAsString(user) + ",";
+			
 		}
+
 		out = out.substring(0, out.length()-1) + "] }";
 
 		return out;

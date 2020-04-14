@@ -6,6 +6,7 @@ import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
+import {config} from '../config/config'
 
 export default class Search extends React.Component{
 
@@ -83,7 +84,8 @@ export default class Search extends React.Component{
 
     //Fetches the Drink of the Day
     async getDOTD(){
-        await fetch('http://localhost:8080/drink/dotd', {
+        //await fetch('http://localhost:8080/drink/dotd', {
+        await fetch(config.url.API_URL + '/drink/dotd', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
