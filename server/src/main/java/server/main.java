@@ -9,7 +9,7 @@ public class main {
 
     @RequestMapping("/")
 	//@CrossOrigin(origins = "http://localhost:3000") 	//test
-	@CrossOrigin(origins = "http://localhost:3000")		//deployment
+	@CrossOrigin(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
     String home() {
 		/*
 		try{
