@@ -314,9 +314,9 @@ export default class ActivityFeed extends React.Component {
                 text: this.state.postText,
                 image: photoString,
                 userId: 0,
+                userName: this.state.user,
                 geolocation: " ",
                 date: n,
-                userName: this.state.user,
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);

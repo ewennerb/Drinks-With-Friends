@@ -34,7 +34,35 @@ public class PostController {
 		Post p = om.readValue(username, Post.class);
 
 		PostSQL posts = new PostSQL();
-		return posts.insertPost(p.text, p.image, "", p.geolocation, p.date);
+		String postReturn = posts.insertPost(p.text, p.image, p.userName, p.geolocation, p.date);
+		int postId = posts.recentPostId;
+		posts = new PostSQL();
+		String notifReturn = posts.notifyUser(postId, p.geolocation);
+
+		if ( postReturn.equals("{ \"status\" : \"ok\" }") && notifReturn.equals("{ \"status\" : \"ok\" }")) {
+			return postReturn;
+		} else {
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+
+	}
+	//Need to include postId and username of logged in user in request body
+	@PostMapping("/notificationClicked")
+	public String notificationClicked(@RequestBody String username) //(@RequestParam(name = "s") String username, 
+			throws JsonProcessingException, JsonMappingException, IOException {
+		System.out.println("TEST");
+
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Post.class, new PostDeserializer());
+		om.registerModule(sm);
+
+		Post p = om.readValue(username, Post.class);
+		System.out.print("HERE");
+
+		PostSQL posts = new PostSQL();
+		return posts.removeNotification(p.postId, p.geolocation);
+
 	}
 
 	@GetMapping("")

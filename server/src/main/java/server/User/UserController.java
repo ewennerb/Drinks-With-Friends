@@ -211,6 +211,16 @@ public class UserController {
 		return users.unfollowUser(followedUser, u.userName);
 	}
 
+	@GetMapping("/getNotifications/{username}")
+	public String getNotifications(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		UserSQL users = new UserSQL();
+
+
+		return "";
+	}
+
 
 	// @PostMapping("/updateUsername")
 	// public String updateUsername(@RequestBody String userName)
