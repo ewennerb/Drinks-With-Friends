@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "base-64": "^0.1.0",
+    "firebase": "^7.14.0",
     "nodemailer": "^5.1.1",
     "nodemailer-mailgun-transport": "^1.4.0",
     "react": "^16.12.0",
