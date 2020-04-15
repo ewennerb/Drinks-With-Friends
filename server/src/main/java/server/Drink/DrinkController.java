@@ -303,6 +303,9 @@ public class DrinkController {
     private void setRandomDOTD(){
         DrinkSQL ds = new DrinkSQL();
         DOTD = ds.getDOTD();
+        if (DOTD == null){
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
+        } 
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
     }
 
