@@ -21,6 +21,7 @@ public class DrinkSQL {
 	public int topResultDrinkId = 0;
 	private String database;
 	BasicDataSource bds;
+	public int recentDrinkId = 0;
 	
 
 	public DrinkSQL() {
@@ -501,6 +502,20 @@ public class DrinkSQL {
 				}
 				smt2.close();
 			}
+
+			String query3 = "select drinkId from "+this.database+".drink where publisher = \""+d.publisher+"\" and name = \""+d.name+"\"";
+			rs = smt.executeQuery(query3);
+
+			int retPostId = 0;
+			while(rs.next())
+			{
+				retPostId = rs.getInt("drinkId");
+			}
+			System.out.println("RECENT DRINK ID***: "+retPostId);
+			recentDrinkId = retPostId;
+
+			rs.close();
+
 			smt.close();
 			conn.close();
 			
@@ -510,6 +525,68 @@ public class DrinkSQL {
 		}
 		return true;
 	}
+
+	public String notifyUser(int drinkId, String publisher) {
+		try {
+			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+publisher+"\")";
+			System.out.println("Follower query: "+query1);
+
+			rs=smt.executeQuery(query1);
+
+			ArrayList<Integer> followList = new ArrayList<Integer>();
+
+			while (rs.next()) {
+				followList.add(rs.getInt("followingUserId")); 
+			}
+
+			rs.close();
+			//addRows to post_notif database
+			String query2 = "";
+			for ( int x = 0; x <followList.size(); x++){
+				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values ('"+drinkId+"', '"+followList.get(x)+"', 1)";
+				int updateResult = smt.executeUpdate(query2);
+				
+				if(updateResult == 0) {
+					return "{ \"status\" : \"Error: SQL update failed.\"}";
+				}
+			}
+
+
+			smt.close();
+			conn.close();
+
+			return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String removeNotification(int postId, String username){
+	
+		//delete post notification from db
+		//need to figure out should this return the post/drink?
+		try{
+			String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\") and drinkFlag = 1";
+			System.out.println(query);
+
+			int result2 = smt.executeUpdate(query);
+
+			smt.close();
+			conn.close();
+		
+		
+			if (result2 == 0)
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			else
+				return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+
+	}
+
 
 	public String[] getDrinkNamesStartingWith(char let){
 		System.out.println("Getting drinks starting with " + let);
