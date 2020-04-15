@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 
@@ -299,11 +299,7 @@ export default class Search extends React.Component{
                                 )
                             } else if (this.state.searchVal === 't') {
                                 return(
-                                    <DrinkCard
-                                        user={this.state.user}
-                                        index={index}
-                                        drink={result}
-                                    />
+                                    minimalDrinkCard(result)
                                 )
                             }
                         })
