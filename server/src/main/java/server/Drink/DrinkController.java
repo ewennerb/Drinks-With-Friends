@@ -256,6 +256,24 @@ public class DrinkController {
         return out;
     }
 
+    @GetMapping("/trending") 
+    public String getTrendingDrinks() throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] names = ds.getTrending();
+
+        String out = "{ \"results\": [ ";
+        if (names.length == 0) {
+            return out + "]}";
+        }
+
+        for (Drink drink : names) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        System.out.println(out);
+        return out;
+    }
+
     @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");

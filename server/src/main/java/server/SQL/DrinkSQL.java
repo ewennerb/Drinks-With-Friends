@@ -528,6 +528,9 @@ public class DrinkSQL {
 				dnames.add(rs.getString("name"));
 				dnames.add(rs.getString("publisher"));
 			}
+			rs.close();
+			smt.close();
+			conn.close();
 		} catch (Exception e) {
 
 
@@ -964,9 +967,55 @@ public class DrinkSQL {
 			String query = "UPDATE " + this.database + ".drink SET lookedUp = lookedUp + 1 " +
 				"WHERE drinkId = " + drinkid;
 			smt.executeUpdate(query);
-
+			//closes in getDrink(dname, publisher)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Drink[] getTrending(){
+		System.out.println("Getting trending drinks");
+		ArrayList<Drink> dnames = new ArrayList<>();
+
+		try {
+			String query = "SELECT * FROM " + this.database + ".drink " +
+				"ORDER BY lookedUp DESC LIMIT 10";
+
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				dnames.add(
+					new Drink(
+						rs.getInt("drinkId"),
+						rs.getString("name"),
+						rs.getString("description"),
+						new Ingredient[]{new Ingredient("","","")},
+						rs.getString("stockPhoto"),
+						rs.getInt("likes"),
+						rs.getInt("dislikes"),
+						rs.getString("publisher")
+					)
+				);
+				//Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher)
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+
+		}
+		Drink[] outDrink = new Drink[dnames.size()];
+		outDrink = dnames.toArray(outDrink);
+		
+		return outDrink;
 	}
 }
