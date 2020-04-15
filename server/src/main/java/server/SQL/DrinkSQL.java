@@ -942,14 +942,21 @@ public class DrinkSQL {
 			return d;
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 			try {
-				rs.close();
+				if (rs != null) {
+					rs.close();
+				}
 				smt.close();
 				conn.close();
+				return new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
 			} catch (SQLException se) {
 				se.printStackTrace();
+				return new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
 			}
+			
 		}
-		return null;
+		
+
 	}
 }
