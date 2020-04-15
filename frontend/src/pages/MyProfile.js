@@ -19,6 +19,7 @@ import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
+import {config} from '../config/config'
 var base64 = require('base-64');
 
 //import "../css/Profile.css"
@@ -372,7 +373,7 @@ class Profile extends Component{
       this.setState({ activeItem: name })
       console.log(name)
       
-      await fetch('http://localhost:8080/user/'+name+'', {
+      await fetch(config.url.API_URL + '/user/'+name+'', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -399,7 +400,7 @@ class Profile extends Component{
     let User = this.state.User;
     //profile pic
     if (this.state.photo != User.photo && this.isValidInput(this.state.photo) && this.state.photo == this.state.profilePhoto){
-      await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
+      await fetch(config.url.API_URL + '/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -423,7 +424,7 @@ class Profile extends Component{
 
     //username
     if (this.state.userName !== User.userName){
-    await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
+    await fetch(config.url.API_URL + '/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -452,7 +453,7 @@ class Profile extends Component{
 
     //password
     if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
-    await fetch('http://localhost:8080/user/updatePassword', {
+    await fetch(config.url.API_URL + '/user/updatePassword', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -477,7 +478,7 @@ class Profile extends Component{
 
     //bio
     if (this.state.bio !== User.bio && this.isValidInput(this.state.bio)) {
-      await fetch('http://localhost:8080/user/saveBio', {
+      await fetch(config.url.API_URL + '/user/saveBio', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -504,7 +505,7 @@ class Profile extends Component{
     //favoritedrink update
     if (this.state.favoriteDrink != User.favoriteDrink && this.isValidInput(this.state.favoriteDrink)) {
       //first search for actual drink with the output
-      // await fetch("http://localhost:8080/drink/search?s=" + this.state.favoriteDrink, {
+      // await fetch(config.url.API_URL + "/drink/search?s=" + this.state.favoriteDrink, {
       //   method: 'GET',
       //   headers: {
       //       'Accept': 'application/json',
@@ -520,7 +521,7 @@ class Profile extends Component{
       //search isnt return anything rn so well just upload the state
       //then upload 
       
-      await fetch('http://localhost:8080/user/saveFavoriteDrink', {
+      await fetch(config.url.API_URL + '/user/saveFavoriteDrink', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -547,7 +548,7 @@ class Profile extends Component{
   } //end of handle submit
 
   async getUser(name) {
-    await fetch('http://localhost:8080/user/'+name, {
+    await fetch(config.url.API_URL + '/user/'+name, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -562,7 +563,7 @@ class Profile extends Component{
   }
   //get all drinks
   async getAllDrinks(){
-    await fetch('http://localhost:8080/drink/', {
+    await fetch(config.url.API_URL + '/drink/', {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -576,7 +577,7 @@ class Profile extends Component{
   //get individual drink objects
   async getDrink(owner, dname) {
     //get all drinks
-    await fetch('http://localhost:8080/drink/'+owner+"?d="+dname, {
+    await fetch(config.url.API_URL + '/drink/'+owner+"?d="+dname, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -664,7 +665,7 @@ export default Profile
         //   </Grid>
         // //pauls code for the submit
         // async handleSubmit2() { //Paul Added for submitting new username
-        //   await fetch('http://localhost:8080/user/updateUsername', {
+        //   await fetch(config.url.API_URL + '/user/updateUsername', {
         //     method: 'POST',
         //     headers: {
         //         'Accept': 'application/json',

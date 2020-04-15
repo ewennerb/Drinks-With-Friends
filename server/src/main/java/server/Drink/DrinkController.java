@@ -18,7 +18,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
 @RequestMapping(path="/drink")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")             //development
+@CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @EnableScheduling
 public class DrinkController {
 ;

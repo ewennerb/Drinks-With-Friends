@@ -1,6 +1,7 @@
 import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow, Form} from "semantic-ui-react";
 import React, {Component} from "react";
 import {NavLink, Link} from "react-router-dom";
+import {config} from '../config/config'
 
 
 
@@ -198,7 +199,7 @@ export const postCardDelete = (post) => {
                     </GridRow>
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Button color='red' onClick={() =>
-                            fetch('http://localhost:8080/post/delete', {
+                            fetch(config.url.API_URL + '/post/delete', {
         method: 'POST',
         headers: {
                                     'Accept': 'application/json',
@@ -300,7 +301,7 @@ class postCardEditandDelete extends Component{
                         </Button>
                         
                         <Button color='red' onClick={() =>
-                            fetch('http://localhost:8080/post/delete', {
+                            fetch(config.url.API_URL + '/post/delete', {
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',

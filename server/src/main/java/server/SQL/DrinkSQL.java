@@ -933,6 +933,7 @@ public class DrinkSQL {
 //		}
 //		return("Something on the backend is wrong in DrinkSQL.java:");
 //	}
+
 	public Integer[] getOldDrinks(){
 		ArrayList<Integer> oDrinks = new ArrayList<>();
 		try {
@@ -1095,4 +1096,5 @@ public class DrinkSQL {
 		
 		return outDrink;
 	}
+
 }

@@ -13,7 +13,7 @@ import {
 
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
-
+import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
 
 class Posts extends Component{
@@ -118,7 +118,7 @@ class Posts extends Component{
     let userName = this.state.userName;
     if (this.isValidInput(userName)){
     
-      await fetch('http://localhost:8080/post/'+userName, {
+      await fetch(config.url.API_URL + '/post/'+userName, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
