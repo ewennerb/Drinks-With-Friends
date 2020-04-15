@@ -148,7 +148,6 @@ export default class Search extends React.Component{
                // }
             }else{
 
-                console.log(data)
                 if (this.state.searchVal === 'd'){
                     if (this.state.showSimilar){
                         this.setState({similarResults: data.similarDrinks})
@@ -248,6 +247,7 @@ export default class Search extends React.Component{
         const activeIndex = this.state.accActive;
         let showMsg = true;
         let search;
+        console.log(this.state.user);
         if (!this.state.showSimilar){
             search =  
                 <div>

@@ -79,11 +79,40 @@ public class DrinkController {
         om.registerModule(sm);
         Drink d = om.readValue(savedDrink, Drink.class);
         DrinkSQL ds = new DrinkSQL();
-        if (ds.insertDrink(d)){
-            return true;
+		
+		//System.out.println("DRINKID BEFORE NOTIFY: "+drinkId);
+
+		if (ds.insertDrink(d)){
+			int drinkId = ds.recentDrinkId;
+			ds = new DrinkSQL();
+			String notifReturn = ds.notifyUser(drinkId, d.publisher);
+		
+			if (notifReturn.equals("{ \"status\" : \"ok\" }"))
+				return true;
+			else 
+				return false;
         }
         return false;
     }
+
+	//Need to include postId and username of logged in user in request body
+	@PostMapping("/notificationClicked/{drinkId}/{username}")
+	public String notificationClicked(@PathVariable int drinkId, @PathVariable String username) //(@RequestParam(name = "s") String username, 
+			throws JsonProcessingException, JsonMappingException, IOException {
+		System.out.println("TEST");
+
+		/*ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+
+		Drink p = om.readValue(username, Drink.class);
+		*/System.out.print("HERE");
+
+		DrinkSQL posts = new DrinkSQL();
+		return posts.removeNotification(drinkId, username);
+
+	}
 
     @DeleteMapping("/{name}")
     public String deleteDrink() {
@@ -100,9 +129,10 @@ public class DrinkController {
     public String searchDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
-        int topId = ds.topResultDrinkId;
+        
+		int topId = ds.topResultDrinkId;
         ds = new DrinkSQL();
-        ds.topResultDrinkId = topId;
+		ds.topResultDrinkId = topId;
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";
