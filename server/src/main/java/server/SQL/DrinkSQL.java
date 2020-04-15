@@ -851,4 +851,105 @@ public class DrinkSQL {
 //		}
 //		return("Something on the backend is wrong in DrinkSQL.java:");
 //	}
+	public Integer[] getOldDrinks(){
+		ArrayList<Integer> oDrinks = new ArrayList<>();
+		try {
+			
+			String query = "SELECT * FROM " + this.database + ".dotd";
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				oDrinks.add(rs.getInt("drinkId"));
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+
+		}
+		Integer[] oldDotd = new Integer[oDrinks.size()];
+		oldDotd = oDrinks.toArray(oldDotd);
+		return oldDotd;
+	}
+	public boolean addDOTD(boolean trunc_flag, int drink_id) {
+		try {
+			String query;
+			if (trunc_flag) {
+				query = "TRUNCATE table " + this.database + ".dotd";
+				smt.executeUpdate(query);
+			}
+			query = "INSERT INTO " + this.database + ".dotd (drinkId) VALUES (" + drink_id + ");";
+			smt.executeUpdate(query);
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				smt.close();
+				conn.close();
+			} catch(SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return true;
+	}
+	public Drink getDOTD(){
+		System.out.println("Setting Drink of the Day");
+		try {
+			String query = "SELECT * FROM "+ this.database+".dotd dt, "+this.database+".drink d, "+this.database +".drink_ingredient di" +
+				" WHERE dt.drinkId = d.drinkId AND dt.iddotd = (SELECT MAX(iddotd) FROM "+this.database+".dotd) AND di.drink_id = d.drinkId";
+			rs = smt.executeQuery(query);
+			Drink d;
+			boolean f = true;
+			ArrayList<Ingredient> ii = new ArrayList<>();
+			String name = "";
+			String des = "";
+			int drinkId = 0;
+			String photo = "";
+			int likes = 0;
+			int dislikes = 0;
+			String publisher = "";
+
+			while (rs.next()) {
+				if (f) {
+					f = false;
+					name = rs.getString("name");
+					des = rs.getString("description");
+					drinkId = rs.getInt("drinkId");
+					photo = rs.getString("stockPhoto");
+					likes = rs.getInt("likes");
+					dislikes = rs.getInt("dislikes");
+					publisher = rs.getString("publisher");
+				}
+				ii.add(new Ingredient(rs.getString("quantity"), rs.getString("measurement"), rs.getString("ingredient")));
+				
+				//Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher)
+			}
+			
+			Ingredient[] ingred = new Ingredient[ii.size()];
+			ingred = ii.toArray(ingred);
+			rs.close();
+			smt.close();
+			conn.close();
+			d = new Drink(drinkId, name, des, ingred, photo, likes, dislikes, publisher);
+			return d;
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return null;
+	}
 }
