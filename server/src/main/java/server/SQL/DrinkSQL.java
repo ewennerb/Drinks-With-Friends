@@ -128,10 +128,10 @@ public class DrinkSQL {
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			Drink drink = new Drink();
-
+			int drinkId = -1;
 			while (rs.next())
 			{
-				int drinkId=rs.getInt("drinkId");
+				drinkId=rs.getInt("drinkId");
 				String stockPhoto=rs.getString("stockPhoto");
 				String description=rs.getString("description");
 				int likes=rs.getInt("likes");
@@ -160,6 +160,8 @@ public class DrinkSQL {
 
 			}
 			rs.close();
+			updateLookedAt(drinkId);
+
 			smt.close();
 			conn.close();
 			
@@ -956,7 +958,15 @@ public class DrinkSQL {
 			}
 			
 		}
-		
+	}
+	public void updateLookedAt(int drinkid){
+		try {
+			String query = "UPDATE " + this.database + ".drink SET lookedUp = lookedUp + 1 " +
+				"WHERE drinkId = " + drinkid;
+			smt.executeUpdate(query);
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
