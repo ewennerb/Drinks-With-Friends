@@ -224,26 +224,26 @@ public class PostSQL {
 
 	public String removeNotification(int postId, String username){
 	
-	//delete post notification from db
-	//need to figure out should this return the post/drink?
-	try{
-		String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\")";
-		System.out.println(query);
+		//delete post notification from db
+		//need to figure out should this return the post/drink?
+		try{
+			String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\")";
+			System.out.println(query);
 
-		int result2 = smt.executeUpdate(query);
+			int result2 = smt.executeUpdate(query);
 
-		smt.close();
-		conn.close();
+			smt.close();
+			conn.close();
 		
 		
-		if (result2 == 0)
+			if (result2 == 0)
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			else
+				return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
-		else
-			return "{ \"status\" : \"ok\" }";
-	}catch(Exception e){
-		e.printStackTrace();
-		return "{ \"status\" : \"Error: SQL update failed.\"}";
-	}
+		}
 
 	}
 	

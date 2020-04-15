@@ -47,21 +47,21 @@ public class PostController {
 
 	}
 	//Need to include postId and username of logged in user in request body
-	@PostMapping("/notificationClicked")
-	public String notificationClicked(@RequestBody String username) //(@RequestParam(name = "s") String username, 
+	@PostMapping("/notificationClicked/{postId}/{username}")
+	public String notificationClicked(@PathVariable int postId, @PathVariable String username) //(@RequestParam(name = "s") String username, 
 			throws JsonProcessingException, JsonMappingException, IOException {
 		System.out.println("TEST");
-
+		/*
 		ObjectMapper om = new ObjectMapper();
 		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
 		sm.addDeserializer(Post.class, new PostDeserializer());
 		om.registerModule(sm);
 
-		Post p = om.readValue(username, Post.class);
+		Post p = om.readValue(username, Post.class);*/
 		System.out.print("HERE");
 
 		PostSQL posts = new PostSQL();
-		return posts.removeNotification(p.postId, p.geolocation);
+		return posts.removeNotification(postId, username);
 
 	}
 
