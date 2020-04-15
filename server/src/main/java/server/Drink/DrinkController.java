@@ -22,13 +22,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @EnableScheduling
 public class DrinkController {
-
-    private ArrayList<String> oldDOTD;
+;
     private Drink DOTD;
 
     DrinkController() {
-        this.oldDOTD = new ArrayList<>();
-        randomDOTD();
+        setRandomDOTD();
     }
 
     @GetMapping("")
@@ -288,6 +286,24 @@ public class DrinkController {
         return out;
     }
 
+    @GetMapping("/trending") 
+    public String getTrendingDrinks() throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] names = ds.getTrending();
+
+        String out = "{ \"results\": [ ";
+        if (names.length == 0) {
+            return out + "]}";
+        }
+
+        for (Drink drink : names) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        System.out.println(out);
+        return out;
+    }
+
     @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
@@ -295,34 +311,50 @@ public class DrinkController {
         
         ArrayList<Drink> drinks = ds.getAllDrinks();
         if (drinks.size() <= 0) {
-            oldDOTD = new ArrayList<>();
+            //oldDOTD = new ArrayList<>();
             System.out.println("No drinks in db");
-            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("Whats in it?","","")}, "", 0,0,"Could be you!");
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
             //public Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher){
             return;
         }
-        if (oldDOTD.size() > 31 || oldDOTD.size() == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
-            if (oldDOTD.size() == drinks.size()){
+        ds = new DrinkSQL();
+        Integer[] oldDOTD = ds.getOldDrinks();
+        boolean truncFlag = false;
+        if (oldDOTD.length >= 62 || oldDOTD.length == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
+            
+            if (oldDOTD.length == drinks.size()){
                 System.out.println("Maxed out drinks in db");
             } else {
-                System.out.println("a month of drinks has passed drinks in db");
+                System.out.println("2 months of drinks has passed drinks in db");
             }
-            oldDOTD = new ArrayList<>();
+            truncFlag = true;
         }
+        
         Random r = new Random(1);
         int pos = r.nextInt(drinks.size());
-        while (oldDOTD.contains(drinks.get(pos).name)){
-            drinks.remove(pos);
-            pos = r.nextInt(drinks.size());
-
+        for (int i = 0; i < oldDOTD.length; i++) {
+            if (drinks.get(pos).id == oldDOTD[i]) {
+                i = 0;
+                drinks.remove(pos);
+                pos = r.nextInt(drinks.size());
+            }
         }
+        
         DOTD = drinks.get(pos);
-        if (DOTD != null){
-            oldDOTD.add(DOTD.name);
-        }
+        ds = new DrinkSQL();
+        ds.addDOTD(truncFlag, DOTD.id);
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
         
         
+    }
+
+    private void setRandomDOTD(){
+        DrinkSQL ds = new DrinkSQL();
+        DOTD = ds.getDOTD();
+        if (DOTD == null){
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
+        } 
+        System.out.println(DOTD.name + " by "+ DOTD.publisher);
     }
 
     @Scheduled(cron = "0 30 7 * * *")

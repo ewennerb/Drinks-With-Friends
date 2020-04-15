@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import {config} from '../config/config'
@@ -19,6 +19,8 @@ export default class Search extends React.Component{
         this.getDOTD = this.getDOTD.bind(this);
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
         this.getRecommended = this.getRecommended.bind(this);
+        this.getTrendingDrinks = this.getTrendingDrinks.bind(this);
+
         this.state = {
             user: this.props.user,
             searchText: "",
@@ -130,8 +132,10 @@ export default class Search extends React.Component{
         }else if(this.state.searchVal === "p"){
             url = config.url.API_URL + "/post/search?s=" + this.state.searchText;
         }else if(this.state.searchVal === "i"){
+
             url = config.url.API_URL + "/drink/searchIngredients?s=" + this.state.searchText;
         }
+
 
         await fetch(url, {
             method: 'GET',
@@ -188,6 +192,21 @@ export default class Search extends React.Component{
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
         
+    }
+
+    getTrendingDrinks(e){
+        
+        fetch('http://localhost:8080/drink/trending', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            this.setState({results: data.results})
+        }).catch(console.log);
+        console.log("trending")
+        this.handleSettingsChange(e, 't');
     }
 
     getRandomInt(max) { //Paul Added
@@ -281,6 +300,10 @@ export default class Search extends React.Component{
                                 return (
                                     postCard(result)
                                 )
+                            } else if (this.state.searchVal === 't') {
+                                return(
+                                    minimalDrinkCard(result)
+                                )
                             }
                         })
                     }
@@ -323,7 +346,7 @@ export default class Search extends React.Component{
                                     return (
                                         postCard(result)
                                     )
-                                }
+                                } 
                             })
                         }
                     </div>
@@ -423,6 +446,12 @@ export default class Search extends React.Component{
                                                             value='p'
                                                             checked={value === 'p'}
                                                             onClick={(e) => this.handleSettingsChange(e,'p')}
+                                                        />
+                                                        <Form.Radio
+                                                            label='Trending'
+                                                            value='t'
+                                                            checked={value === 't'}
+                                                            onClick={(e) => this.getTrendingDrinks(e)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group inline>
