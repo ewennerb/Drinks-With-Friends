@@ -47,4 +47,9 @@ export const GlobalStyles = createGlobalStyle`
     .ui.fluid.input>input, .ui.form .field .ui.input input{
         color: black !important;
     }
+
+    .confirmation > *, .confirmation > * > .ui, .confirmation > * > .ui > .ui > label,.ui.inverted.placeholder>:before {
+        background: black !important;
+        color: white !important;
+    }
   `
