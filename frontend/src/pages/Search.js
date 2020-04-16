@@ -35,14 +35,29 @@ export default class Search extends React.Component{
             openRandomModal: false,
             randomDrink: "",
             randomNum: 0,
+            userLocation: {},
         }
     }
 
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
+        await navigator.geolocation.getCurrentPosition(
+            async(position) => {
+                const { latitude, longitude } = position.coords;
+                console.log(latitude);
+                console.log(longitude);
+                await this.setState({
+                    userLocation: { lat: latitude, lng: longitude },
+                    done: false
+                });
+            },
+            () => {
+                this.setState({ done: false });
+            }
+        );
         await this.getDOTD();
-        this.setState({
+        await this.setState({
             loaded: false,
             user: this.props.user,
             done: true,
@@ -93,7 +108,7 @@ export default class Search extends React.Component{
             console.log(data);
             await this.setState({dotd: data})
         }).catch(console.log);
-        await this.setState({done: true})
+        // await this.setState({loaded: true})
     }
 
     async getRecommended(){
@@ -260,6 +275,7 @@ export default class Search extends React.Component{
                                         user={this.state.user}
                                         index={index}
                                         drink={result}
+                                        userLocation={this.state.userLocation}
                                     />
                                 )
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
@@ -273,7 +289,8 @@ export default class Search extends React.Component{
                                         user={this.state.user}
                                         index={index}
                                         drink={result}
-                                        />
+                                        userLocation={this.state.userLocation}
+                                    />
                                 )
                             }
                             else if (this.state.searchVal === 'p'){
@@ -300,6 +317,7 @@ export default class Search extends React.Component{
                                             user={this.state.user}
                                             index={index}
                                             drink={result}
+                                            userLocation={this.state.userLocation}
                                         />
                                     )
                                     // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
@@ -315,6 +333,7 @@ export default class Search extends React.Component{
                                             user={this.state.user}
                                             index={index}
                                             drink={result}
+                                            userLocation={this.state.userLocation}
                                         />
                                     )
                                 }
@@ -337,6 +356,7 @@ export default class Search extends React.Component{
                                             user={this.state.user}
                                             index={index}
                                             drink={result}
+                                            userLocation={this.state.userLocation}
                                         />
                                     )
                                     // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))

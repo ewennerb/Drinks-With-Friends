@@ -303,7 +303,6 @@ export default class Routes extends React.Component {
                     </div>
                 </BrowserRouter>
             </div>
-
         );
     } //end render
 
