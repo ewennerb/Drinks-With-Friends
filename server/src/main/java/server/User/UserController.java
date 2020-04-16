@@ -221,7 +221,7 @@ public class UserController {
 		UserSQL users = new UserSQL();
 
 
-		return "";
+		return users.getNotificationObjects(username);
 	}
 
 
