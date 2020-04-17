@@ -6,7 +6,7 @@ import {
     Button,
     Form,
     Modal, Header, FormCheckbox,
-    FormGroup, Icon, Message, GridRow, GridColumn
+    FormGroup, Icon, Message, GridRow, GridColumn, Item
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {postCard, postCardDelete} from "./utils";
@@ -38,6 +38,7 @@ export default class ActivityFeed extends React.Component {
         this.handleNameChange = this.handleNameChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
+        this.removeGeotag = this.removeGeotag.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.handleSettingsChange = this.handleSettingsChange.bind(this);
         this.addMap = this.addMap.bind(this);
@@ -63,6 +64,7 @@ export default class ActivityFeed extends React.Component {
                 }
             ],
             results: [],
+            geoTag: undefined,
 
             resultsNoDelete: [],
             resultsDelete: [],
@@ -108,6 +110,7 @@ export default class ActivityFeed extends React.Component {
             drinkName: "",
             postText: "",
             mapSegment: false,
+            geoTag: undefined,
             ingredients: [
                 {
                     ingredient: "",
@@ -285,6 +288,20 @@ export default class ActivityFeed extends React.Component {
         });
     }
 
+    addGeotag(row){
+        this.setState({
+            geoTag: row,
+            mapSegment: false
+        })
+    }
+
+    removeGeotag(){
+        this.setState({
+            geoTag: undefined,
+            mapSegment: false
+        })
+    }
+
 
     async postDrink(){
         let photoString = "";
@@ -372,16 +389,25 @@ export default class ActivityFeed extends React.Component {
         let mapSeg;
 
         if(!this.state.mapSegment){
-            console.log("segment active")
-            mapSeg = <div>
-                <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
-                {/*<Segment textAlign="center" placeholder>*/}
-                {/*    <Header>*/}
-                {/*        <Icon name="plus circle" color="grey" circular onClick={this.addMap} />*/}
-                {/*        Add a Location*/}
-                {/*    </Header>*/}
-                {/*</Segment>*/}
-            </div>
+            if(this.state.geoTag === {} || this.state.geoTag === undefined){
+                console.log("segment active")
+                mapSeg = <div>
+                    <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
+                </div>
+            }else{
+                mapSeg = <div>
+                    <Item>
+                        <Icon name="map marker alternate"/>
+                        <Item.Content>
+                            <Item.Header>{this.state.geoTag.name}</Item.Header>
+                            <Item.Meta>{this.state.geoTag.vicinity}</Item.Meta>
+                        </Item.Content>
+                        <Icon name="x" link onClick={this.removeGeotag}/>
+                    </Item>
+                    {/*<Header color="grey">{this.state.geoTag.name} - {this.state.geoTag.vicinity}</Header>*/}
+                </div>
+            }
+
         }else{
             console.log("Not active yet")
             //Todo: Add map shit here
@@ -389,6 +415,7 @@ export default class ActivityFeed extends React.Component {
                 {/*<Segment.Group horizontal>*/}
                 {/*    <Segment>*/}
                         <Map
+                            addGeotag={this.addGeotag.bind(this)}
                             google={this.props.google}
                             center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
                             height='300px'

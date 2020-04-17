@@ -43,14 +43,37 @@ class Map extends Component{
         this.services = undefined;
         this.bars = [];
         this.headers = {
-            columnKey: "name",
-            invisible: false,
-            sortable: false,
-            filterable: true
+            name: {
+                text: "Name",
+                invisible: false,
+                sortable: false,
+                filterable: true
+            },
+            vicinity: {
+                text: "Vicinity",
+                invisible: false,
+                sortable: false,
+                filterable: false
+            },
+            actions: {
+                text: 'Actions',
+                sortable: false,
+                filterable: false,
+                transform: (value, idx, row) => (
+                    <Button
+                        basic
+                        color="yellow"
+                        icon="plus"
+                        content="Add Geotag"
+                        onClick={() => this.handleGeoTag(value, idx, row)}
+                    />
+                )
+            }
         }
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.onPlaceSelected = this.onPlaceSelected.bind(this);
         // this.resetComponent = this.resetComponent.bind(this);
+        this.handleGeoTag = this.handleGeoTag.bind(this);
         this.autoComp = React.createRef();
     }
 
@@ -94,6 +117,16 @@ class Map extends Component{
             }
         );
     };
+
+
+    handleGeoTag(value, idx, row){
+        console.log("value");
+        console.log(value);
+        console.log("index");
+        console.log(idx);
+        console.log(row);
+        this.props.addGeotag(row);
+    }
 
 
     handleSearchChange(event){
@@ -457,7 +490,16 @@ class Map extends Component{
 
                             <Segment basic={true} loading={this.state.loading} style={{"height": "200px", "overflow-y": "scroll"}}>
                                 {/*Todo: Put the weird table here*/}
-                                {renderResult}
+                                {/*<Input></Input>*/}
+                                <SmartDataTable
+                                    className="ui very basic collapsing table"
+                                    data={this.state.results}
+                                    headers={this.headers}
+                                    orderedHeaders={["name", "vicinity", "actions"]}
+                                    hideUnordered={true}
+                                    withHeader={false}
+                                />
+                                {/*{renderResult}*/}
                             </Segment>
 
 
