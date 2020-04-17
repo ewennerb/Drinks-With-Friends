@@ -23,7 +23,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 // import com.fasterxml.jackson.databind.JsonNode;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @RequestMapping(path="/user")
 public class UserController {
 
@@ -76,12 +77,20 @@ public class UserController {
     }
 
 	@GetMapping("/searchUsers")
-	public String searchUsers(@RequestParam(name = "s") String request) throws JsonProcessingException {
+	public String searchUsers(@RequestParam(name = "s") String request, @RequestParam(name = "u") String username) throws JsonProcessingException, IOException {
 		System.out.println("SEARCHING USERS");
+
+		/*ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(username, User.class);*/
 
 		UserSQL us = new UserSQL();
 		User[] users = us.searchUsers(request);
-		
+		us = new UserSQL();
+		users = us.flagFollowedUsers(users, username);
+
 		if(users == null) {
 			return "{\"results\": \"DNE\"";
 		}
@@ -89,7 +98,9 @@ public class UserController {
 		String out =  "{ \"results\": [ ";
 		for (User user : users ) {
 			out += new ObjectMapper().writeValueAsString(user) + ",";
+			
 		}
+
 		out = out.substring(0, out.length()-1) + "] }";
 
 		return out;
@@ -170,6 +181,49 @@ public class UserController {
 			return "{ \"status\" : \"Error: Username not unique.\"}";
 		}
 	}
+
+	@PostMapping("/follow/{followedUser}")
+	public String follow(@PathVariable String followedUser, @RequestBody String followingUser)
+			throws JsonParseException, JsonMappingException, IOException {
+			
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(followingUser, User.class);
+
+		System.out.println("Followed user: "+followedUser+", Folowwing user: "+u.userName);
+
+		UserSQL users = new UserSQL();
+		return users.followUser(followedUser, u.userName);
+	}
+
+	@PostMapping("/unfollow/{followedUser}")
+	public String unfollow(@PathVariable String followedUser, @RequestBody String followingUser)
+			throws JsonParseException, JsonMappingException, IOException {
+			
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(followingUser, User.class);
+
+		System.out.println("unFollowed user: "+followedUser+", unFolowwing user: "+u.userName);
+
+		UserSQL users = new UserSQL();
+		return users.unfollowUser(followedUser, u.userName);
+	}
+
+	@GetMapping("/getNotifications/{username}")
+	public String getNotifications(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		UserSQL users = new UserSQL();
+
+
+		return users.getNotificationObjects(username);
+	}
+
 
 	// @PostMapping("/updateUsername")
 	// public String updateUsername(@RequestBody String userName)

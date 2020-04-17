@@ -18,9 +18,10 @@ public class DrinkSQL {
 	private Connection conn;
 	Statement smt;
 	ResultSet rs;
-	int topResultDrinkId = 0;
+	public int topResultDrinkId = 0;
 	private String database;
 	BasicDataSource bds;
+	public int recentDrinkId = 0;
 	
 
 	public DrinkSQL() {
@@ -128,10 +129,10 @@ public class DrinkSQL {
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			Drink drink = new Drink();
-
+			int drinkId = -1;
 			while (rs.next())
 			{
-				int drinkId=rs.getInt("drinkId");
+				drinkId=rs.getInt("drinkId");
 				String stockPhoto=rs.getString("stockPhoto");
 				String description=rs.getString("description");
 				int likes=rs.getInt("likes");
@@ -160,6 +161,8 @@ public class DrinkSQL {
 
 			}
 			rs.close();
+			updateLookedAt(drinkId);
+
 			smt.close();
 			conn.close();
 			
@@ -501,6 +504,20 @@ public class DrinkSQL {
 				}
 				smt2.close();
 			}
+
+			String query3 = "select drinkId from "+this.database+".drink where publisher = \""+d.publisher+"\" and name = \""+d.name+"\"";
+			rs = smt.executeQuery(query3);
+
+			int retPostId = 0;
+			while(rs.next())
+			{
+				retPostId = rs.getInt("drinkId");
+			}
+			System.out.println("RECENT DRINK ID***: "+retPostId);
+			recentDrinkId = retPostId;
+
+			rs.close();
+
 			smt.close();
 			conn.close();
 			
@@ -510,6 +527,68 @@ public class DrinkSQL {
 		}
 		return true;
 	}
+
+	public String notifyUser(int drinkId, String publisher) {
+		try {
+			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+publisher+"\")";
+			System.out.println("Follower query: "+query1);
+
+			rs=smt.executeQuery(query1);
+
+			ArrayList<Integer> followList = new ArrayList<Integer>();
+
+			while (rs.next()) {
+				followList.add(rs.getInt("followingUserId")); 
+			}
+
+			rs.close();
+			//addRows to post_notif database
+			String query2 = "";
+			for ( int x = 0; x <followList.size(); x++){
+				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values ('"+drinkId+"', '"+followList.get(x)+"', 1)";
+				int updateResult = smt.executeUpdate(query2);
+				
+				if(updateResult == 0) {
+					return "{ \"status\" : \"Error: SQL update failed.\"}";
+				}
+			}
+
+
+			smt.close();
+			conn.close();
+
+			return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String removeNotification(int postId, String username){
+	
+		//delete post notification from db
+		//need to figure out should this return the post/drink?
+		try{
+			String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\") and drinkFlag = 1";
+			System.out.println(query);
+
+			int result2 = smt.executeUpdate(query);
+
+			smt.close();
+			conn.close();
+		
+		
+			if (result2 == 0)
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			else
+				return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+
+	}
+
 
 	public String[] getDrinkNamesStartingWith(char let){
 		System.out.println("Getting drinks starting with " + let);
@@ -526,6 +605,9 @@ public class DrinkSQL {
 				dnames.add(rs.getString("name"));
 				dnames.add(rs.getString("publisher"));
 			}
+			rs.close();
+			smt.close();
+			conn.close();
 		} catch (Exception e) {
 
 
@@ -851,4 +933,168 @@ public class DrinkSQL {
 //		}
 //		return("Something on the backend is wrong in DrinkSQL.java:");
 //	}
+
+	public Integer[] getOldDrinks(){
+		ArrayList<Integer> oDrinks = new ArrayList<>();
+		try {
+			
+			String query = "SELECT * FROM " + this.database + ".dotd";
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				oDrinks.add(rs.getInt("drinkId"));
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				rs.close();
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+
+		}
+		Integer[] oldDotd = new Integer[oDrinks.size()];
+		oldDotd = oDrinks.toArray(oldDotd);
+		return oldDotd;
+	}
+	public boolean addDOTD(boolean trunc_flag, int drink_id) {
+		try {
+			String query;
+			if (trunc_flag) {
+				query = "TRUNCATE table " + this.database + ".dotd";
+				smt.executeUpdate(query);
+			}
+			query = "INSERT INTO " + this.database + ".dotd (drinkId) VALUES (" + drink_id + ");";
+			smt.executeUpdate(query);
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				smt.close();
+				conn.close();
+			} catch(SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return true;
+	}
+	public Drink getDOTD(){
+		System.out.println("Setting Drink of the Day");
+		try {
+			String query = "SELECT * FROM "+ this.database+".dotd dt, "+this.database+".drink d, "+this.database +".drink_ingredient di" +
+				" WHERE dt.drinkId = d.drinkId AND dt.iddotd = (SELECT MAX(iddotd) FROM "+this.database+".dotd) AND di.drink_id = d.drinkId";
+			rs = smt.executeQuery(query);
+			Drink d;
+			boolean f = true;
+			ArrayList<Ingredient> ii = new ArrayList<>();
+			String name = "";
+			String des = "";
+			int drinkId = 0;
+			String photo = "";
+			int likes = 0;
+			int dislikes = 0;
+			String publisher = "";
+
+			while (rs.next()) {
+				if (f) {
+					f = false;
+					name = rs.getString("name");
+					des = rs.getString("description");
+					drinkId = rs.getInt("drinkId");
+					photo = rs.getString("stockPhoto");
+					likes = rs.getInt("likes");
+					dislikes = rs.getInt("dislikes");
+					publisher = rs.getString("publisher");
+				}
+				ii.add(new Ingredient(rs.getString("quantity"), rs.getString("measurement"), rs.getString("ingredient")));
+				
+				//Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher)
+			}
+			
+			Ingredient[] ingred = new Ingredient[ii.size()];
+			ingred = ii.toArray(ingred);
+			rs.close();
+			smt.close();
+			conn.close();
+			d = new Drink(drinkId, name, des, ingred, photo, likes, dislikes, publisher);
+			return d;
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+				return new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
+			} catch (SQLException se) {
+				se.printStackTrace();
+				return new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
+			}
+			
+		}
+	}
+	public void updateLookedAt(int drinkid){
+		try {
+			String query = "UPDATE " + this.database + ".drink SET lookedUp = lookedUp + 1 " +
+				"WHERE drinkId = " + drinkid;
+			smt.executeUpdate(query);
+			//closes in getDrink(dname, publisher)
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Drink[] getTrending(){
+		System.out.println("Getting trending drinks");
+		ArrayList<Drink> dnames = new ArrayList<>();
+
+		try {
+			String query = "SELECT * FROM " + this.database + ".drink " +
+				"ORDER BY lookedUp DESC LIMIT 10";
+
+			rs = smt.executeQuery(query);
+			while (rs.next()) {
+				dnames.add(
+					new Drink(
+						rs.getInt("drinkId"),
+						rs.getString("name"),
+						rs.getString("description"),
+						new Ingredient[]{new Ingredient("","","")},
+						rs.getString("stockPhoto"),
+						rs.getInt("likes"),
+						rs.getInt("dislikes"),
+						rs.getString("publisher")
+					)
+				);
+				//Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher)
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+
+		}
+		Drink[] outDrink = new Drink[dnames.size()];
+		outDrink = dnames.toArray(outDrink);
+		
+		return outDrink;
+	}
+
 }

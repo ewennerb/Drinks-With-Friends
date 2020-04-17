@@ -1,6 +1,9 @@
 import React from "react";
-import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
+import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
+import {config} from '../config/config'
+import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 
 
 export default class DrinkCard extends React.Component {
@@ -15,17 +18,20 @@ export default class DrinkCard extends React.Component {
             dislikes: this.props.drink.dislikes,
             ready: false,
             isLiked: false,
-            isDisliked: false
+            isDisliked: false,
+            shareModal: false,
         };
         this.likeDislikeRequestor = this.likeDislikeRequestor.bind(this);
         this.handleLikeDislike = this.handleLikeDislike.bind(this);
+        this.openShare = this.openShare.bind(this);
+        this.closeShare = this.closeShare.bind(this);
     }
 
 
     async componentDidMount() {
         let userData;
 
-        await fetch("http://localhost:8080/user/" + this.props.user, {
+        await fetch(config.url.API_URL + "/user/" + this.props.user, {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -43,7 +49,7 @@ export default class DrinkCard extends React.Component {
                 user = undefined;
             }else{
                 user = data;
-                await fetch("http://localhost:8080/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
+                await fetch(config.url.API_URL + "/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -116,30 +122,30 @@ export default class DrinkCard extends React.Component {
             if (!this.state.isLiked) {
                 //If disliked and like gets hit, flip
                 if (this.state.isDisliked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/on", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/on", option);
                 }
 
                 this.setState({isLiked: true, isDisliked: false})
             } else {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
             }
         }else{
             if(!this.state.isDisliked) {
                 //If liked and dislike gets hit, flip
                 if (this.state.isLiked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
             }
         }
@@ -161,12 +167,21 @@ export default class DrinkCard extends React.Component {
         }
     }
 
+    openShare(){
+        this.setState({shareModal: true});
+    }
+
+    closeShare(){
+        this.setState({shareModal: false});
+    }
+
 
     render(){
         console.log(this.state.user);
         let {user, drink, index, ready} = this.state;
         let drinkPic, likes;
         if(ready){
+            console.log(user);
             if (user !== undefined) {
 
                 let lColor = this.likeColor();
@@ -210,42 +225,67 @@ export default class DrinkCard extends React.Component {
             }
 
             return(
-                <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
-                    {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
-                    <Card.Content>
-                        
-                        <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}> <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link></Card.Header>
-                        <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
-                    </Card.Content>
-                    <Card.Content textAlign="left">
-                        {drinkPic}
-                        <div>
-                            <p><strong>Description: </strong></p>
-                            <Card.Description data-testid={"drink-description-" + index.toString()}>{drink.description}</Card.Description>
+                <div>
+                    <Modal open={this.state.shareModal} onClose={this.closeShare} closeOnEscape={false} size="mini" centered closeIcon>
+                        <Header textAlign="left">Share Via:</Header>
+                        {/*Todo: Actually plug in a legit URL and all the other paramters*/}
+                        <Segment basic textAlign="center">
+                            <FacebookShareButton quote="Check this shit out!" hashtag="#DWF" url={"http://fake.com"}>
+                                <FacebookIcon size={32}/>
+                            </FacebookShareButton>
+                            &nbsp;
+                            <TwitterShareButton>
+                                <TwitterIcon size={32}/>
+                            </TwitterShareButton>
+                            &nbsp;
+                            <EmailShareButton>
+                                <EmailIcon size={32}/>
+                            </EmailShareButton>
+                        </Segment>
+                    </Modal>
+                    <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
+                        {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
+                        <Card.Content>
 
-                        </div>
+                            <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
+                                <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
+                                <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
+                                <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={() => console.log("Geotag!")}/>
+                            </Card.Header>
 
-                        <div>
-                            <br/>
-                            <p><strong>Ingredients: </strong></p>
-                            <Card.Content>
-                                <List bulleted > 
-                                    {drink.ingredients.map((ingr, idx) => {
-                                        return (
-                                            <p key={idx} data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
-                                                {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                                            </p>
-                                        )
-                                    })}
-                                </List>
-                            </Card.Content>
-                        </div>
-                    </Card.Content>
+                            <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
+                        </Card.Content>
+                        <Card.Content textAlign="left">
+                            {drinkPic}
+                            <div>
+                                <p><strong>Description: </strong></p>
+                                <Card.Description data-testid={"drink-description-" + index.toString()}>{drink.description}</Card.Description>
 
-                    <Card.Content>
-                        {likes}
-                    </Card.Content>
-                </Card>
+                            </div>
+
+                            <div>
+                                <br/>
+                                <p><strong>Ingredients: </strong></p>
+                                <Card.Content>
+                                    <List bulleted >
+                                        {drink.ingredients.map((ingr, idx) => {
+                                            return (
+                                                <p key={idx} data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
+                                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                                </p>
+                                            )
+                                        })}
+                                    </List>
+                                </Card.Content>
+                            </div>
+                        </Card.Content>
+
+                        <Card.Content>
+                            {likes}
+                        </Card.Content>
+                    </Card>
+                </div>
+
             );
         }else{
             return(

@@ -18,16 +18,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @RestController
 @RequestMapping(path="/drink")
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")             //development
+@CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @EnableScheduling
 public class DrinkController {
-
-    private ArrayList<String> oldDOTD;
+;
     private Drink DOTD;
 
     DrinkController() {
-        this.oldDOTD = new ArrayList<>();
-        randomDOTD();
+        setRandomDOTD();
     }
 
     @GetMapping("")
@@ -78,11 +77,40 @@ public class DrinkController {
         om.registerModule(sm);
         Drink d = om.readValue(savedDrink, Drink.class);
         DrinkSQL ds = new DrinkSQL();
-        if (ds.insertDrink(d)){
-            return true;
+		
+		//System.out.println("DRINKID BEFORE NOTIFY: "+drinkId);
+
+		if (ds.insertDrink(d)){
+			int drinkId = ds.recentDrinkId;
+			ds = new DrinkSQL();
+			String notifReturn = ds.notifyUser(drinkId, d.publisher);
+		
+			if (notifReturn.equals("{ \"status\" : \"ok\" }"))
+				return true;
+			else 
+				return false;
         }
         return false;
     }
+
+	//Need to include postId and username of logged in user in request body
+	@PostMapping("/notificationClicked/{drinkId}/{username}")
+	public String notificationClicked(@PathVariable int drinkId, @PathVariable String username) //(@RequestParam(name = "s") String username, 
+			throws JsonProcessingException, JsonMappingException, IOException {
+		System.out.println("TEST");
+
+		/*ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Drink.class, new DrinkDeserializer());
+		om.registerModule(sm);
+
+		Drink p = om.readValue(username, Drink.class);
+		*/System.out.print("HERE");
+
+		DrinkSQL posts = new DrinkSQL();
+		return posts.removeNotification(drinkId, username);
+
+	}
 
     @DeleteMapping("/{name}")
     public String deleteDrink() {
@@ -100,7 +128,9 @@ public class DrinkController {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 0);
         
+		int topId = ds.topResultDrinkId;
         ds = new DrinkSQL();
+		ds.topResultDrinkId = topId;
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";
@@ -256,6 +286,24 @@ public class DrinkController {
         return out;
     }
 
+    @GetMapping("/trending") 
+    public String getTrendingDrinks() throws JsonProcessingException {
+        DrinkSQL ds = new DrinkSQL();
+        Drink[] names = ds.getTrending();
+
+        String out = "{ \"results\": [ ";
+        if (names.length == 0) {
+            return out + "]}";
+        }
+
+        for (Drink drink : names) {
+            out += new ObjectMapper().writeValueAsString(drink) + ",";
+        }
+        out = out.substring(0, out.length()-1) + "] }";
+        System.out.println(out);
+        return out;
+    }
+
     @Scheduled(cron = "0 0 7 * * *")
     public void randomDOTD(){
         System.out.println("New Drink of the Day");
@@ -263,34 +311,50 @@ public class DrinkController {
         
         ArrayList<Drink> drinks = ds.getAllDrinks();
         if (drinks.size() <= 0) {
-            oldDOTD = new ArrayList<>();
+            //oldDOTD = new ArrayList<>();
             System.out.println("No drinks in db");
-            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("Whats in it?","","")}, "", 0,0,"Could be you!");
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
             //public Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher){
             return;
         }
-        if (oldDOTD.size() > 31 || oldDOTD.size() == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
-            if (oldDOTD.size() == drinks.size()){
+        ds = new DrinkSQL();
+        Integer[] oldDOTD = ds.getOldDrinks();
+        boolean truncFlag = false;
+        if (oldDOTD.length >= 62 || oldDOTD.length == drinks.size()){   //31 drinks per month that can't be repeated or its the max amount in the database            
+            
+            if (oldDOTD.length == drinks.size()){
                 System.out.println("Maxed out drinks in db");
             } else {
-                System.out.println("a month of drinks has passed drinks in db");
+                System.out.println("2 months of drinks has passed drinks in db");
             }
-            oldDOTD = new ArrayList<>();
+            truncFlag = true;
         }
+        
         Random r = new Random(1);
         int pos = r.nextInt(drinks.size());
-        while (oldDOTD.contains(drinks.get(pos).name)){
-            drinks.remove(pos);
-            pos = r.nextInt(drinks.size());
-
+        for (int i = 0; i < oldDOTD.length; i++) {
+            if (drinks.get(pos).id == oldDOTD[i]) {
+                i = 0;
+                drinks.remove(pos);
+                pos = r.nextInt(drinks.size());
+            }
         }
+        
         DOTD = drinks.get(pos);
-        if (DOTD != null){
-            oldDOTD.add(DOTD.name);
-        }
+        ds = new DrinkSQL();
+        ds.addDOTD(truncFlag, DOTD.id);
         System.out.println(DOTD.name + " by "+ DOTD.publisher);
         
         
+    }
+
+    private void setRandomDOTD(){
+        DrinkSQL ds = new DrinkSQL();
+        DOTD = ds.getDOTD();
+        if (DOTD == null){
+            DOTD = new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
+        } 
+        System.out.println(DOTD.name + " by "+ DOTD.publisher);
     }
 
     @Scheduled(cron = "0 30 7 * * *")

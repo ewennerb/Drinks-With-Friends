@@ -3,9 +3,10 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, ingredientCard, userCard, postCard} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, postCard} from "./utils";
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
+import {config} from '../config/config'
 
 export default class Search extends React.Component{
 
@@ -18,6 +19,8 @@ export default class Search extends React.Component{
         this.getDOTD = this.getDOTD.bind(this);
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
         this.getRecommended = this.getRecommended.bind(this);
+        this.getTrendingDrinks = this.getTrendingDrinks.bind(this);
+
         this.state = {
             user: this.props.user,
             searchText: "",
@@ -83,7 +86,7 @@ export default class Search extends React.Component{
 
     //Fetches the Drink of the Day
     async getDOTD(){
-        await fetch('http://localhost:8080/drink/dotd', {
+        await fetch(config.url.API_URL + '/drink/dotd', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -101,7 +104,7 @@ export default class Search extends React.Component{
             return
         }
         this.setState({results: []})
-        await fetch('http://localhost:8080/drink/getUserRecommended/'+this.state.user, {
+        await fetch(config.url.API_URL + '/drink/getUserRecommended/'+this.state.user, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -119,18 +122,20 @@ export default class Search extends React.Component{
         console.log(this.state.searchVal);
         console.log(this.state.officialOnly);
         if (this.state.searchVal === 'u'){
-            url = "http://localhost:8080/user/searchUsers?s=" + this.state.searchText;
+            url = config.url.API_URL + "/user/searchUsers?s=" + this.state.searchText +"&u="+ this.state.user;
         }else if(this.state.searchVal === "d"){
             if(this.state.officialOnly){
-                url = "http://localhost:8080/drink/searchOfficialDrink?s=" + this.state.searchText;
+                url = config.url.API_URL + "/drink/searchOfficialDrink?s=" + this.state.searchText;
             }else{
-                url = "http://localhost:8080/drink/search?s=" + this.state.searchText;
+                url = config.url.API_URL + "/drink/search?s=" + this.state.searchText;
             }
         }else if(this.state.searchVal === "p"){
-            url = "http://localhost:8080/post/search?s=" + this.state.searchText;
+            url = config.url.API_URL + "/post/search?s=" + this.state.searchText;
         }else if(this.state.searchVal === "i"){
-            url = "http://localhost:8080/drink/searchIngredients?s=" + this.state.searchText;
+
+            url = config.url.API_URL + "/drink/searchIngredients?s=" + this.state.searchText;
         }
+
 
         await fetch(url, {
             method: 'GET',
@@ -147,7 +152,6 @@ export default class Search extends React.Component{
                // }
             }else{
 
-                console.log(data)
                 if (this.state.searchVal === 'd'){
                     if (this.state.showSimilar){
                         this.setState({similarResults: data.similarDrinks})
@@ -160,7 +164,7 @@ export default class Search extends React.Component{
                     for (let res in data.results) {
                         console.log(data.results[res].userName)
                         let names = {}
-                        await fetch("http://localhost:8080/user/"+data.results[res].userName, {
+                        await fetch(config.url.API_URL + "/user/"+data.results[res].userName, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
@@ -190,6 +194,21 @@ export default class Search extends React.Component{
         
     }
 
+    getTrendingDrinks(e){
+        
+        fetch('http://localhost:8080/drink/trending', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            this.setState({results: data.results})
+        }).catch(console.log);
+        console.log("trending")
+        this.handleSettingsChange(e, 't');
+    }
+
     getRandomInt(max) { //Paul Added
         this.setState({ randomNum: (Math.floor(Math.random() * Math.floor(max))) });
     }
@@ -197,7 +216,7 @@ export default class Search extends React.Component{
     async handleRandomModalOpen() { //Paul Added
         this.setState({openRandomModal: true, searchVal: 'd'});
 
-        await fetch('http://localhost:8080/drink', {
+        await fetch(config.url.API_URL + '/drink', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -217,7 +236,7 @@ export default class Search extends React.Component{
 
 
         //searches the drink
-        await fetch("http://localhost:8080/drink/search?s=" + randomDrink.name, {
+        await fetch(config.url.API_URL + "/drink/search?s=" + randomDrink.name, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -247,6 +266,7 @@ export default class Search extends React.Component{
         const activeIndex = this.state.accActive;
         let showMsg = true;
         let search;
+        console.log(this.state.user);
         if (!this.state.showSimilar){
             search =  
                 <div>
@@ -279,6 +299,10 @@ export default class Search extends React.Component{
                             else if (this.state.searchVal === 'p'){
                                 return (
                                     postCard(result)
+                                )
+                            } else if (this.state.searchVal === 't') {
+                                return(
+                                    minimalDrinkCard(result)
                                 )
                             }
                         })
@@ -322,7 +346,7 @@ export default class Search extends React.Component{
                                     return (
                                         postCard(result)
                                     )
-                                }
+                                } 
                             })
                         }
                     </div>
@@ -422,6 +446,12 @@ export default class Search extends React.Component{
                                                             value='p'
                                                             checked={value === 'p'}
                                                             onClick={(e) => this.handleSettingsChange(e,'p')}
+                                                        />
+                                                        <Form.Radio
+                                                            label='Trending'
+                                                            value='t'
+                                                            checked={value === 't'}
+                                                            onClick={(e) => this.getTrendingDrinks(e)}
                                                         />
                                                     </Form.Group>
                                                     <Form.Group inline>

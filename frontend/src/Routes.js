@@ -8,7 +8,7 @@ import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
 import ResetPassword from "./pages/ResetPassword";
-
+import {config} from './config/config'
 
 import {
     Menu,
@@ -17,7 +17,8 @@ import {
     Segment,
     Form,
     Button,
-    Header, Checkbox
+    Header, Checkbox,
+    Popup
 } from "semantic-ui-react"
 import Drink from "./pages/Drink";
 
@@ -76,23 +77,24 @@ export default class Routes extends React.Component {
             loggedIn: loggedIn
         });
     }
-    // async componentWillMount(){
-    //     this.state.is21 = localStorage.getItem('is21') === 'true';
-    //     if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
-    //         return;
-    //     }
-    //     await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
-    //         method: 'GET',
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json'
-    //         },
-    //     }).then(res => res.json()).then((data) => {
-    //         console.log('LOGGED ON')
-    //         this.setState({response: data})
-    //     }).catch(console.log);
-    //     this.setState({loggedIn: true, user: localStorage.getItem('username')});
-    // }
+    async componentWillMount(){
+        this.state.is21 = localStorage.getItem('is21') === 'true';
+        if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
+            return;
+        }
+        await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json()).then((data) => {
+            console.log('LOGGED ON')
+            this.setState({response: data})
+        }).catch(console.log);
+        this.setState({loggedIn: true, user: localStorage.getItem('username')});
+    }
+
     //rod changed it to component did mount bc it kept sayingwill mount is whats the word defected
     async componentDidMount(){
         //console.log("componentdid mount")
@@ -101,7 +103,7 @@ export default class Routes extends React.Component {
             console.log("return ")
             return;
         }
-        await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+        await fetch(config.url.API_URL + '/user/' + localStorage.getItem('username'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -118,16 +120,17 @@ export default class Routes extends React.Component {
 
     }
     /*Rod added this trying to figure out other user's profiles */
-    // async componentDidMount() {
-    //     //capital U is the object :^)
-    //     if (this.state.loggedIn && this.state.user !== undefined){
-    //         await this.getUser(this.state.user);
-    //         let User = this.state.User;
-    //     }
-    // }
+    async componentDidMount() {
+        //capital U is the object :^)
+        if (this.state.loggedIn && this.state.user !== undefined){
+            await this.getUser(this.state.user);
+            let User = this.state.User;
+        }
+    }
     render(){
         let logOrProfile;
         let logOrRegister;
+        let notifBell;
         const { activeItem } = this.state;
         if (this.state.user !== undefined){
              logOrProfile = <Menu.Item
@@ -138,6 +141,21 @@ export default class Routes extends React.Component {
                 size="large"
                 content={this.state.user}
             />;
+
+             //Todo: Need to figure out how to get notifications and display them here
+             //Todo: Need to figure out what
+             notifBell = <Menu.Item>
+                 <Popup
+                     trigger={<Icon.Group>
+                         <Icon name='bell outline'/>
+                         <Icon name="circle" color="yellow" corner/>
+                         </Icon.Group>}
+                     content="You have no notifications. Go fuck urself"
+                     position="bottom center"
+                 />
+             </Menu.Item>;
+
+
              logOrRegister = <Menu.Item
                  as={Link}
                  to={{pathname: '/'}}
@@ -199,6 +217,7 @@ export default class Routes extends React.Component {
                                 content="Drinks with Friends"
                             />
                             {logOrProfile}
+                            {notifBell}
                             <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
                                 <Icon name="sidebar"/>Menu
                             </Menu.Item>

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import server.User.User;
 import server.Drink.Drink;
+import server.Post.Post;
 
 public class UserSQL {
 
@@ -588,5 +589,220 @@ public class UserSQL {
 			System.out.print("oof");
 		}
 		return null;
+	}
+
+	public String followUser(String followedUser, String followingUser) {
+		try{
+			String query = "insert into "+ this.database+".user_followers (userId, followingUserId) values ( (select userId from "+ this.database+".user where userName = \""+followedUser+"\"), (select userId from "+ this.database+".user where userName = \""+followingUser+"\") )";
+			
+			int updateResult = smt.executeUpdate(query);
+			
+			smt.close();
+			conn.close();
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public String unfollowUser(String followedUser, String followingUser) {
+		try {
+			String query = "delete from "+ this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+followedUser+"\") and followingUserId = (select userId from "+ this.database+".user where userName = \""+followingUser+"\")";
+			
+			int updateResult = smt.executeUpdate(query);
+			
+			smt.close();
+			conn.close();
+
+			if ( updateResult == 1 ) {
+				return "{ \"status\" : \"ok\" }";
+			} else if(updateResult == 0) {
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			}
+
+			return "{ \"status\" : \"Error: SQL update failed.\" }";
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
+	}
+
+	public User[] flagFollowedUsers(User[] users, String activeUserName) {
+		
+
+		try{
+			String query = "select userId from "+this.database+".user_followers where followingUserId = (select userId from "+ this.database+".user where userName = \""+activeUserName+"\")";
+			System.out.println("Follower query: "+query);
+
+			rs=smt.executeQuery(query);
+
+			ArrayList<Integer> followList = new ArrayList<Integer>();
+
+			while (rs.next()) {
+				followList.add(rs.getInt("userId")); 
+			}
+
+			//System.out.println("followList "+followList.get(0));
+		
+
+			for(int x = 0; x < users.length; x++) {
+				for(int y=0; y<followList.size(); y++){
+					if (users[x].userId == followList.get(y) ) {
+						users[x].followedFlag = 1;
+						break;
+					}
+				}
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+			
+			return users;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public class notification{
+		int id;
+		int followerId;
+		int drinkFlag;
+
+		public notification(int id, int publisher, int date) {
+			this.id = id;
+			this.followerId = publisher;
+			this.drinkFlag = date;
+		}
+	}
+
+	public String getNotificationObjects(String username) {
+	
+		try{
+			String	query1 = "select userId from "+this.database+".user where userName = \""+username+"\"";
+			rs=smt.executeQuery(query1);
+			
+			int userId = 0;
+			while(rs.next()){
+				userId = rs.getInt("userId");
+			}
+			System.out.println("userId: "+userId);
+
+
+			//get notifications from table
+			String query2 = "select * from "+this.database+".post_notification where followerUserId = \""+userId+"\"";
+			rs=smt.executeQuery(query2);
+
+			ArrayList<notification> notifs = new ArrayList<notification>();
+			while(rs.next())
+			{
+				int postId = rs.getInt("postId");
+				int followerId = rs.getInt("followerUserId");
+				int drinkFlag = rs.getInt("drinkFlag");
+
+				notifs.add(new notification(postId, followerId, drinkFlag));
+			}
+			System.out.println("Notifs received: ");
+			for(int x=0;x<notifs.size();x++){
+				System.out.println("\tnotif : "+notifs.get(x).id+","+notifs.get(x).followerId+", "+notifs.get(x).drinkFlag);
+			}
+
+
+			ArrayList<Drink> drinks = new ArrayList<Drink>();
+			//get drink info for drink notifs
+			for ( int x =0; x<notifs.size(); x++) {
+				if (notifs.get(x).drinkFlag == 1) {
+					String query3 = "select name, publisher from "+this.database+".drink where drinkId =\""+notifs.get(x).id+"\"";
+					rs=smt.executeQuery(query3);
+
+					Drink d = new Drink();
+					while(rs.next()){
+						d.publisher = rs.getString("publisher");
+						d.name = rs.getString("name");
+						d.id = notifs.get(x).id;
+						drinks.add(d);
+					}
+				}
+			}
+			System.out.println("Drink Notifs received: ");
+			for(int x=0;x<drinks.size();x++){
+				System.out.println("\tdrink : "+drinks.get(x).id+","+drinks.get(x).publisher);
+			}
+
+			//get post info for post notifs
+			ArrayList<Post> posts = new ArrayList<Post>();
+			for ( int x =0; x<notifs.size(); x++) {
+				if (notifs.get(x).drinkFlag == 0) {
+					String query4 = "select userId from "+this.database+".post where postId =\""+notifs.get(x).id+"\"";
+					query4 = "select userName from "+this.database+".user where userId = (select userId from "+this.database+".post where postId =\""+notifs.get(x).id+"\")";
+					rs=smt.executeQuery(query4);
+
+					Post d = new Post();
+					while(rs.next()){
+						d.text = rs.getString("userName");
+						d.postId = notifs.get(x).id;
+						posts.add(d);
+					}
+				}
+			}
+			System.out.println("Post Notifs received: ");
+			for(int x=0;x<posts.size();x++){
+				System.out.println("\tPosts : "+posts.get(x).postId+","+posts.get(x).userId);
+			}
+			
+			
+			//sort by date/time (maybe can cheat with id instead of time), maybe can cheat with order of post notification db
+			String out = "{ \"results\": [ ";
+
+
+			ArrayList<Integer> list = new ArrayList<Integer>();
+			for ( int x = 0; x < notifs.size(); x++) {
+				if( notifs.get(x).drinkFlag == 1) {
+					for(int y = 0; y<drinks.size(); y++){
+						if(drinks.get(y).id == notifs.get(x).id){
+							System.out.println("Adding drink to list");
+							out+= "{ \"drinkName\" : \""+drinks.get(y).name +"\", \"publisher\" : \"";
+							out+= drinks.get(y).publisher+"\", \"drinkFlag\" : 1";
+							out+= "}";
+						}				
+					}
+				}else {
+					for(int z=0; z<posts.size(); z++) {
+						if(posts.get(z).postId == notifs.get(x).id){
+							System.out.println("Adding post to list");
+							out+= "{ \"postId\" : \""+posts.get(z).postId +"\", \"publisher\" : \"";
+							out+= posts.get(z).text+"\", \"drinkFlag\" : 0";
+							out+= "}";
+						}
+					}
+				}
+				out+=",";
+			}
+			out = out.substring(0, out.length()-1) + "] }";
+
+			//need to reorder possibly
+
+			
+			rs.close();
+			smt.close();
+			conn.close();
+			return out;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+			
+
 	}
 }
