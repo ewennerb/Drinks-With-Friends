@@ -12,3 +12,20 @@ a.drinklink {
 .search_left {
     float: left;
 }
+
+@media only screen and (max-width: 900px) {
+    .ui.column.grid>[class*="four wide"].column {
+        width: 0 !important;
+    }
+    .ui.column.grid>[class*="eight wide"].column {
+        width: 100% !important;
+    }
+    
+}
+
+@media only screen and (max-width: 900px) {
+    
+    div > div > div {
+        float: none !important;
+    }
+}

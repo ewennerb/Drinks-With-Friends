@@ -390,7 +390,7 @@ export default class Search extends React.Component{
             return (
                 <div>
                     <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
-                        <Grid.Column width={4}/>
+                        <Grid.Column width={4} className="frontpage"/>
                         <Grid.Column width={8} >
                             <Grid.Row textAlign="center">
                                 <br/>
@@ -405,6 +405,7 @@ export default class Search extends React.Component{
 
 
                             <Grid.Row textAlign="left">
+                                
                                 <Grid.Column width={16} textAlign="left">
                                     <Accordion>
                                         <Accordion.Title
