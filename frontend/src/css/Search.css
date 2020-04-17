@@ -13,16 +13,14 @@ a.drinklink {
     float: left;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
     .ui.column.grid>[class*="four wide"].column {
         width: 0 !important;
     }
     .ui.column.grid>[class*="eight wide"].column {
         width: 100% !important;
     }
-    div > div > div {
-        float: none !important;
-    }
+    
 }
 
 @media only screen and (max-width: 900px) {
