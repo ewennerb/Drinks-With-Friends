@@ -4,7 +4,7 @@ import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
 import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
-
+import "../css/Drink.css"
 
 export default class DrinkCard extends React.Component {
     constructor(props) {
