@@ -7,6 +7,7 @@ import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 import Map from "./MapContainer";
 import GeoSearch from "./geoSearch";
 
+import "../css/Drink.css"
 
 export default class DrinkCard extends React.Component {
     constructor(props) {
@@ -342,3 +343,8 @@ export default class DrinkCard extends React.Component {
     }
 
 }
+
+// export const drinkCard = (index, name, description, photo, ingredients, publisher, likes, ) => {
+//
+//     )
+// };
