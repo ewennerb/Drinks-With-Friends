@@ -9,6 +9,8 @@ import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
 import ResetPassword from "./pages/ResetPassword";
 import {config} from './config/config'
+import {toggleSwitch} from './pages/utils';
+import {ThemeProvider, useTheme, ThemeContext, ThemeConsumer} from 'styled-components'
 
 import {
     Menu,
@@ -31,6 +33,7 @@ export default class Routes extends React.Component {
         this.handlePageJump = this.handlePageJump.bind(this);
         this.handleIs21 = this.handleIs21.bind(this);
         this.handleCheck = this.handleCheck.bind(this);
+        this.changeTheme = this.changeTheme.bind(this);
         this.state = {
             menuVisible: false,
             loggedIn: true,
@@ -40,6 +43,10 @@ export default class Routes extends React.Component {
             checked: false,
             profile: undefined,
         };
+    }
+
+    changeTheme = e => {
+        this.setState({darkMode: !this.state.darkMode});
     }
 
     logOut(){
@@ -82,7 +89,7 @@ export default class Routes extends React.Component {
         if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
             return;
         }
-        await fetch('http://localhost:8080/user/' + localStorage.getItem('username'), {
+        await fetch(config.url.API_URL + '/user/' + localStorage.getItem('username'), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -90,6 +97,7 @@ export default class Routes extends React.Component {
             },
         }).then(res => res.json()).then((data) => {
             console.log('LOGGED ON')
+            console.log(data)
             this.setState({response: data})
         }).catch(console.log);
         this.setState({loggedIn: true, user: localStorage.getItem('username')});
@@ -188,7 +196,7 @@ export default class Routes extends React.Component {
             <div className="Routes">
                 {/* This is the navigation bar */}
                 <BrowserRouter>
-                    <div hidden={this.state.is21}>
+                    <div hidden={this.state.is21} className="confirmation">
                         <Segment style={{width: "100%", height: "100vh"}} placeholder inverted>
                             <Header size="huge">Confirm Your Age</Header>
                             <Header size="large">We require our users to be 21 years old or over</Header>
@@ -273,7 +281,10 @@ export default class Routes extends React.Component {
 
                                         <Menu.Item content={<br/>}/>
                                         <Menu.Item content="About Us"/>
-                                        <Menu.Item content="Dark Mode"/>
+                                        <Menu.Item content="Dark Mode" onClick={this.changeTheme}>
+                                            Dark mode
+                                            {toggleSwitch() }
+                                        </Menu.Item>
                                     </Menu.Menu>
                                 </Menu.Item>
 

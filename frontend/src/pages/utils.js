@@ -1,7 +1,8 @@
 import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, GridRow, Form} from "semantic-ui-react";
-import React, {Component} from "react";
+import React, {Component, useContext} from "react";
 import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
+import '../css/toggle.css'
 
 
 
@@ -44,7 +45,24 @@ export const userCard = (index, username, photo) => {
             </Segment>
         </Card>
     )
-                            };
+};
+export const toggleSwitch = () => {
+    
+    return (
+        <div className="toggle-switch">
+            <input
+            type="checkbox"
+            className="toggle-switch-checkbox"
+            name="toggleSwitch"
+            id="toggleSwitch"
+            />
+            <label className="toggle-switch-label" htmlFor="toggleSwitch">
+            <span className="toggle-switch-inner" />
+            <span className="toggle-switch-switch" />
+            </label>
+        </div>
+    )
+};
 
 
 export const dotdCard = (dotd) => {
@@ -126,7 +144,7 @@ export const postCard = (post) => {
                 </Link>
                 <Grid columns={1}>
                     <GridRow style={{paddingBottom: "0px"}}>
-                        <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
+                        <Link style={{textDecoration: "none"}} to={(`${post.userName}`)}>
                             <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>
                                 @{post.userName}
                             </p>
@@ -191,7 +209,7 @@ export const postCardDelete = (post) => {
                 </Link>
                 <Grid columns={1}>
                     <GridRow style={{paddingBottom: "0px"}}>
-                        <Link style={{textDecoration: "none", color: "black"}} to={(`${post.userName}`)}>
+                        <Link style={{textDecoration: "none"}} to={(`${post.userName}`)}>
                             <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>
                                 @{post.userName}
                             </p>
