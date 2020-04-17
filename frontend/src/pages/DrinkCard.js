@@ -248,12 +248,12 @@ export default class DrinkCard extends React.Component {
                         <Card.Content>
 
                             <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
-                                <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
+                                <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
                                 <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={() => console.log("Geotag!")}/>
                             </Card.Header>
 
-                            <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
+                            <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
                         </Card.Content>
                         <Card.Content textAlign="left">
                             {drinkPic}
