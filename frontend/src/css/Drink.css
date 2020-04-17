@@ -1,10 +1,13 @@
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 500px) {
     .ui.centered.card {
         width: 350px !important;
 
     }
     .ui.menu .item {
         flex: 0 1 auto;
+    }
+    .ui.menu {
+        display: block !important;
     }
 }
