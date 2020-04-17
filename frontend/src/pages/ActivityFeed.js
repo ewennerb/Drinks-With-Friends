@@ -322,6 +322,26 @@ export default class ActivityFeed extends React.Component {
         }).then(res => res.json()).then((data) => {
             console.log(data);
             this.setState({response: data, modalOpen2: false})
+            //window.location.replace('/feed');
+        }).catch(console.log);
+        
+        await fetch(config.url.API_URL + '/post/' + 'placeHolder address' + '/' + 'placeHolder locName', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: this.state.postText,
+                image: photoString,
+                userId: 0,
+                userName: this.state.user,
+                geolocation: " ",
+                date: n,
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data, modalOpen2: false})
             window.location.replace('/feed');
         }).catch(console.log);
     };
