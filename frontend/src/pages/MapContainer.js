@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { withGoogleMap, GoogleMap, withScriptjs, InfoWindow, Marker, P } from "react-google-maps";
-import {Search, Segment, Header, List, Icon} from "semantic-ui-react";
+import {Search, Segment, Header, List, Icon, Button} from "semantic-ui-react";
 import Geocode from "react-geocode";
 import _ from 'lodash';
+
+import SmartDataTable from 'react-smart-data-table'
 import Autocomplete from 'react-google-autocomplete';
+
+
 Geocode.setApiKey( "AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k" );
 Geocode.enableDebug();
 
 
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 
 class Map extends Component{
@@ -30,10 +37,17 @@ class Map extends Component{
             searchInput: '',
             isLoading: false,
             ready:false,
-            results: undefined
+            results: undefined,
+            loading: false,
         };
         this.services = undefined;
         this.bars = [];
+        this.headers = {
+            columnKey: "name",
+            invisible: false,
+            sortable: false,
+            filterable: true
+        }
         this.handleSearchChange = this.handleSearchChange.bind(this);
         this.onPlaceSelected = this.onPlaceSelected.bind(this);
         // this.resetComponent = this.resetComponent.bind(this);
@@ -71,7 +85,8 @@ class Map extends Component{
                         lat: this.props.center.lat,
                         lng: this.props.center.lng
                     },
-                    ready: false
+                    ready: false,
+                    loading: false,
                 } )
             },
             error => {
@@ -234,12 +249,13 @@ class Map extends Component{
             latValue = place.geometry.location.lat(),
             lngValue = place.geometry.location.lng();
         // Set these values in the state.
+        const location = new google.maps.LatLng({ lat: latValue, lng: lngValue });
 
 
         //Gets a list of the bars near the city you selected
-        await this.getCityBars(google);
+        await this.getCityBars(google, location);
         console.log("swaos");
-        console.log(this.state);
+        console.log(this.state, );
 
 
         await this.setState({
@@ -264,26 +280,36 @@ class Map extends Component{
 
 
 //Todo: Fuck this shit I do not care
-    async getCityBars(google) {
+    async getCityBars(google, location) {
         let searchQuery = {
-            location: new google.maps.LatLng({ lat: this.state.mapPosition.lat, lng: this.state.mapPosition.lng }),
+            location: location,
             radius: 4828,
             types: ['bar']
         };
 
-        const loadResults = (results) => {
-            this.bars = results;
-            this.setState({results: results});
+        const loadResults = async (results, status, pagination) => {
+           this.bars = this.bars.concat(results);
+            // await this.setState({results: this.bars});
+            if(pagination.hasNextPage){
+                await sleep(500).then(async () => {
+
+                    await pagination.nextPage();
+                    //do stuff
+                });
+            }else{
+                await this.setState({results: this.bars, loading: false});
+            }
             return results;
         };
 
         if (this.services === undefined){
             let map = new google.maps.Map(
-                await document.getElementById('map'), {center: { lat: this.state.mapPosition.lat, lng: this.state.mapPosition.lng }, zoom: 15});
+                await document.getElementById('map'), {center: { lat: location.lat, lng: location.lng }, zoom: 15});
             this.services = await new google.maps.places.PlacesService(map);
         }
-
-        let bars = await this.services.nearbySearch(searchQuery, (results) => loadResults(results));
+        this.bars = [];
+        this.setState({loading: true});
+        let bars = await this.services.nearbySearch(searchQuery, (results, status, pagination) => loadResults(results, status, pagination));
         //     results: results,
         //     mapPosition: {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()},
         //     markerPosition: {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()}
@@ -356,22 +382,39 @@ class Map extends Component{
                 // do {x += 1} while(this.bars === undefined && x <= Infinity);
                 console.log(this.state.results);
                 renderResult = <div>
+                    {/*<Input></Input>*/}
+                    <SmartDataTable>
+
+                    </SmartDataTable>
                     <List divided verticalAlign='middle'>
                         {this.bars.map((res, index) => {
                             console.log(res.name);
                             return (
                                 <List.Item>
-                                    {res.name}
+                                    {/*<List.Icon name="map marker" color="grey"/>*/}
+
+                                    <List.Content floated="right">
+                                        <Button basic color="yellow" content="Add Geotag" icon="plus" compact/>
+                                    </List.Content>
+                                    <Icon name="map marker alternate" color="grey"/>
+                                    <List.Content>
+                                        <List.Header>{res.name}</List.Header>
+                                        <List.Description>{res.vicinity}</List.Description>
+                                    </List.Content>
+
+                                    {/*<Header color={"grey"}>{res.name}</Header>*/}
+                                    {/*<Button content="select"/>*/}
+
                                 </List.Item>
                             )
 
                             //Todo: make the onClick method here return the props back up to the main component
                         })}
-                    </List>;
+                    </List>
                 </div>
 
             } else {
-                renderResult = <Header size="small">No Bars Here :(</Header>
+                renderResult = <Header size="small" textAlign="center">No Bars Here :(</Header>
             }
         }
             return(
@@ -393,25 +436,33 @@ class Map extends Component{
                         </Header>
                     </Segment>
                     <Segment compact textAlign="left" style={{"width": "50%"}}>
-                        <Header >
-                            Searching for Bars In:
-                            <Sbar
-                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k&libraries=places"
-                                loadingElement={
-                                    <div style={{ height: `50%` }} />
-                                }
-                                containerElement={
-                                    <div style={{ height: this.props.height }} />
-                                }
-                                mapElement={
-                                    <div style={{ height: `0px`, width: `0px`}} />
-                                }
-                            />
-                            {renderResult}
-                        </Header>
-                        <Segment basic attached="top">
+                        {/*<Segment.Group>*/}
+                            {/*<Segment>*/}
+                                <Header>
+                                    <h3>Searching for Bars In:</h3>
+                                        <Sbar
+                                            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k&libraries=places"
+                                            loadingElement={
+                                                <div style={{ height: `50%` }} />
+                                            }
+                                            containerElement={
+                                                <div style={{ height: `40px` }} />
+                                            }
+                                            mapElement={
+                                                <div style={{ height: `0px`, width: `0px`}} />
+                                            }
+                                    />
+                                </Header>
+                            {/*</Segment>*/}
 
-                        </Segment>
+                            <Segment basic={true} loading={this.state.loading} style={{"height": "200px", "overflow-y": "scroll"}}>
+                                {/*Todo: Put the weird table here*/}
+                                {renderResult}
+                            </Segment>
+
+
+
+                        {/*</Segment.Group>*/}
 
                     </Segment>
                 </Segment.Group>

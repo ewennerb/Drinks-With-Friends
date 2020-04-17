@@ -374,12 +374,13 @@ export default class ActivityFeed extends React.Component {
         if(!this.state.mapSegment){
             console.log("segment active")
             mapSeg = <div>
-                <Segment textAlign="center" placeholder>
-                    <Header>
-                        <Icon name="plus circle" color="grey" circular onClick={this.addMap} />
-                        Add a Location
-                    </Header>
-                </Segment>
+                <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
+                {/*<Segment textAlign="center" placeholder>*/}
+                {/*    <Header>*/}
+                {/*        <Icon name="plus circle" color="grey" circular onClick={this.addMap} />*/}
+                {/*        Add a Location*/}
+                {/*    </Header>*/}
+                {/*</Segment>*/}
             </div>
         }else{
             console.log("Not active yet")
@@ -393,6 +394,7 @@ export default class ActivityFeed extends React.Component {
                             height='300px'
                             zoom={15}
                         />
+
                 {/*    </Segment>*/}
                 {/*    <Segment compact>*/}
                 {/*        <Header>Add a Location</Header>*/}
@@ -562,25 +564,29 @@ export default class ActivityFeed extends React.Component {
                     <Form size='large'>
                         <Segment stacked>
                             <Form>
-                                <Button
-                                    content="Choose File"
-                                    labelPosition="left"
-                                    icon="file"
-                                    onClick={() => this.fileInputRef.current.click()}
-                                />
-                                <input
-                                    ref={this.fileInputRef}
-                                    type="file"
-                                    hidden
-                                    onChange={this.fileChange}
-                                />
-                                <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
-                                <Form.Input
-                                    placeholder='Text for Post'
-                                    content={this.postText}
-                                    onChange={this.handlePostTextChange}
-                                    required={true}
-                                />
+                                <Form.Group inline>
+                                    <Button
+                                        content="Choose File"
+                                        labelPosition="left"
+                                        icon="file"
+                                        onClick={() => this.fileInputRef.current.click()}
+                                    />
+                                    <input
+                                        ref={this.fileInputRef}
+                                        type="file"
+                                        hidden
+                                        width="100%"
+                                        onChange={this.fileChange}
+                                    />
+                                    <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
+                                    <Form.Input
+                                        placeholder='Text for Post'
+                                        content={this.postText}
+                                        onChange={this.handlePostTextChange}
+                                        required={true}
+                                    />
+                                </Form.Group>
+
                                 <br/>
                                 <br/>
                             </Form>
