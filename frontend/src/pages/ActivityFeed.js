@@ -44,6 +44,7 @@ export default class ActivityFeed extends React.Component {
         this.handleSettingsChange = this.handleSettingsChange.bind(this);
         this.addMap = this.addMap.bind(this);
         this.delMap = this.delMap.bind(this);
+        this.addGeotag = this.addGeotag.bind(this);
         this.state = {
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
@@ -289,8 +290,8 @@ export default class ActivityFeed extends React.Component {
         });
     }
 
-    addGeotag(row){
-        this.setState({
+    async addGeotag(row){
+        await this.setState({
             geoTag: row,
             mapSegment: false
         })
@@ -363,7 +364,16 @@ export default class ActivityFeed extends React.Component {
             //window.location.replace('/feed');
         }).catch(console.log);
 
-        await fetch(config.url.API_URL + '/post/' + 'placeHolder address' + '/' + 'placeHolder locName', {
+        let address, locName;
+        if (this.state.geoTag === undefined || this.state.geoTag === {}){
+            address = "%20";
+            locName = "%20";
+        }else{
+            address = encodeURIComponent(this.state.geoTag.vicinity);
+            locName = encodeURIComponent(this.state.geoTag.name);
+        }
+
+        await fetch(config.url.API_URL + '/post/' + address + '/' + locName, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -416,44 +426,40 @@ export default class ActivityFeed extends React.Component {
                     <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
                 </div>
             }else{
-                mapSeg = <div>
-                    <Item>
-                        <Icon name="map marker alternate"/>
-                        <Item.Content>
-                            <Item.Header>{this.state.geoTag.name}</Item.Header>
-                            <Item.Meta>{this.state.geoTag.vicinity}</Item.Meta>
-                        </Item.Content>
-                        <Icon name="x" link onClick={this.removeGeotag}/>
-                    </Item>
-                    {/*<Header color="grey">{this.state.geoTag.name} - {this.state.geoTag.vicinity}</Header>*/}
-                </div>
+                console.log(this.state.geoTag.vicinity);
+                mapSeg = <Segment basic clearing compact>
+                    <Header as="h6" floated="right">
+                        <Icon size="small" floated="right" name="x" link onClick={this.removeGeotag}/>
+                    </Header>
+                    <Header as="h4" color="grey" floated="left">
+                        <Icon name='map marker alternate' color="grey"/>
+                        <Header.Content>
+                            {this.state.geoTag.name}
+                            <Header.Subheader>
+                                {this.state.geoTag.vicinity}
+
+                            </Header.Subheader>
+                        </Header.Content>
+
+                    </Header>
+
+                    <br/>
+                    <br/>
+                </Segment>
             }
 
         }else{
             console.log("Not active yet")
             //Todo: Add map shit here
             mapSeg = <div>
-                {/*<Segment.Group horizontal>*/}
-                {/*    <Segment>*/}
-                        <Map
-                            addGeotag={this.addGeotag.bind(this)}
-                            google={this.props.google}
-                            center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
-                            height='300px'
-                            zoom={15}
-                        />
-
-                {/*    </Segment>*/}
-                {/*    <Segment compact>*/}
-                {/*        <Header>Add a Location</Header>*/}
-
-                {/*    </Segment>*/}
-                {/*</Segment.Group>*/}
-
-                {/*<Segment.Group horizontal>*/}
-                {/*    */}
-                {/*    */}
-                {/*</Segment.Group>*/}
+                <Map
+                    addGeotag={this.addGeotag.bind(this)}
+                    google={this.props.google}
+                    center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
+                    height='300px'
+                    postText={this.state.postText}
+                    zoom={15}
+                />
             </div>
         }
 
@@ -634,12 +640,10 @@ export default class ActivityFeed extends React.Component {
                                         required={true}
                                     />
                                 </Form.Group>
-
-                                <br/>
-                                <br/>
                             </Form>
-
                             {mapSeg}
+
+
                             <div className='ui two buttons'>
                                 <Button color='grey' onClick={this.handleClosePost}>
                                     Cancel

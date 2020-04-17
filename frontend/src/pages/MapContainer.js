@@ -70,7 +70,6 @@ class Map extends Component{
                 )
             }
         }
-        this.handleSearchChange = this.handleSearchChange.bind(this);
         this.onPlaceSelected = this.onPlaceSelected.bind(this);
         // this.resetComponent = this.resetComponent.bind(this);
         this.handleGeoTag = this.handleGeoTag.bind(this);
@@ -129,53 +128,6 @@ class Map extends Component{
     }
 
 
-    handleSearchChange(event){
-        // console.log(google);
-        const value = event.target.value;
-        console.log(value);
-        this.setState({searchInput: value});
-        console.log(this.state);
-
-
-        // const loadPredictions = (predictions, status) => {
-        //     let bars = [];
-        //     if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        //         alert(status);
-        //         return;
-        //     }
-        //     console.log(predictions);
-        //         //     for(let i = 0; i < predictions.length; i++){
-        //         //         if(predictions[i].types.some(item => 'bar' === item.name)){
-        //         //             bars.push(predictions[i]);
-        //         //         }
-        //         //         // if(predictions[i].types)
-        //         //     }
-        //         //     console.log(bars);
-        //         //     this.setState({isLoading: false, results: predictions})
-        //         // };
-        //         //
-        //         //
-        //         // this.autoComp = new google.maps.places.AutocompleteService();
-        //         // console.log("Autocomplete service set up");
-        //         // await this.autoComp.getPlacePredictions(
-        //         //     {
-        //         //         input: this.state.searchInput,
-        //         //         location: new google.maps.LatLng({ lat: this.state.mapPosition.lat, lng: this.state.mapPosition.lng }),
-        //         //         types: ["establishment"],
-        //         //         radius: 32187
-        //         //     },
-        //         //     loadPredictions
-        //         // );
-    };
-
-
-
-
-
-
-
-
-
     /**
      * Component should only update ( meaning re-render ), when the user selects the address, or drags the pin
      *
@@ -193,7 +145,12 @@ class Map extends Component{
             this.state.results !== nextState.results
         ) {
             return true
-        } else if ( this.props.center.lat === nextProps.center.lat || this.state.results === undefined || nextState.results === undefined ){
+        } else if (
+            this.props.center.lat === nextProps.center.lat ||
+            this.state.results === undefined ||
+            nextState.results === undefined ||
+            this.props.postText !== nextProps.postText
+        ){
             return false
         }
     }
@@ -307,12 +264,10 @@ class Map extends Component{
             ready: true,
             // results: bars
         })
-        //Todo: put inter-component function here to pass location to the top
     };
 
 
 
-//Todo: Fuck this shit I do not care
     async getCityBars(google, location) {
         let searchQuery = {
             location: location,
@@ -343,18 +298,9 @@ class Map extends Component{
         this.bars = [];
         this.setState({loading: true});
         let bars = await this.services.nearbySearch(searchQuery, (results, status, pagination) => loadResults(results, status, pagination));
-        //     results: results,
-        //     mapPosition: {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()},
-        //     markerPosition: {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()}
-        // })});
         console.log(bars);
         return;
     }
-
-
-    //
-    // }
-
 
     render(){
         const { isLoading, results } = this.state;
@@ -368,6 +314,7 @@ class Map extends Component{
 
 
                                 >
+                                    {/*Todo: maybe include this later?*/}
                                     {/* InfoWindow on top of marker */}
                                     {/*<InfoWindow*/}
                                     {/*    onClose={this.onInfoWindowClose}*/}
@@ -409,46 +356,7 @@ class Map extends Component{
             )
         );
         if( this.props.center.lat !== undefined ) {
-            if (this.state.ready) {
-                let x = 0;
-                console.log("X = 0!");
-                // do {x += 1} while(this.bars === undefined && x <= Infinity);
-                console.log(this.state.results);
-                renderResult = <div>
-                    {/*<Input></Input>*/}
-                    <SmartDataTable>
 
-                    </SmartDataTable>
-                    <List divided verticalAlign='middle'>
-                        {this.bars.map((res, index) => {
-                            console.log(res.name);
-                            return (
-                                <List.Item>
-                                    {/*<List.Icon name="map marker" color="grey"/>*/}
-
-                                    <List.Content floated="right">
-                                        <Button basic color="yellow" content="Add Geotag" icon="plus" compact/>
-                                    </List.Content>
-                                    <Icon name="map marker alternate" color="grey"/>
-                                    <List.Content>
-                                        <List.Header>{res.name}</List.Header>
-                                        <List.Description>{res.vicinity}</List.Description>
-                                    </List.Content>
-
-                                    {/*<Header color={"grey"}>{res.name}</Header>*/}
-                                    {/*<Button content="select"/>*/}
-
-                                </List.Item>
-                            )
-
-                            //Todo: make the onClick method here return the props back up to the main component
-                        })}
-                    </List>
-                </div>
-
-            } else {
-                renderResult = <Header size="small" textAlign="center">No Bars Here :(</Header>
-            }
         }
             return(
                 <Segment.Group horizontal>
@@ -469,49 +377,38 @@ class Map extends Component{
                         </Header>
                     </Segment>
                     <Segment compact textAlign="left" style={{"width": "50%"}}>
-                        {/*<Segment.Group>*/}
-                            {/*<Segment>*/}
-                                <Header>
-                                    <h3>Searching for Bars In:</h3>
-                                        <Sbar
-                                            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k&libraries=places"
-                                            loadingElement={
-                                                <div style={{ height: `50%` }} />
-                                            }
-                                            containerElement={
-                                                <div style={{ height: `40px` }} />
-                                            }
-                                            mapElement={
-                                                <div style={{ height: `0px`, width: `0px`}} />
-                                            }
-                                    />
-                                </Header>
-                            {/*</Segment>*/}
+                        <Header>
+                            <h3>Searching for Bars In:</h3>
+                            <Sbar
+                                googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k&libraries=places"
+                                loadingElement={
+                                    <div style={{ height: `50%` }} />
+                                }
+                                containerElement={
+                                    <div style={{ height: `40px` }} />
+                                }
+                                mapElement={
+                                    <div style={{ height: `0px`, width: `0px`}} />
+                                }
+                            />
+                        </Header>
 
-                            <Segment basic={true} loading={this.state.loading} style={{"height": "200px", "overflow-y": "scroll"}}>
-                                {/*Todo: Put the weird table here*/}
-                                {/*<Input></Input>*/}
-                                <SmartDataTable
-                                    className="ui very basic collapsing table"
-                                    data={this.state.results}
-                                    headers={this.headers}
-                                    orderedHeaders={["name", "vicinity", "actions"]}
-                                    hideUnordered={true}
-                                    withHeader={false}
-                                />
-                                {/*{renderResult}*/}
-                            </Segment>
-
-
-
-                        {/*</Segment.Group>*/}
+                        <Segment basic={true} loading={this.state.loading} style={{"height": "200px", "overflow-y": "scroll"}}>
+                            {/*Todo: Put filter bar here eventually*/}
+                            {/*<Input></Input>*/}
+                            <SmartDataTable
+                                className="ui very basic collapsing table"
+                                data={this.state.results}
+                                headers={this.headers}
+                                orderedHeaders={["name", "vicinity", "actions"]}
+                                hideUnordered={true}
+                                withHeader={false}
+                            />
+                        </Segment>
 
                     </Segment>
                 </Segment.Group>
             );
-        // } else {
-        //     return(<div style={{height: this.props.height}} />);
-        // }
     }
 }
 export default Map
