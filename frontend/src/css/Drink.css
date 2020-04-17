@@ -6,6 +6,7 @@
     }
     .ui.menu .item {
         flex: 0 1 auto;
+        height: 10px;
     }
     .ui.menu {
         display: block !important;
