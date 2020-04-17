@@ -33,7 +33,7 @@ class DislikedDrinks extends Component{
   async componentDidMount(){
     
     // let userPage = this.state.profile;
-    
+    this.getDislikedDrinks(this.state.profile);
     // if (userPage != undefined && this.state.Drinks != undefined){
     // let Drinks = this.state.Drinks;
     // let likedDrinks = [];
@@ -100,18 +100,21 @@ class DislikedDrinks extends Component{
     );
   }
 
-  async getLikeStatus(user, drinkId) {
-    await fetch(config.url.API_URL + '/user/getLikeStatus/'+user+"/"+drinkId, {
+  async getDislikedDrinks(user) {
+    await fetch('http://localhost:8080/user/getDislikedDrinks/'+user, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { 
-          //console.log(data);
-          this.setState({likeStatus: data});
+         // console.log((data));
+          //JSON.parse
+          // let likedDrinks = [];
+          this.setState({dislikedDrinks: data});
       }).catch(console.log);
-  }
+  }// end of get liked Drinks
+
 
   isValidInput(input) {
     return !(input == undefined || input === '' || input == null);

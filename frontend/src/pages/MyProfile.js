@@ -19,7 +19,6 @@ import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
-import {config} from '../config/config'
 var base64 = require('base-64');
 
 //import "../css/Profile.css"
@@ -39,48 +38,40 @@ class Profile extends Component{
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleFileSelect = this.handleFileSelect.bind(this);
     this.handleFavoriteDrinkChange = this.handleFavoriteDrinkChange.bind(this);
+
+    this.fileReader = new FileReader();
+    this.handleFileRead = this.handleFileRead.bind(this)
     //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
+    this.fileInputRef = React.createRef();
+    
+    //let User = props.UserObject;
     this.state = {
       modalOpen: false, 
       activeItem: "posts",
-      bio: '',
       userName: localStorage.getItem("username"),
       // browser: props.user,
       profile: props.match.params.profile,
-      User: props.UserObject,
-    };
-}
+      User: {},
+      
+    }
+  }
 
   async componentDidMount(){
     // getting user
     // let userPage = this.state.profile;
-    
-    // if (userPage != undefined){
-    let User = this.state.User;
-    if (User != undefined){
-    this.setState({
-      modalOpen: false,
-      activeItem: "posts",
-      userName: User.userName,
-      password: User.password,
-      bio: User.bio,
-      photo: User.photo,
-      profilePhoto: User.profilePhoto,
-      email: User.email,
-      name: User.name,
-      favoriteDrink: User.favoriteDrink,
-      publishedDrinks: User.publishedDrinks,
-      postHistory: User.postHistory,
-      friendsList: User.friendsList,
-      darkMode: User.darkMode,
-      browser: localStorage.getItem('username')
-    })
-    } else {
-      await this.getUser(this.state.profile)
-    }
-    //end of if user undef
-    // }//end of if userpage != undefined
-
+    //todo always request user profile
+    //let User = this.state.User;
+    this.getUser(this.state.profile);
+    // if (User != undefined){
+    //   if (User.likedDrinks == undefined){
+    //     await this.getLikedDrinks(this.state.profile);
+    //   }
+    //   if (User.dislikedDrinks == undefined){
+    //     await this.getDislikedDrinks(this.state.profile);
+    //   }
+    // }
+ 
+  
     
   }// end of component did mount
 
@@ -101,19 +92,10 @@ class Profile extends Component{
     this.setState({ activeItem: name })
     console.log(name)
   }
- //HOW TO PASS STATE
-  // passState(likedDrinks, dislikedDrinks){
-  //   console.log("trying to pass state");
-  //   this.setState({
-  //       likedDrinks: this.state.likedDrinks.push(likedDrinks),
-  //       dislikedDrinks: this.state.dislikedDrinks.push(dislikedDrinks)
-  //   });
-  // }
 
   render(){
+
     const { activeItem } = this.state.activeItem
-
-
     let notUser = <p/>;
     // if (this.props.user === "" || this.props.user === undefined){
     //   notUser =
@@ -253,9 +235,9 @@ class Profile extends Component{
               <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
                  Drinks={this.state.Drinks} match={match}  />} />
               <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
-                  Drinks={this.state.Drinks} match={match}  />}/>
+                  likedDrinks={this.state.likedDrinks} match={match}  />}/>
               <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
-                  Drinks={this.state.Drinks} match={match}  />}/>
+                  dislikedDrinks={this.state.dislikedDrinks} match={match}  />}/>
               
               <Route exact path="/:profile/map" component={Map}/>
               <Route exact path="/:profile/friends" component={Friends}/>
@@ -281,12 +263,24 @@ class Profile extends Component{
           <Form size='large'>
           <Segment stacked>
           {/* file input */}
-          <Form.Input
+          <Button
+            content="Choose File"
+            labelPosition="left"
+            icon="file"
+            onClick={() => this.fileInputRef.current.click()}
+          />
+          <input
+              ref={this.fileInputRef}
+              type="file"
+              hidden
+              onChange={this.handleFileSelect}
+          />
+          {/* <Form.Input
             type="file"
             accept="image/*"
             id="imageselector"
             onChange={this.handleFileSelect}
-          />
+          /> */}
          {/* username change input */}
           <Form.Input
             fluid icon='user'
@@ -336,18 +330,28 @@ class Profile extends Component{
     )
   }//end render
 
+  handleFileRead = (e) => {
+    let res = base64.encode(this.fileReader.result);
+    this.setState({fileString: res, photo: res, profilePhoto: res})
+  }
   //form input on change functions
-  async handleFileSelect(event, {id}) {
-    event.preventDefault();
-    //const value = event;
-    //how to convert to 64base or get image data
-    let input = document.getElementById(id);
-    //console.log(input);
-    let image = input.files[0];
-    //console.log(image)
-    let imgstring = await base64.encode(image.name);
-    console.log(imgstring);
-    this.setState({photo: imgstring , profilePhoto: imgstring})
+  async handleFileSelect(event) {
+    let file = event.target.files[0];
+    let filename = event.target.files[0].name;
+    this.fileReader = new FileReader();
+    this.fileReader.onload = this.handleFileRead;
+    await this.fileReader.readAsBinaryString(file);
+    this.setState({photo: file, filename: filename});
+    // event.preventDefault();
+    // //const value = event;
+    // //how to convert to 64base or get image data
+    // let input = document.getElementById(id);
+    // //console.log(input);
+    // let image = input.files[0];
+    // //console.log(image)
+    // let imgstring = await base64.encode(image.name);
+    // console.log(imgstring);
+    // this.setState({photo: imgstring , profilePhoto: imgstring})
   }
   async handleUsernameChange(event) {
     const value = event.target.value;
@@ -373,7 +377,7 @@ class Profile extends Component{
       this.setState({ activeItem: name })
       console.log(name)
       
-      await fetch(config.url.API_URL + '/user/'+name+'', {
+      await fetch('http://localhost:8080/user/'+name+'', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -399,8 +403,9 @@ class Profile extends Component{
     //submitting everything from the modal
     let User = this.state.User;
     //profile pic
-    if (this.state.photo != User.photo && this.isValidInput(this.state.photo) && this.state.photo == this.state.profilePhoto){
-      await fetch(config.url.API_URL + '/user/updateUsername/'+User.userName, {
+    if (this.isValidInput(this.state.fileString) && this.state.photo != User.photo ){
+      //let photo = base65.encode(this.state.fileString);
+      await fetch('http://localhost:8080/user/saveProfilePic/', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -412,8 +417,8 @@ class Profile extends Component{
             phoneNumber: '',
             name: '',
             email: '',
-            photo: this.state.photo,
-            profilePhoto: this.state.profilePhoto,
+            photo: this.state.fileString,
+            profilePhoto: this.state.fileString,
         })
         }).then(res => res.json()).then((data) => {
         console.log("UPDATE PHOTO");
@@ -424,7 +429,7 @@ class Profile extends Component{
 
     //username
     if (this.state.userName !== User.userName){
-    await fetch(config.url.API_URL + '/user/updateUsername/'+User.userName, {
+    await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -453,7 +458,7 @@ class Profile extends Component{
 
     //password
     if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
-    await fetch(config.url.API_URL + '/user/updatePassword', {
+    await fetch('http://localhost:8080/user/updatePassword', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -478,7 +483,7 @@ class Profile extends Component{
 
     //bio
     if (this.state.bio !== User.bio && this.isValidInput(this.state.bio)) {
-      await fetch(config.url.API_URL + '/user/saveBio', {
+      await fetch('http://localhost:8080/user/saveBio', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -505,7 +510,7 @@ class Profile extends Component{
     //favoritedrink update
     if (this.state.favoriteDrink != User.favoriteDrink && this.isValidInput(this.state.favoriteDrink)) {
       //first search for actual drink with the output
-      // await fetch(config.url.API_URL + "/drink/search?s=" + this.state.favoriteDrink, {
+      // await fetch("http://localhost:8080/drink/search?s=" + this.state.favoriteDrink, {
       //   method: 'GET',
       //   headers: {
       //       'Accept': 'application/json',
@@ -521,7 +526,7 @@ class Profile extends Component{
       //search isnt return anything rn so well just upload the state
       //then upload 
       
-      await fetch(config.url.API_URL + '/user/saveFavoriteDrink', {
+      await fetch('http://localhost:8080/user/saveFavoriteDrink', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -547,8 +552,38 @@ class Profile extends Component{
     this.forceUpdate();
   } //end of handle submit
 
+  async getLikedDrinks(user) {
+    await fetch('http://localhost:8080/user/getLikedDrinks/'+user, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { 
+          //console.log((data));
+          //JSON.parse
+          // let likedDrinks = [];
+          this.setState({likedDrinks: data});
+      }).catch(console.log);
+  }// end of get liked Drinks
+
+  async getDislikedDrinks(user) {
+    await fetch('http://localhost:8080/user/getDislikedDrinks/'+user, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { 
+         // console.log((data));
+          //JSON.parse
+          // let likedDrinks = [];
+          this.setState({dislikedDrinks: data});
+      }).catch(console.log);
+  }// end of get liked Drinks
+
   async getUser(name) {
-    await fetch(config.url.API_URL + '/user/'+name, {
+    await fetch('http://localhost:8080/user/'+name, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -556,14 +591,17 @@ class Profile extends Component{
       },
       }).then(res => res.json()).then((data) => { //dk tbh
           //console.log(data);
+          let user = data;
+          this.setState({User: data,
+
           
-          this.setState({User: data});
+          });
       }).catch(console.log);
       
   }
   //get all drinks
   async getAllDrinks(){
-    await fetch(config.url.API_URL + '/drink/', {
+    await fetch('http://localhost:8080/drink/', {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -577,7 +615,7 @@ class Profile extends Component{
   //get individual drink objects
   async getDrink(owner, dname) {
     //get all drinks
-    await fetch(config.url.API_URL + '/drink/'+owner+"?d="+dname, {
+    await fetch('http://localhost:8080/drink/'+owner+"?d="+dname, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -665,7 +703,7 @@ export default Profile
         //   </Grid>
         // //pauls code for the submit
         // async handleSubmit2() { //Paul Added for submitting new username
-        //   await fetch(config.url.API_URL + '/user/updateUsername', {
+        //   await fetch('http://localhost:8080/user/updateUsername', {
         //     method: 'POST',
         //     headers: {
         //         'Accept': 'application/json',

@@ -36,7 +36,7 @@ class LikedDrinks extends Component{
     //   this.getLikedDrinks(this.state.profile);
     //   console.log(this.state.likedDrinks)
     //   }
-
+    this.getLikedDrinks(this.state.profile);
     // }
     // let userPage = this.state.profile;
     
