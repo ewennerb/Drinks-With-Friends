@@ -11,6 +11,7 @@ import {
 import {Link} from "react-router-dom";
 import {postCard, postCardDelete} from "./utils";
 import Map from "./MapContainer";
+import {config} from '../config/config'
 var base64 = require('base-64');
 
 
@@ -124,7 +125,7 @@ export default class ActivityFeed extends React.Component {
     }
 
     async getSearchResults(){
-        let url = "http://localhost:8080/post/search?s="
+        let url = config.url.API_URL + "/post/search?s="
         
 
         await fetch(url, {
@@ -140,7 +141,7 @@ export default class ActivityFeed extends React.Component {
             for (let res in data.results) {
                 console.log(data.results[res].userName)
                 let names = {}
-                await fetch("http://localhost:8080/user/"+data.results[res].userName, {
+                await fetch(config.url.API_URL + "/user/"+data.results[res].userName, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -309,7 +310,7 @@ export default class ActivityFeed extends React.Component {
             photoString = await base64.encode(this.state.fileString);
         }
         
-        await fetch('http://localhost:8080/drink/', {
+        await fetch(config.url.API_URL + '/drink/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -342,7 +343,7 @@ export default class ActivityFeed extends React.Component {
         var n = String(mm + '/' + dd + '/' + yyyy);
         console.log(n, this.state.user);
 
-        await fetch('http://localhost:8080/post/', {
+        await fetch(config.url.API_URL + '/post/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -352,9 +353,29 @@ export default class ActivityFeed extends React.Component {
                 text: this.state.postText,
                 image: photoString,
                 userId: 0,
+                userName: this.state.user,
                 geolocation: " ",
                 date: n,
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data, modalOpen2: false})
+            //window.location.replace('/feed');
+        }).catch(console.log);
+
+        await fetch(config.url.API_URL + '/post/' + 'placeHolder address' + '/' + 'placeHolder locName', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: this.state.postText,
+                image: photoString,
+                userId: 0,
                 userName: this.state.user,
+                geolocation: " ",
+                date: n,
             })
         }).then(res => res.json()).then((data) => {
             console.log(data);
@@ -364,7 +385,7 @@ export default class ActivityFeed extends React.Component {
     };
 
     async setResponse() {
-        await fetch('http://localhost:8080/post', {
+        await fetch(config.url.API_URL + '/post', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

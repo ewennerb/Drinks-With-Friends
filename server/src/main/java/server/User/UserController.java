@@ -23,7 +23,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 // import com.fasterxml.jackson.databind.JsonNode;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @RequestMapping(path="/user")
 public class UserController {
 
@@ -97,7 +98,9 @@ public class UserController {
 		String out =  "{ \"results\": [ ";
 		for (User user : users ) {
 			out += new ObjectMapper().writeValueAsString(user) + ",";
+			
 		}
+
 		out = out.substring(0, out.length()-1) + "] }";
 
 		return out;
@@ -209,6 +212,16 @@ public class UserController {
 
 		UserSQL users = new UserSQL();
 		return users.unfollowUser(followedUser, u.userName);
+	}
+
+	@GetMapping("/getNotifications/{username}")
+	public String getNotifications(@PathVariable String username)
+			throws JsonParseException, JsonMappingException, IOException {
+
+		UserSQL users = new UserSQL();
+
+
+		return users.getNotificationObjects(username);
 	}
 
 

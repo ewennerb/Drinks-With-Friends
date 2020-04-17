@@ -27,9 +27,9 @@ public class Post{
 		this.text = text;
 		this.image = image;
 		this.userId = userId;
+		this.userName = username;
 		this.geolocation = geolocation;
 		this.date = date;
-		this.userName = username;
 	}
 
 

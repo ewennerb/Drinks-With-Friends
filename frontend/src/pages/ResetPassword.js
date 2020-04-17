@@ -5,6 +5,7 @@ import { Button, Form, Grid, Header, Segment,
 import 'semantic-ui-css/semantic.min.css';
 //import Redirect from "react-router-dom/es/Redirect"  doesnt like that link use react-router-dom;
 
+import {config} from '../config/config'
 class ResetPassword extends React.Component {
     constructor(props) {
         super(props);
@@ -139,7 +140,7 @@ class ResetPassword extends React.Component {
 
     //when the "login" button is clicked
     async handleSubmit() {
-        await fetch('http://localhost:8080/user/updatePassword', {
+        await fetch(config.url.API_URL + '/user/updatePassword', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

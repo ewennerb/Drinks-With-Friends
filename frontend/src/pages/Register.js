@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import 'semantic-ui-css/semantic.min.css';
 // import {PhoneInput} from 'react-phone-input-2';
 import 'react-phone-input-2/lib/semantic-ui.css'
+import {config} from '../config/config'
 
 
 
@@ -38,7 +39,7 @@ export default class Register extends React.Component {
     //Queries the account creation API endpoint when the button is pressed.
     async handleSubmit() {
         //Todo - This 'Fetch' method will query the API on submission of the form
-        await fetch('http://localhost:8080/user/', {
+        await fetch(config.url.API_URL + '/user/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

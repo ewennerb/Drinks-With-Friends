@@ -7,7 +7,7 @@ import {
   GridRow,
 } from "semantic-ui-react";
 
-
+import {config} from '../config/config'
 import "../css/All.css"
 import { NavLink } from "react-router-dom/esm/react-router-dom";
 
@@ -29,7 +29,7 @@ class All extends Component{
   }
   
   async handleSearch(letter) {
-    await fetch('http://localhost:8080/drink/all/' + letter, {
+    await fetch(config.url.API_URL + '/drink/all/' + letter, {
               method: 'GET',
               headers: {
                   'Accept': 'application/json',

@@ -12,7 +12,7 @@ import {
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../rDrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
-
+import {config} from '../../config/config'
 class LikedDrinks extends Component{
   constructor(props){
   super(props)
@@ -107,7 +107,7 @@ class LikedDrinks extends Component{
 
 
   async getLikedDrinks(user) {
-    await fetch('http://localhost:8080/user/getLikedDrinks/'+user, {
+    await fetch(config.url.API_URL + '/user/getLikedDrinks/'+user, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',

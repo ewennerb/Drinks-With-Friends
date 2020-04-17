@@ -1,6 +1,7 @@
 import React from "react";
 import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment, Search} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
+import {config} from '../config/config'
 import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 import Map from "./MapContainer";
@@ -41,7 +42,7 @@ export default class DrinkCard extends React.Component {
 
         let userData;
 
-        await fetch("http://localhost:8080/user/" + this.props.user, {
+        await fetch(config.url.API_URL + "/user/" + this.props.user, {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
@@ -59,7 +60,7 @@ export default class DrinkCard extends React.Component {
                 user = undefined;
             }else{
                 user = data;
-                await fetch("http://localhost:8080/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
+                await fetch(config.url.API_URL + "/user/getLikeStatus/" + user.userName + "/" + this.props.drink.id, {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
@@ -133,30 +134,30 @@ export default class DrinkCard extends React.Component {
             if (!this.state.isLiked) {
                 //If disliked and like gets hit, flip
                 if (this.state.isDisliked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/on", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/on", option);
                 }
 
                 this.setState({isLiked: true, isDisliked: false})
             } else {
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/likeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
             }
         }else{
             if(!this.state.isDisliked) {
                 //If liked and dislike gets hit, flip
                 if (this.state.isLiked){
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/flip", option);
                 }else{
                     //Do normal like
-                    this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
+                    this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
             }else{
                 //Undo DisLike
-                this.likeDislikeRequestor(body, "http://localhost:8080/user/dislikeDrink/" + this.state.drink.id + "/off", option);
+                this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
             }
         }
@@ -294,12 +295,12 @@ export default class DrinkCard extends React.Component {
                         <Card.Content>
 
                             <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
-                                <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
+                                <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
                                 <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.openMap}/>
                             </Card.Header>
 
-                            <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
+                            <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
                         </Card.Content>
                         <Card.Content textAlign="left">
                             {drinkPic}

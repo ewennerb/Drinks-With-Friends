@@ -18,7 +18,7 @@ import {
 import {Link, Router} from 'react-router-dom';
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import "../css/Drink.css"
-
+import {config} from '../config/config'
 
 
 
@@ -51,7 +51,7 @@ class Drink extends Component{
     })
 }
 async getDrink(){
-    await fetch('http://localhost:8080/drink/'+this.props.match.params.username+'?d='+this.props.match.params.name, {
+    await fetch(config.url.API_URL + '/drink/'+this.props.match.params.username+'?d='+this.props.match.params.name, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

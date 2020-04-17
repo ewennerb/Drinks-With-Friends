@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
-
+import {config} from '../config/config'
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -36,7 +36,7 @@ class Login extends React.Component {
                 messageFromServer: '',
             });
         } else { //If there is something in the email box
-            await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+            await fetch(config.url.API_URL + '/user/find/' + this.state.email_reset, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -207,7 +207,7 @@ class Login extends React.Component {
         console.log("email_reset: " + this.state.email_reset);
 
         //GET INFO
-        await fetch('http://localhost:8080/user/find/' + this.state.email_reset, {
+        await fetch(config.url.API_URL + '/user/find/' + this.state.email_reset, {
                  method: 'GET',
                  headers: {
                      'Accept': 'application/json',
@@ -219,7 +219,7 @@ class Login extends React.Component {
              });
 
         if (this.state.fPass) { //Forgot Password
-            await fetch('http://localhost:8080/user/resetPasswordEmail', {
+            await fetch(config.url.API_URL + '/user/resetPasswordEmail', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -240,7 +240,7 @@ class Login extends React.Component {
 
 
         else { //forgot username
-            await fetch('http://localhost:8080/user/forgotUsername', {
+            await fetch(config.url.API_URL + '/user/forgotUsername', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -341,7 +341,7 @@ class Login extends React.Component {
 
     //when the "login" button is clicked
     async handleSubmit() {
-        await fetch('http://localhost:8080/user/' + this.state.username, {
+        await fetch(config.url.API_URL + '/user/' + this.state.username, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
