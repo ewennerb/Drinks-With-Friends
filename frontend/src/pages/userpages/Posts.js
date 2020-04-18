@@ -26,9 +26,9 @@ class Posts extends Component{
       // posts: User.posts,
       browser: props.user,
       profile: props.match.params.profile,
+      userLocation: props.userLocation,
       User: User,
-      // allDrinks: props.allDrinks,
-      // Drinks: props.Drinks,
+
     };
 
   }
@@ -93,7 +93,7 @@ class Posts extends Component{
                         user={this.state.userName}
                         index={index}
                         drink={drink}
-                        passState={this.state.passState}
+                        userLocation={this.state.userLocation}
                       />
                       // rodsDrinkCard ({
                       //   user: this.state.userName,

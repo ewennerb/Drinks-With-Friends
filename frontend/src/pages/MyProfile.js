@@ -61,7 +61,19 @@ class Profile extends Component{
     // let userPage = this.state.profile;
     //todo always request user profile
     //let User = this.state.User;
+    await navigator.geolocation.getCurrentPosition(
+      async(position) => {
+          const { latitude, longitude } = position.coords;
+          console.log(latitude);
+          console.log(longitude);
+          await this.setState({
+              userLocation: { lat: latitude, lng: longitude },
+          });
+      },
+     
+    );
     this.getUser(this.state.profile);
+    
     // if (User != undefined){
     //   if (User.likedDrinks == undefined){
     //     await this.getLikedDrinks(this.state.profile);
@@ -141,11 +153,11 @@ class Profile extends Component{
       favoriteDrink = 
       <p>My favorite drink is {this.state.favoriteDrink}</p>
     }
-    if (this.state.profilePhoto === null || this.state.profilePhoto === "" || this.state.profilePhoto == undefined){
+    if (this.state.photo === null || this.state.photo === "" ){
       pfp = <Image size="small" src={process.env.PUBLIC_URL + "/nopfp.png"} />
       //what this data-testid={"user-placeholder-img-"}
     } else {
-      pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.profilePhoto}`}/>
+      pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.photo}`}/>
     }
 
     return(
@@ -233,13 +245,13 @@ class Profile extends Component{
               {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
                  Drinks={this.state.Drinks} match={match}  />} /> */}
               <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
-                 Drinks={this.state.Drinks} match={match}  />} />
+                 userLocation={this.state.userLocation} match={match}  />} />
               <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
-                  likedDrinks={this.state.likedDrinks} match={match}  />}/>
+                  userLocation={this.state.userLocation} match={match}  />}/>
               <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
-                  dislikedDrinks={this.state.dislikedDrinks} match={match}  />}/>
+                  userLocation={this.state.userLocation} match={match}  />}/>
               
-              <Route exact path="/:profile/map" component={Map}/>
+              <Route exact path="/:profile/map" component={Map} userLocation={this.state.userLocation}/>
               <Route exact path="/:profile/friends" component={Friends}/>
             </Switch>
           </Segment>
@@ -395,7 +407,7 @@ class Profile extends Component{
             email: '',
             photo: this.state.fileString,
             profilePhoto: this.state.fileString,
-        })
+        }) //istill dont know whether the arg takes photo or profilephoto
         }).then(res => res.json()).then((data) => {
         console.log("UPDATE PHOTO");
         console.log(data);
@@ -539,8 +551,12 @@ class Profile extends Component{
           //console.log(data);
           let user = data;
           this.setState({User: data,
-
-          
+              photo: user.photo,
+              email: user.email,
+              password: user.password,
+              phoneNumber: user.phoneNumber,
+              bio: user.bio,
+              favoriteDrink: user.favoriteDrink
           });
       }).catch(console.log);
       

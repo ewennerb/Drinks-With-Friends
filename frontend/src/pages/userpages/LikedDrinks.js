@@ -24,8 +24,9 @@ class LikedDrinks extends Component{
     // posts: User.posts,
     browser: props.user,
     profile: props.match.params.profile,
+    userLocation: props.userLocation,
     User: User,
-    likedDrinks: props.likedDrinks,
+    likedDrinks: {},
     // Drinks: props.Drinks,
     };
   }
@@ -66,10 +67,7 @@ class LikedDrinks extends Component{
   
 
   render(){
-    let likedDrinks;
-    if(this.state.likedDrinks != undefined) {
-      likedDrinks = this.state.likedDrinks;
-    }
+ 
     return (
       <Container>
       <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
@@ -80,15 +78,16 @@ class LikedDrinks extends Component{
                <Header>{this.state.profile}'s Liked Drinks</Header>
             </Segment>
             <br/>
-            {(likedDrinks === undefined || this.state.likedDrinks.length < 1)
+            {(this.state.likedDrinks === undefined || this.state.likedDrinks.length < 1)
               ? <Header>No Liked Drinks Found</Header>
-              : likedDrinks.map((drink, index) => {
+              : this.state.likedDrinks.map((drink, index) => {
                   return(
                     <DrinkCard
                     user={this.state.profile}
                     index={index}
                     drink={drink}
                     key={index}
+                    userLocation={this.state.userLocation}
                     />
                     // rodsDrinkCard ({
                     //   user: this.state.userName,

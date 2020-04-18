@@ -417,7 +417,7 @@ export default class Search extends React.Component{
                                 <br/>
 
                                 {/*This is a method from utils.js that renders drink of the day now*/}
-                                {dotdCard(this.state.dotd)}
+                                {/* {dotdCard(this.state.dotd)} */}
 
                                 <br/>
                                 <br/>

@@ -26,7 +26,7 @@ class DislikedDrinks extends Component{
     browser: props.user,
     profile: props.match.params.profile,
     User: User,
-    dislikedDrinks: props.dislikedDrinks,
+    userLocation: props.userLocation,
     // Drinks: props.Drinks,
     };
   }
@@ -82,6 +82,7 @@ class DislikedDrinks extends Component{
                     index={index}
                     drink={drink}
                     key={index}
+                    userLocation={this.state.userLocation}
                     />
                     // rodsDrinkCard ({
                     //   user: this.state.userName,
