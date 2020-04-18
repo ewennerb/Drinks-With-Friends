@@ -20,7 +20,7 @@ import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
 var base64 = require('base-64');
-
+import {config} from '../config/config'
 //import "../css/Profile.css"
 
 class Profile extends Component{
@@ -373,30 +373,6 @@ class Profile extends Component{
   }
   //end of forminput on change functions
 
-  async handleItemClick (e, {name}) {
-      this.setState({ activeItem: name })
-      console.log(name)
-      
-      await fetch('http://localhost:8080/user/'+name+'', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            // help
-            //userName: this.state.response.username,
-            // phoneNumber: '',
-            // password: '',
-            // name: '',
-            // email: this.state.email_reset,
-        })
-    }).then(res => res.json()).then((data) => { //dk tbh
-        console.log(data);
-        this.setState({response: data});
-    }).catch(console.log);
-  }
-
 
   async handleSubmit() {
 
@@ -405,7 +381,7 @@ class Profile extends Component{
     //profile pic
     if (this.isValidInput(this.state.fileString) && this.state.photo != User.photo ){
       //let photo = base65.encode(this.state.fileString);
-      await fetch('http://localhost:8080/user/saveProfilePic/', {
+      await fetch(config.url.API_URL+'/user/saveProfilePic/', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -429,7 +405,7 @@ class Profile extends Component{
 
     //username
     if (this.state.userName !== User.userName){
-    await fetch('http://localhost:8080/user/updateUsername/'+User.userName, {
+    await fetch(config.url.API_URL+'/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -458,7 +434,7 @@ class Profile extends Component{
 
     //password
     if (this.state.password !== User.password  && this.isValidInput(this.state.password)){
-    await fetch('http://localhost:8080/user/updatePassword', {
+    await fetch(config.url.API_URL+'/user/updatePassword', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -483,7 +459,7 @@ class Profile extends Component{
 
     //bio
     if (this.state.bio !== User.bio && this.isValidInput(this.state.bio)) {
-      await fetch('http://localhost:8080/user/saveBio', {
+      await fetch(config.url.API_URL+'/user/saveBio', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -526,7 +502,7 @@ class Profile extends Component{
       //search isnt return anything rn so well just upload the state
       //then upload 
       
-      await fetch('http://localhost:8080/user/saveFavoriteDrink', {
+      await fetch(config.url.API_URL+'/user/saveFavoriteDrink', {
       method: 'POST',
       headers: {
           'Accept': 'application/json',
@@ -552,38 +528,8 @@ class Profile extends Component{
     this.forceUpdate();
   } //end of handle submit
 
-  async getLikedDrinks(user) {
-    await fetch('http://localhost:8080/user/getLikedDrinks/'+user, {
-      method: 'GET',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      }).then(res => res.json()).then((data) => { 
-          //console.log((data));
-          //JSON.parse
-          // let likedDrinks = [];
-          this.setState({likedDrinks: data});
-      }).catch(console.log);
-  }// end of get liked Drinks
-
-  async getDislikedDrinks(user) {
-    await fetch('http://localhost:8080/user/getDislikedDrinks/'+user, {
-      method: 'GET',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      }).then(res => res.json()).then((data) => { 
-         // console.log((data));
-          //JSON.parse
-          // let likedDrinks = [];
-          this.setState({dislikedDrinks: data});
-      }).catch(console.log);
-  }// end of get liked Drinks
-
   async getUser(name) {
-    await fetch('http://localhost:8080/user/'+name, {
+    await fetch(config.url.API_URL+'/user/'+name, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -599,9 +545,9 @@ class Profile extends Component{
       }).catch(console.log);
       
   }
-  //get all drinks
+  //get all drinks do i need htis
   async getAllDrinks(){
-    await fetch('http://localhost:8080/drink/', {
+    await fetch(config.url.API_URL+'/drink/', {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
@@ -610,20 +556,6 @@ class Profile extends Component{
       }).then(res => res.json()).then((data) => { //dk tbh
           console.log(data);
           this.setState({allDrinks: data});
-      }).catch(console.log);
-  }
-  //get individual drink objects
-  async getDrink(owner, dname) {
-    //get all drinks
-    await fetch('http://localhost:8080/drink/'+owner+"?d="+dname, {
-      method: 'GET',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      }).then(res => res.json()).then((data) => { 
-          //console.log(data);
-          this.setState({drink: data});
       }).catch(console.log);
   }
 
