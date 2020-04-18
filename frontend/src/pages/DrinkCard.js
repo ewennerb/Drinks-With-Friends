@@ -1,10 +1,13 @@
 import React from "react";
-import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment} from "semantic-ui-react";
+import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment, Search} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
 import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
+import Map from "./MapContainer";
+import GeoSearch from "./geoSearch";
 
+import "../css/Drink.css"
 
 export default class DrinkCard extends React.Component {
     constructor(props) {
@@ -16,19 +19,28 @@ export default class DrinkCard extends React.Component {
             drink: this.props.drink,
             likes: this.props.drink.likes,
             dislikes: this.props.drink.dislikes,
+            userLocation: this.props.userLocation,
             ready: false,
             isLiked: false,
             isDisliked: false,
             shareModal: false,
+            mapModal: false,
+            isLoading: false,
+            searchInput: ""
         };
+        this.location = {};
         this.likeDislikeRequestor = this.likeDislikeRequestor.bind(this);
         this.handleLikeDislike = this.handleLikeDislike.bind(this);
+        this.openMap = this.openMap.bind(this);
+        this.closeMap = this.closeMap.bind(this);
         this.openShare = this.openShare.bind(this);
         this.closeShare = this.closeShare.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
     }
 
 
     async componentDidMount() {
+
         let userData;
 
         await fetch(config.url.API_URL + "/user/" + this.props.user, {
@@ -67,6 +79,7 @@ export default class DrinkCard extends React.Component {
                 drink: this.props.drink,
                 likes: this.props.drink.likes,
                 dislikes: this.props.drink.dislikes,
+                userLocation: this.props.userLocation,
                 ready: true,
                 isLiked: isLiked,
                 isDisliked: isDisliked
@@ -176,8 +189,27 @@ export default class DrinkCard extends React.Component {
     }
 
 
+    openMap(){
+        this.setState({mapModal: true});
+    }
+
+    closeMap(){
+        this.setState({mapModal: false});
+    }
+
+
+    handleSearchChange(event) {
+        // console.log(google);
+        const value = event.target.value;
+        // console.log(value);
+        this.setState({searchInput: value, isLoading: true});
+    }
+
+
     render(){
-        console.log(this.state.user);
+        // console.log(this.state.user);
+        let theseProps = this.props;
+        console.log(this.state.userLocation);
         let {user, drink, index, ready} = this.state;
         let drinkPic, likes;
         if(ready){
@@ -230,18 +262,34 @@ export default class DrinkCard extends React.Component {
                         <Header textAlign="left">Share Via:</Header>
                         {/*Todo: Actually plug in a legit URL and all the other paramters*/}
                         <Segment basic textAlign="center">
-                            <FacebookShareButton quote="Check this shit out!" hashtag="#DWF" url={"http://fake.com"}>
+                            <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
                                 <FacebookIcon size={32}/>
-                            </FacebookShareButton>
-                            &nbsp;
-                            <TwitterShareButton>
+                            </FacebookShareButton>&nbsp;
+                            <TwitterShareButton title={"Drinks With Friends"} url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
                                 <TwitterIcon size={32}/>
-                            </TwitterShareButton>
-                            &nbsp;
-                            <EmailShareButton>
+                            </TwitterShareButton>&nbsp;
+                            {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
+                            <EmailShareButton subject="Check out this drink I found!" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
                                 <EmailIcon size={32}/>
                             </EmailShareButton>
                         </Segment>
+                    </Modal>
+                    <Modal open={this.state.mapModal} onClose={this.closeMap} closeOnEscape={false} centered closeIcon size="large">
+                        <h1>Goodle Maps</h1>
+                        <div style={{ margin: '100px' }}>
+                            <GeoSearch
+                                google={this.props.google}
+                                center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
+                            />
+                            <Map
+                                google={this.props.google}
+                                center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
+                                height='300px'
+                                zoom={15}
+                            />
+
+
+                        </div>
                     </Modal>
                     <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
                         {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
@@ -250,7 +298,7 @@ export default class DrinkCard extends React.Component {
                             <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
                                 <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
-                                <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={() => console.log("Geotag!")}/>
+                                <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.openMap}/>
                             </Card.Header>
 
                             <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>

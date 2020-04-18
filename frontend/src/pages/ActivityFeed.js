@@ -6,10 +6,11 @@ import {
     Button,
     Form,
     Modal, Header, FormCheckbox,
-    FormGroup, Icon, Message, GridRow, GridColumn
+    FormGroup, Icon, Message, GridRow, GridColumn, Item
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {postCard, postCardDelete} from "./utils";
+import Map from "./MapContainer";
 import {config} from '../config/config'
 var base64 = require('base-64');
 
@@ -38,8 +39,12 @@ export default class ActivityFeed extends React.Component {
         this.handleNameChange = this.handleNameChange.bind(this);
         this.fileChange = this.fileChange.bind(this);
         this.fileReader = new FileReader();
+        this.removeGeotag = this.removeGeotag.bind(this);
         this.getSearchResults = this.getSearchResults.bind(this);
         this.handleSettingsChange = this.handleSettingsChange.bind(this);
+        this.addMap = this.addMap.bind(this);
+        this.delMap = this.delMap.bind(this);
+        this.addGeotag = this.addGeotag.bind(this);
         this.state = {
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
@@ -61,10 +66,13 @@ export default class ActivityFeed extends React.Component {
                 }
             ],
             results: [],
+            geoTag: undefined,
 
             resultsNoDelete: [],
             resultsDelete: [],
-            searchVal: 'd'
+            searchVal: 'd',
+            mapSegment: false,
+            userLocation: this.props.userLocation,
 
         };
         this.fileInputRef = React.createRef();
@@ -81,13 +89,30 @@ export default class ActivityFeed extends React.Component {
             this.handleOpen();
         }
     };
-    componentDidMount(){
+    async componentDidMount(){
+        navigator.geolocation.getCurrentPosition(
+            async(position) => {
+                const { latitude, longitude } = position.coords;
+                console.log(latitude);
+                console.log(longitude);
+                await this.setState({
+                    userLocation: { lat: latitude, lng: longitude },
+                    done: false
+                });
+            },
+            () => {
+                this.setState({ done: false });
+            }
+        );
+        console.log(this.state.userLocation);
         this.setState({
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
             description: "",
             drinkName: "",
             postText: "",
+            mapSegment: false,
+            geoTag: undefined,
             ingredients: [
                 {
                     ingredient: "",
@@ -265,6 +290,20 @@ export default class ActivityFeed extends React.Component {
         });
     }
 
+    async addGeotag(row){
+        await this.setState({
+            geoTag: row,
+            mapSegment: false
+        })
+    }
+
+    removeGeotag(){
+        this.setState({
+            geoTag: undefined,
+            mapSegment: false
+        })
+    }
+
 
     async postDrink(){
         let photoString = "";
@@ -324,8 +363,17 @@ export default class ActivityFeed extends React.Component {
             this.setState({response: data, modalOpen2: false})
             //window.location.replace('/feed');
         }).catch(console.log);
-        
-        await fetch(config.url.API_URL + '/post/' + 'placeHolder address' + '/' + 'placeHolder locName', {
+
+        let address, locName;
+        if (this.state.geoTag === undefined || this.state.geoTag === {}){
+            address = "%20";
+            locName = "%20";
+        }else{
+            address = encodeURIComponent(this.state.geoTag.vicinity);
+            locName = encodeURIComponent(this.state.geoTag.name);
+        }
+
+        await fetch(config.url.API_URL + '/post/' + address + '/' + locName, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -359,8 +407,62 @@ export default class ActivityFeed extends React.Component {
         }).catch(console.log);
     }
 
+    addMap(){
+        this.setState({mapSegment: true});
+    }
+    delMap(){
+        this.setState({mapSegment: false});
+    }
+
     render(){
         const value = this.state.searchVal;
+
+        let mapSeg;
+
+        if(!this.state.mapSegment){
+            if(this.state.geoTag === {} || this.state.geoTag === undefined){
+                console.log("segment active")
+                mapSeg = <div>
+                    <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
+                </div>
+            }else{
+                console.log(this.state.geoTag.vicinity);
+                mapSeg = <Segment basic clearing compact>
+                    <Header as="h6" floated="right">
+                        <Icon size="small" floated="right" name="x" link onClick={this.removeGeotag}/>
+                    </Header>
+                    <Header as="h4" color="grey" floated="left">
+                        <Icon name='map marker alternate' color="grey"/>
+                        <Header.Content>
+                            {this.state.geoTag.name}
+                            <Header.Subheader>
+                                {this.state.geoTag.vicinity}
+
+                            </Header.Subheader>
+                        </Header.Content>
+
+                    </Header>
+
+                    <br/>
+                    <br/>
+                </Segment>
+            }
+
+        }else{
+            console.log("Not active yet")
+            //Todo: Add map shit here
+            mapSeg = <div>
+                <Map
+                    addGeotag={this.addGeotag.bind(this)}
+                    google={this.props.google}
+                    center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
+                    height='300px'
+                    postText={this.state.postText}
+                    zoom={15}
+                />
+            </div>
+        }
+
 
         let notUser = <p/>;
         if (this.props.user === "" || this.props.user === undefined){
@@ -384,27 +486,29 @@ export default class ActivityFeed extends React.Component {
 
             <div>
                 {notUser}
-                <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
-                <Form style={{margin: "auto", marginTop: "15px", height:"10px", width: "auto"}}>
-                    <Form.Group inline>
-                        <label>Create For</label>
-                        <Form.Radio
-                            label='Drinks'
-                            value='d'
-                            checked={value === 'd'}
-                            onClick={(e) => this.handleSettingsChange(e,'d')}
-                            data-testid="search-form-drinks"
-                        />
-                        <Form.Radio
-                            label='Posts'
-                            value='p'
-                            checked={value === 'p'}
-                            onClick={(e) => this.handleSettingsChange(e,'p')}
-                            data-testid="search-form-ingredients"
-                        />
-                    </Form.Group>
-                </Form>
-                    <Modal.Header>Create a Drink</Modal.Header>
+                <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose} size="large" style={{"height": "90vh"}}>
+                    <Modal.Header>
+                        <Form>
+                            <Form.Group inline>
+                                <label>Create For</label>
+                                <Form.Radio
+                                    label='Drinks'
+                                    value='d'
+                                    checked={value === 'd'}
+                                    onClick={(e) => this.handleSettingsChange(e,'d')}
+                                    data-testid="search-form-drinks"
+                                />
+                                <Form.Radio
+                                    label='Posts'
+                                    value='p'
+                                    checked={value === 'p'}
+                                    onClick={(e) => this.handleSettingsChange(e,'p')}
+                                    data-testid="search-form-ingredients"
+                                />
+                            </Form.Group>
+                        </Form>
+                        Create a Drink
+                    </Modal.Header>
                     <Form size='large'>
                         <Segment stacked>
                             <Form>
@@ -488,63 +592,102 @@ export default class ActivityFeed extends React.Component {
 
 
                 
-                <Modal open={this.state.modalOpen2} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose}>
-                <Form style={{margin: "auto", marginTop: "15px", height:"10px", width: "auto"}}>
-                    <Form.Group inline>
-                        <label>Create For</label>
-                        <Form.Radio
-                            label='Drinks'
-                            value='d'
-                            checked={value === 'd'}
-                            onClick={(e) => this.handleSettingsChange(e,'d')}
-                            data-testid="search-form-drinks"
-                        />
-                        <Form.Radio
-                            label='Posts'
-                            value='p'
-                            checked={value === 'p'}
-                            onClick={(e) => this.handleSettingsChange(e,'p')}
-                            data-testid="search-form-ingredients"
-                        />
-                    </Form.Group>
-                </Form>
-                    <Modal.Header>Create a Post</Modal.Header>
+                <Modal open={this.state.modalOpen2} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose} size="large">
+                    <Modal.Header>
+                        <Form>
+                            <Form.Group inline>
+                                <label>Create For</label>
+                                <Form.Radio
+                                    label='Drinks'
+                                    value='d'
+                                    checked={value === 'd'}
+                                    onClick={(e) => this.handleSettingsChange(e,'d')}
+                                    data-testid="search-form-drinks"
+                                />
+                                <Form.Radio
+                                    label='Posts'
+                                    value='p'
+                                    checked={value === 'p'}
+                                    onClick={(e) => this.handleSettingsChange(e,'p')}
+                                    data-testid="search-form-ingredients"
+                                />
+                            </Form.Group>
+                        </Form>
+                        Create a Post
+                    </Modal.Header>
                     <Form size='large'>
                         <Segment stacked>
                             <Form>
-                                <Button
-                                    content="Choose File"
-                                    labelPosition="left"
-                                    icon="file"
-                                    onClick={() => this.fileInputRef.current.click()}
-                                />
-                                <input
-                                    ref={this.fileInputRef}
-                                    type="file"
-                                    hidden
-                                    onChange={this.fileChange}
-                                />
-                                <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
-                                <Form.Input
-                                    placeholder='Text for Post'
-                                    content={this.postText}
-                                    onChange={this.handlePostTextChange}
-                                    required={true}
-                                />
-                                <br/>
-                                <br/>
-                                <div className='ui two buttons'>
-                                    <Button color='grey' onClick={this.handleClosePost}>
-                                        Cancel
-                                    </Button>
-                                    <Button color='yellow' disabled={this.state.postText === ""} onClick={() => this.postPost()}>
-                                        Post!
-                                    </Button>
-                                </div>
+                                <Form.Group inline>
+                                    <Button
+                                        content="Choose File"
+                                        labelPosition="left"
+                                        icon="file"
+                                        onClick={() => this.fileInputRef.current.click()}
+                                    />
+                                    <input
+                                        ref={this.fileInputRef}
+                                        type="file"
+                                        hidden
+                                        width="100%"
+                                        onChange={this.fileChange}
+                                    />
+                                    <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
+                                    <Form.Input
+                                        placeholder='Text for Post'
+                                        content={this.postText}
+                                        onChange={this.handlePostTextChange}
+                                        required={true}
+                                    />
+                                </Form.Group>
                             </Form>
+                            {mapSeg}
 
+
+                            <div className='ui two buttons'>
+                                <Button color='grey' onClick={this.handleClosePost}>
+                                    Cancel
+                                </Button>
+                                <Button color='yellow' disabled={this.state.postText === ""} onClick={() => this.postPost()}>
+                                    Post!
+                                </Button>
+                            </div>
                         </Segment>
                     </Form>
+
+
+                    {/*    <Segment stacked placeholder textAlign="left">*/}
+                    {/*    */}
+                    {/*        <Form.Group>*/}
+                    {/*            <Button*/}
+                    {/*                content="Choose File"*/}
+                    {/*                labelPosition="left"*/}
+                    {/*                icon="file"*/}
+                    {/*                onClick={() => this.fileInputRef.current.click()}*/}
+                    {/*            />*/}
+                    {/*            <input*/}
+                    {/*                ref={this.fileInputRef}*/}
+                    {/*                type="file"*/}
+                    {/*                hidden*/}
+                    {/*                onChange={this.fileChange}*/}
+                    {/*            />*/}
+                    {/*            <Message hidden={!this.state.selected} >{this.state.fileName}</Message>*/}
+                    {/*            <Form.Input*/}
+                    {/*                placeholder='Text for Post'*/}
+                    {/*                content={this.postText}*/}
+                    {/*                onChange={this.handlePostTextChange}*/}
+                    {/*                required={true}*/}
+                    {/*            />*/}
+                    {/*            <br/>*/}
+                    {/*            <br/>*/}
+                    {/*        </Form.Group>*/}
+                    {/*    </Form>*/}
+
+                    {/*</Segment>*/}
+
+                    {/*<Form size='large'>*/}
+                    {/*    <Segment stacked placeholder>*/}
+
                 </Modal>
 
 

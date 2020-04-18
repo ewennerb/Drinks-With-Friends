@@ -10,7 +10,6 @@ import All from "./pages/All"
 import ResetPassword from "./pages/ResetPassword";
 import {config} from './config/config'
 import {toggleSwitch} from './pages/utils';
-import {ThemeProvider, useTheme, ThemeContext, ThemeConsumer} from 'styled-components'
 
 import {
     Menu,
@@ -231,7 +230,7 @@ export default class Routes extends React.Component {
                             </Menu.Item>
                         </Menu>
                         <Sidebar.Pushable as={Segment} attached="bottom">
-                            <Sidebar as={Menu} direction="right" animation="uncover" visible={this.state.menuVisible} icon="labeled" vertical width="thin">
+                            <Sidebar as={Menu} direction="right" animation="overlay" visible={this.state.menuVisible} icon="labeled" vertical width="thin">
                                 {/*Todo - make these redirect to different links*/}
                                 {/*TODO - PASS USER TO ALL CLASSES' PROPS*/}
 
@@ -247,7 +246,7 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
-                                          
+                                            
                                         />
 
                                         <Menu.Item
@@ -290,7 +289,7 @@ export default class Routes extends React.Component {
 
 
                             </Sidebar>
-                            <Sidebar.Pusher>
+                            <Sidebar.Pusher dimmed={this.state.menuVisible} onClick={() => this.setState({ menuVisible: false })}>
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
@@ -314,7 +313,6 @@ export default class Routes extends React.Component {
                     </div>
                 </BrowserRouter>
             </div>
-
         );
     } //end render
 

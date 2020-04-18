@@ -19,25 +19,30 @@ export const GlobalStyles = createGlobalStyle`
         font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         transition: all 0.25s linear;
     }
-    .ui, .header {
+
+    .ui.vertical.menu .item .menu a.item:hover {
+        color: ${({theme}) => theme.text === darkTheme.text ? 'black' : 'black'} !important
+    }
+    .ui.vertical.menu .item .menu a.item {
+        color: ${({theme}) => theme.text === darkTheme.text ? 'rgba(0,0,0,.5)' : 'rgba(0,0,0,.5)'} !important
+    }
+
+    .ui:not(button), .header {
         background: ${({ theme }) => theme.body} !important;
     }
     
-    .ui, .drinklink, .header, .menu .item, .ui > *, .inline.fields > label, .inline.fields .field>label, a{
+    .ui:not(button), .drinklink, .header, .menu .item, .ui > *, .inline.fields > label, .inline.fields .field>label, a{
         color: ${({ theme }) => theme.text} !important;
     }
 
     .meta, .ui.card .meta>a:not(.ui) {
-        color: ${({theme}) => theme.text = darkTheme.text ? '#9c9c9c' : 'grey'} !important
+        color: ${({theme}) => theme.text === darkTheme.text ? '#9c9c9c' : 'grey'} !important
     }
 
     .ui.vertical.menu {
-        background: ${({ theme }) => theme.body = darkTheme.body ? '#3d3d3d' : 'white'};
+        background: ${({ theme }) => theme.body === darkTheme.body ? '#3d3d3d' : 'white'};
     }
-    .ui.button {
-        background: ${({ theme }) => theme.button = darkTheme.button ? '#fbbd08' : 'white'} !important;
-        margin-bottom: 10px;
-    }
+    
     .ui.buttons > .button {
         margin-right: 10px;
         margin-left: 10px;
