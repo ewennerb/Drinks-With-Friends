@@ -19,8 +19,8 @@ import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
 import Friends from "./userpages/Friends.js"
 import Posts from "./userpages/Posts.js"
-var base64 = require('base-64');
 import {config} from '../config/config'
+var base64 = require('base-64');
 //import "../css/Profile.css"
 
 class Profile extends Component{

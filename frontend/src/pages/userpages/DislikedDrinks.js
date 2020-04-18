@@ -14,7 +14,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
-import {config} from '../../config/config';
+
 
 class DislikedDrinks extends Component{
   constructor(props){
