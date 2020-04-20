@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 public class PostController {
 
 	//getAll PostS
-
 	//getPost
 	int g_postId = 0;
 
