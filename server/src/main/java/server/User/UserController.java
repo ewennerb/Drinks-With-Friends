@@ -62,12 +62,7 @@ public class UserController {
         //find a single user
 		System.out.println("User: "+ name);
 		UserSQL users = new UserSQL();
-		//testing updatePassword - change vals to retest
-		//users.updatePassword(name, "newPass", "newtestpass");
-		//testing insertUser
-		//users.insertUser(name, "testInsP1", "testInsNme1", "testInsEmail1", "testInsPhone1");
-		//testing uniqueUserName
-		//users.checkUniqueUserName(name);
+
 		ObjectMapper om2 = new ObjectMapper();
 		SimpleModule sm2 = new SimpleModule("UserSerializer", new Version(1, 0, 0, null, null, null));
 		sm2.addSerializer(User.class, new UserSerializer());
@@ -498,5 +493,19 @@ public class UserController {
     public String deleteUser() {
         //find a single user
         return "success";
-    }
+	}
+	
+	@PostMapping("/darkMode")
+	public String toggleDarkMode(@RequestBody String body)throws JsonParseException, JsonMappingException, IOException {
+		
+		int userStart = body.indexOf("username") + 6 + "username".length();
+		int userEnd = body.indexOf("\"", userStart);
+		int mode = body.indexOf(":", userEnd + 1) + 1;
+		System.out.println(body + " " + body.substring(mode, mode + 1));
+		String m = body.substring(mode, mode + 1).equals("t") ? "true" : "false";
+		UserSQL us = new UserSQL();
+
+
+		return us.toggleDarkMode(body.substring(userStart, userEnd), m);
+	}
 }

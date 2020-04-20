@@ -105,6 +105,7 @@ public class UserSQL {
 				u.friendsList = rs.getString("friendsList");
 				u.dateCreated = rs.getString("dateCreated");
 				u.lastLogin = rs.getString("lastLogin");
+				u.darkMode = rs.getInt("darkMode");
 
 			
 				//returnUser+=userId+"\t"+userName+"\t"+password+"\t"+fullName+"\t"+email+"\t"+phoneNum+"\t"+profilePhoto+"\t"+bio+"\t"+likedDrinks+"\t"+dislikedDrinks+"\t"+favoriteDrink+"\t"+publishedDrinks+"\t"+postHistory+"\t"+friendsList+"\t"+dateCreated+"\t"+lastLogin;
@@ -805,4 +806,33 @@ public class UserSQL {
 			
 
 	}
+
+	public String toggleDarkMode(String name, String mode){
+		try {
+			String query = "UPDATE " + this.database+".user set darkMode = "+ mode + " where userName = '" + name+"';";
+			System.out.println(query);
+			smt.executeUpdate(query);
+			
+			if (rs != null) {
+				rs.close();
+			}
+			smt.close();
+			conn.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+			} catch (SQLException se ){
+				se.printStackTrace();
+			}
+			return "'status': 'big oof'";
+		}
+		return "'status': 'ok'";
+	}
+
 }
