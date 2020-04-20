@@ -154,7 +154,7 @@ public class UserController {
 
 		return updatePassword;
 	}
-
+ 
 	//this was rod i can make it cleaner if needed i was just playing around
 	@PostMapping("/updateUsername/{oldusername}")
 	public String updateUsername(@PathVariable String oldusername ,@RequestBody String userName)
