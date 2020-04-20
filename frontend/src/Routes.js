@@ -9,7 +9,10 @@ import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
 import ResetPassword from "./pages/ResetPassword";
 import {config} from './config/config'
-import {toggleSwitch} from './pages/utils';
+import {ThemeProvider} from 'styled-components';
+import {GlobalStyles} from './config/global';
+import {lightTheme, darkTheme} from './config/theme';
+import './css/toggle.css'
 
 import {
     Menu,
@@ -42,11 +45,31 @@ export default class Routes extends React.Component {
             checked: false,
             profile: undefined,
         };
+
     }
 
-    changeTheme = e => {
-        this.setState({darkMode: !this.state.darkMode});
-    }
+    async changeTheme(){
+        let mode = !this.state.darkMode;
+        await this.setState({darkMode: mode});
+        if (this.state.user === undefined) {
+            return;
+        }
+        await fetch(config.url.API_URL + '/user/darkMode', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'userName': this.state.user,
+                'darkMode': this.state.darkMode
+            })
+        }).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+    };
 
     logOut(){
         this.setState({
@@ -98,6 +121,7 @@ export default class Routes extends React.Component {
             console.log('LOGGED ON')
             console.log(data)
             this.setState({response: data})
+            this.setState({darkMode: data.darkMode === 1})
         }).catch(console.log);
         this.setState({loggedIn: true, user: localStorage.getItem('username')});
     }
@@ -123,6 +147,7 @@ export default class Routes extends React.Component {
                           loggedIn: true,
                          user: localStorage.getItem("username") ,
                 })
+            
         }).catch(console.log);
 
     }
@@ -189,9 +214,26 @@ export default class Routes extends React.Component {
                 
             />
         }
+        let toggleSwitch =
+            <div className="toggle-switch">
+                <input
+                    type="checkbox"
+                    className="toggle-switch-checkbox"
+                    name="toggleSwitch"
+                    id="toggleSwitch"
+                    onClick={this.changeTheme}
+                    checked={this.state.darkMode}
+                    />
+                    <label className="toggle-switch-label" htmlFor="toggleSwitch">
+                    <span className="toggle-switch-inner" />
+                    <span className="toggle-switch-switch" />
+                </label>
+            </div>
 
         return (
             
+            <ThemeProvider theme={this.state.darkMode ? darkTheme : lightTheme}>
+            <GlobalStyles/>
             <div className="Routes">
                 {/* This is the navigation bar */}
                 <BrowserRouter>
@@ -280,9 +322,9 @@ export default class Routes extends React.Component {
 
                                         <Menu.Item content={<br/>}/>
                                         <Menu.Item content="About Us"/>
-                                        <Menu.Item content="Dark Mode" onClick={this.changeTheme}>
+                                        <Menu.Item content="Dark Mode">
                                             Dark mode
-                                            {toggleSwitch() }
+                                            {toggleSwitch}
                                         </Menu.Item>
                                     </Menu.Menu>
                                 </Menu.Item>
@@ -313,7 +355,7 @@ export default class Routes extends React.Component {
                     </div>
                 </BrowserRouter>
             </div>
-
+            </ThemeProvider>
         );
     } //end render
 

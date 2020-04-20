@@ -2,7 +2,6 @@ import {Card, Header, List, Rating, Segment, Image, Button, CardContent, Grid, G
 import React, {Component, useContext} from "react";
 import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
-import '../css/toggle.css'
 
 
 
@@ -46,24 +45,6 @@ export const userCard = (index, username, photo) => {
         </Card>
     )
 };
-export const toggleSwitch = () => {
-    
-    return (
-        <div className="toggle-switch">
-            <input
-            type="checkbox"
-            className="toggle-switch-checkbox"
-            name="toggleSwitch"
-            id="toggleSwitch"
-            />
-            <label className="toggle-switch-label" htmlFor="toggleSwitch">
-            <span className="toggle-switch-inner" />
-            <span className="toggle-switch-switch" />
-            </label>
-        </div>
-    )
-};
-
 
 export const dotdCard = (dotd) => {
     return(

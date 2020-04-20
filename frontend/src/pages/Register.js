@@ -62,6 +62,7 @@ export default class Register extends React.Component {
                 dateCreated: "",
                 lastLogin: "",
                 response: undefined,
+                darkMode: 0
             })
         }).then(res => res.json()).then((data) => {
             this.setState({response: data})
