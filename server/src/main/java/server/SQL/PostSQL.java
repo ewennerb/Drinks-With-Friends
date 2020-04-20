@@ -139,6 +139,9 @@ public class PostSQL {
 			String query2 = "delete from "+this.database+".post_notification where postId = \""+postId+"\"";
 			int result2 = smt.executeUpdate(query2);
 
+			String query3 = "delete from "+this.database+".drink_map where postId = \""+postId+"\"";
+			int result3 =smt.executeUpdate(query3);
+
 			smt.close();
 			conn.close();
 			return "{ \"status\" : \"ok\" }";
@@ -245,6 +248,38 @@ public class PostSQL {
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
 
+	}
+
+	public String insertGeotag(Post p, String addr, String locName) {
+		try{
+			//getUserId
+			String query1 = "select userId from "+ this.database+".user where userName = \""+p.geolocation+"\"";
+			System.out.println(query1);
+
+			rs = smt.executeQuery(query1);
+			int userId = 0;
+			while(rs.next()){
+				userId = rs.getInt("userId");
+			}
+			System.out.print("UserId: "+userId);
+
+			//insert into drink_map
+			String query2 = "insert into "+this.database+".drink_map (userId, locationName, address, postId) values (\""+userId+"\", \""+addr+"\", \""+locName+"\", \""+p.postId+"\")";
+			System.out.println(query2);
+
+			int result = smt.executeUpdate(query2);
+
+			if(result != 1)
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+
+			rs.close();
+			smt.close();
+			conn.close();
+			return "{ \"status\" : \"ok\" }";
+		}catch(Exception e){
+			e.printStackTrace();
+			return "{ \"status\" : \"Error: SQL update failed.\"}";
+		}
 	}
 	
 

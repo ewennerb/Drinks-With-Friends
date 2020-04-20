@@ -21,7 +21,7 @@ public class PostController {
 	//getAll PostS
 
 	//getPost
-
+	int g_postId = 0;
 
 	//create Post
 	@PostMapping("/")
@@ -36,9 +36,11 @@ public class PostController {
 
 		PostSQL posts = new PostSQL();
 		String postReturn = posts.insertPost(p.text, p.image, p.userName, p.geolocation, p.date);
-		int postId = posts.recentPostId;
+		g_postId = posts.recentPostId;
+		p.postId = g_postId;
+		
 		posts = new PostSQL();
-		String notifReturn = posts.notifyUser(postId, p.geolocation);
+		String notifReturn = posts.notifyUser(g_postId, p.geolocation);
 
 		if ( postReturn.equals("{ \"status\" : \"ok\" }") && notifReturn.equals("{ \"status\" : \"ok\" }")) {
 			return postReturn;
@@ -47,6 +49,23 @@ public class PostController {
 		}
 
 	}
+
+	@PostMapping("/{address}/{locationName}")
+	public String insertGeotag(@RequestBody String username, @PathVariable String address, @PathVariable String locationName)
+			throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Post.class, new PostDeserializer());
+		om.registerModule(sm);
+
+		Post p = om.readValue(username, Post.class);
+		p.postId = g_postId;
+
+		PostSQL posts = new PostSQL();
+		String insertGeotagString = posts.insertGeotag(p, address, locationName);
+		return insertGeotagString;
+	}
+
 	//Need to include postId and username of logged in user in request body
 	@PostMapping("/notificationClicked/{postId}/{username}")
 	public String notificationClicked(@PathVariable int postId, @PathVariable String username) //(@RequestParam(name = "s") String username, 
@@ -97,6 +116,8 @@ public class PostController {
 
 		return om.writeValueAsString(posts.getUserPosts(username));
 	}
+
+	
 
 	@PostMapping("/delete")
 	public String deletePost(@RequestBody String username)
