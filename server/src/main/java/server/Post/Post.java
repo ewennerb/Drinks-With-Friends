@@ -21,7 +21,7 @@ public class Post{
 		this.date = null;
 	}
 
-	public Post(int postId, String text, String image, int userId, String geolocation, String date, String username)
+	public Post(int postId, String text, String image, int userId, String username, String geolocation, String date)
 	{
 		this.postId = postId;
 		this.text = text;
