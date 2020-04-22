@@ -185,6 +185,39 @@ public class PostSQL {
 		}
 	}
 
+	public Post[] getPost(int postId) {
+		try{
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.postId = '" + postId +"' AND u.userId = p.userId";
+			
+			rs = smt.executeQuery(query);
+			ArrayList<Post> post = new ArrayList<>(); 
+			while(rs.next()) {
+				int id = rs.getInt("postId");
+				String text = rs.getString("text");
+				String image = rs.getString("image");
+				int userId = rs.getInt("userId");
+				String geolocation = rs.getString("geolocation");
+				String date = rs.getString("date");
+				Post p = new Post(id, text, image, userId, geolocation, date, rs.getString("userName"));
+	
+				//add stuff to get geolocation figure out formatting
+				p.name = rs.getString("name");
+				post.add(p);
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+			Post[] outPost = new Post[post.size()];
+			outPost = post.toArray(outPost);
+			return outPost;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error searching post to db");
+			return null;
+		}
+	}
+
 	public String notifyUser(int postId, String username) {
 		try {
 		
