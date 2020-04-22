@@ -1,3 +1,4 @@
+
 export const lightTheme = {
     body: '#f5f2f2',
     text: '#363537',
