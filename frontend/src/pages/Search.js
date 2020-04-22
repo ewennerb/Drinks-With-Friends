@@ -301,7 +301,6 @@ export default class Search extends React.Component{
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
                                 console.log(result.followedFlag)
-                                return (userCard(index, result.userName, result.photo))
 
                                 //console.log("result.userName: " + result.userName);
                                 //console.log("this.props.user.userName: " + this.state.user);
@@ -309,10 +308,10 @@ export default class Search extends React.Component{
                                     console.log("yourself!");
                                 }
                                 else if (result.followedFlag == 1) { //if user IS already followed by user, display unfollow card
-                                    return (userCardFollowed(index, result.userName, result.photo, this.props.userName))
+                                    return (userCardFollowed(index, result.userName, result.photo, this.state.user))
                                 }
                                 else { //else, display the normal card
-                                    return (userCard(index, result.userName, result.photo, this.props.userName))
+                                    return (userCard(index, result.userName, result.photo, this.state.user))
                                 }
 
                             } else if(this.state.searchVal === 'i'){
