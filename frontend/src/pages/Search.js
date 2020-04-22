@@ -300,6 +300,9 @@ export default class Search extends React.Component{
                                 )
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
+                                console.log(result.followedFlag)
+                                return (userCard(index, result.userName, result.photo))
+
                                 //console.log("result.userName: " + result.userName);
                                 //console.log("this.props.user.userName: " + this.state.user);
                                 if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
@@ -311,6 +314,7 @@ export default class Search extends React.Component{
                                 else { //else, display the normal card
                                     return (userCard(index, result.userName, result.photo, this.props.userName))
                                 }
+
                             } else if(this.state.searchVal === 'i'){
                                 //return (ingredientCard(index, result))
                                 return(
