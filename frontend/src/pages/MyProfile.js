@@ -49,7 +49,7 @@ class Profile extends Component{
       modalOpen: false, 
       activeItem: "posts",
       userName: localStorage.getItem("username"),
-      // browser: props.user,
+      browser: localStorage.getItem("username"),
       profile: props.match.params.profile,
       User: {},
       

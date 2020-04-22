@@ -23,7 +23,8 @@ class LikedDrinks extends Component{
     // userName: User.userName,
     // posts: User.posts,
     browser: props.user,
-    profile: props.match.params.profile,
+    //profile: props.match.params.profile,
+    profile: props.profile,
     userLocation: props.userLocation,
     User: User,
     likedDrinks: {},
@@ -37,7 +38,8 @@ class LikedDrinks extends Component{
     //   this.getLikedDrinks(this.state.profile);
     //   console.log(this.state.likedDrinks)
     //   }
-    this.getLikedDrinks(this.state.profile);
+    console.log("LIKED DRINKS DID MOUNT");
+    await this.getLikedDrinks(this.state.profile);
     // }
     // let userPage = this.state.profile;
     
@@ -45,14 +47,6 @@ class LikedDrinks extends Component{
     // let Drinks = this.state.Drinks;
     // //let likedDrinks = [];
 
-    // await this.getLikedDrinks(userPage);
-    // //console.log(this.state.likedDrinks);
-    // let likedDrinks = this.state.likedDrinks;
-    // for(let id in likedDrinks) {
-    //     console.log(id)
-    //     console.log(likedDrinks[id])
-    // }
-    
     //go through the drinks with id and find ones this profile liked
     
     
@@ -119,7 +113,7 @@ class LikedDrinks extends Component{
       }).then(res => res.json()).then((data) => { 
           console.log((data));
           //JSON.parse
-          // let likedDrinks = [];
+          // let likedDrinks = [];  
           this.setState({likedDrinks: data});
       }).catch(console.log);
   }

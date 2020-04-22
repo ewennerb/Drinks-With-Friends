@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import server.User.User;
 import server.Drink.Drink;
 import server.Post.Post;
+import server.Drink.Ingredient;
 
 public class UserSQL {
 
@@ -541,17 +542,51 @@ public class UserSQL {
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
 		
-		Drink drink;
+		Drink drink = new Drink();
 		try{
 			smt.close();
 			conn.close();
+			//rs.close();
 			DrinkSQL ds = new DrinkSQL();
 			conn = ds.getConn();
 			smt = ds.getSmt();
 			rs = smt.executeQuery(query);
 			while (rs.next()){
 				int drinkId = rs.getInt("drink_id");
-				drink = ds.getDrink(drinkId); 
+				//drink = ds.getDrink(drinkId); 
+				//getdrinkbyid
+				String query_drinkid = "SELECT * from "+ this.database+".drink where drinkId = "+ drinkId ;
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_drinkid);
+				//getdrinkbyid
+				while(rs2.next()){
+					String drinkName=rs2.getString("name");
+					String stockPhoto=rs2.getString("stockPhoto");
+					String description=rs2.getString("description");
+					String owner=rs2.getString("publisher");
+					int likes=rs2.getInt("likes");
+					int dislikes=rs2.getInt("dislikes");
+
+					String query_ingreds = "SELECT quantity, measurement, ingredient " +
+						"FROM "+ this.database+".drink_ingredient " +
+						"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+					//System.out.println(query_ingreds);
+					Statement smt3 = conn.createStatement();
+					ResultSet rs3 = smt3.executeQuery(query_ingreds);
+					ArrayList<Ingredient> ii = new ArrayList<>();
+					Ingredient[] ingreds;
+					while (rs3.next()){
+						ii.add(new Ingredient(rs3.getString("quantity"),rs3.getString("measurement"),rs3.getString("ingredient")));
+					}
+					rs3.close();
+					smt3.close();
+					if (!(rs3.isClosed() && smt3.isClosed())){
+						System.out.println("ingredient find is not closed");
+					}
+					ingreds = new Ingredient[ii.size()];
+					ingreds = ii.toArray(ingreds);
+					drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
+				}
 				drinks.add(drink);
 			}
 			rs.close();
@@ -559,6 +594,8 @@ public class UserSQL {
 			conn.close();
 			return drinks;
 		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
 			System.out.print("oof");
 		}
 		return null;
@@ -569,7 +606,7 @@ public class UserSQL {
 		System.out.println(query);
 		ArrayList<Drink> drinks = new ArrayList<>();
 		
-		Drink drink;
+		Drink drink = new Drink();
 		try{
 			smt.close();
 			conn.close();
@@ -579,7 +616,41 @@ public class UserSQL {
 			rs = smt.executeQuery(query);
 			while (rs.next()){
 				int drinkId = rs.getInt("drink_id");
-				drink = ds.getDrink(drinkId); 
+				// drink = ds.getDrink(drinkId); 
+				//getdrinkbyid
+				String query_drinkid = "SELECT * from "+ this.database+".drink where drinkId = "+ drinkId ;
+				Statement smt2 = conn.createStatement();
+				ResultSet rs2 = smt2.executeQuery(query_drinkid);
+				//getdrinkbyid
+				while(rs2.next()){
+					String drinkName=rs2.getString("name");
+					String stockPhoto=rs2.getString("stockPhoto");
+					String description=rs2.getString("description");
+					String owner=rs2.getString("publisher");
+					int likes=rs2.getInt("likes");
+					int dislikes=rs2.getInt("dislikes");
+
+					String query_ingreds = "SELECT quantity, measurement, ingredient " +
+						"FROM "+ this.database+".drink_ingredient " +
+						"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+					//System.out.println(query_ingreds);
+					Statement smt3 = conn.createStatement();
+					ResultSet rs3 = smt3.executeQuery(query_ingreds);
+					ArrayList<Ingredient> ii = new ArrayList<>();
+					Ingredient[] ingreds;
+					while (rs3.next()){
+						ii.add(new Ingredient(rs3.getString("quantity"),rs3.getString("measurement"),rs3.getString("ingredient")));
+					}
+					rs3.close();
+					smt3.close();
+					if (!(rs3.isClosed() && smt3.isClosed())){
+						System.out.println("ingredient find is not closed");
+					}
+					ingreds = new Ingredient[ii.size()];
+					ingreds = ii.toArray(ingreds);
+					drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
+				}
+			
 				drinks.add(drink);
 			}
 			rs.close();

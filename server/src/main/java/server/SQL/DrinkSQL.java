@@ -452,7 +452,7 @@ public class DrinkSQL {
 			LinkedHashMap<Drink, Integer> sortedList = new LinkedHashMap<>();
 			p.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEachOrdered(x -> sortedList.put(x.getKey(), x.getValue()));
 			System.out.println("SORTED MAP: "+sortedList);
-
+ 
 			ArrayList<Drink> finalSorted = new ArrayList<Drink>();
 			Set<Drink> keys = sortedList.keySet();
 			for(Drink k:keys){
@@ -750,7 +750,7 @@ public class DrinkSQL {
 	public Drink getDrink(int drinkId){
 		try {
 			Drink drink = new Drink();
-			String query = "select * from "+ this.database+".drink where drinkId = "+ drinkId ;
+			String query = "SELECT * from "+ this.database+".drink where drinkId = "+ drinkId ;
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 			// Drink drink = new Drink();
@@ -774,13 +774,27 @@ public class DrinkSQL {
 				while (rs2.next()){
 					ii.add(new Ingredient(rs2.getString("quantity"),rs2.getString("measurement"),rs2.getString("ingredient")));
 				}
-
+				rs2.close();
+				smt2.close();
+				if (!(rs2.isClosed() && smt2.isClosed())){
+					System.out.println("ingredient find is not closed");
+				}
 				ingreds = new Ingredient[ii.size()];
 				ingreds = ii.toArray(ingreds);
 				drink = new Drink(drinkId, drinkName, description,  ingreds, stockPhoto, likes, dislikes, owner);
-				rs2.close();
-				smt2.close();
-				//System.out.println(drink);
+
+				System.out.println(drink);
+			}
+			
+			rs.close();
+			smt.close();
+			conn.close();
+				
+			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+				System.out.println("getdrinkbyid is not closed");
+				System.out.println("	rs: " + rs.isClosed());
+				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	conn: " + conn.isClosed());
 			}
 			return drink;
 		}catch(Exception e){
