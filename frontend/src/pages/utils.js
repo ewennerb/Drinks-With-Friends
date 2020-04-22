@@ -5,7 +5,7 @@ import {config} from '../config/config'
 
 
 
-export const userCard = (index, username, photo) => {
+export const userCard = (index, username, photo, loggedInUsername) => {
     let pfp;
     if (photo === null || photo === ""){
         pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
@@ -13,6 +13,7 @@ export const userCard = (index, username, photo) => {
         pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
         }
     //Todo: Add photo functionality
+    console.log("Index: " + index.toString());
 
     return(
         
@@ -36,8 +37,29 @@ export const userCard = (index, username, photo) => {
                             </p>
                             </Link>
                         </Button>
-                        <Button basic color='blue'>
-                            Follow
+                        <Button basic color='blue' onClick={() =>
+                            fetch(config.url.API_URL + '/follow/' + username, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                text: "",
+                                image: "",
+                                userName: loggedInUsername,
+                                userId: 0,
+                                geolocation: "",
+                                date: "",
+                                postId: 0
+                        })
+                        }).then(res => res.json()).then((data) => {
+                                console.log(data);
+                                window.location.replace('/');
+
+                        }).catch(console.log)
+                    }>
+                        Follow
                         </Button>
                     </div>
                 </Card.Content>
@@ -45,6 +67,80 @@ export const userCard = (index, username, photo) => {
         </Card>
     )
 };
+
+
+
+export const userCardFollowed = (index, username, photo, loggedInUsername) => {
+    let pfp;
+    if (photo === null || photo === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
+        }else{
+        pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
+        }
+    //Todo: Add photo functionality
+    return(
+        <Card centered data-testid={"user-card-" + index.toString()}>
+            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+                     {pfp}
+                    </CardContent>
+                <Card.Content>
+                   
+                <Card.Header data-testid={"user-name-" + index.toString()}>@{username}</Card.Header>
+                   
+                </Card.Content>
+                <Card.Content extra>
+                    <div className='ui two buttons'>
+                        <Button basic color='grey'>
+                           
+                            <Link style={{textDecoration: "none", color: "grey"}} to={(`${username}`)}>
+                                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
+                                    View Profile
+                            </p>
+                            </Link>
+                        </Button>
+                        <Button basic color='red' onClick={() =>
+                            fetch(config.url.API_URL + '/unfollow/' + username, { //NEED TO SEND THE RIGHT CALL
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                text: "",
+                                image: "",
+                                userName: loggedInUsername,
+                                userId: 0,
+                                geolocation: "",
+                                date: "",
+                                postId: 0
+                        })
+                        }).then(res => res.json()).then((data) => {
+                                console.log(data);
+                                window.location.replace('/');
+
+                        }).catch(console.log)
+                    }>
+                        Unfollow
+                        </Button>
+                    </div>
+                </Card.Content>
+            </Segment>
+        </Card>
+    )
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const dotdCard = (dotd) => {
     return(
@@ -199,19 +295,19 @@ export const postCardDelete = (post) => {
                     <GridRow  style={{paddingTop: "0px"}}>
                         <Button color='red' onClick={() =>
                             fetch(config.url.API_URL + '/post/delete', {
-        method: 'POST',
-        headers: {
+                                method: 'POST',
+                                headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
-                        },
-        body: JSON.stringify({
-        text: "",
-        image: "",
-        userName: post.userName,
-        userId: 0,
-        geolocation: "",
-        date: "",
-        postId: post.postId
+                                },
+                                body: JSON.stringify({
+                                text: "",
+                                image: "",
+                                userName: post.userName,
+                                userId: 0,
+                                geolocation: "",
+                                date: "",
+                                postId: post.postId
                         })
                         }).then(res => res.json()).then((data) => {
                                 console.log(data);
