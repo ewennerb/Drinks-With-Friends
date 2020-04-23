@@ -47,16 +47,30 @@ public class DrinkDeserializer extends StdDeserializer<Drink> {
             System.out.print(in.toString());
             tt[k++] = in;
         }
-        Drink d = new Drink(-1,
+        Drink d = new Drink(
+            variableId(node),
             node.get("name").asText(),
             node.get("description").asText(),
             tt,
-            node.get("photo").asText(),
+            variablePhoto(node),
             0, 0,
             node.get("publisher").asText());
         return d;
     }
 
+
+    public String variablePhoto(JsonNode n) {
+		if (n.get("photo") == null)
+			return "";
+		else
+			return n.get("photo").asText();
+    }
+    public int variableId(JsonNode n) {
+		if (n.get("id") == null)
+			return -1;
+		else
+			return n.get("id").asInt();
+	}
     
 
 
