@@ -224,18 +224,21 @@ class Profile extends Component{
             <Menu.Item
               name="map"
               as={Link}
-              to={{pathname: `/${this.state.user}/map`}}
+              to={{pathname: `/${this.state.userName}/map`}}
               active={activeItem === "map"}
               onClick={this.handleItemClick}
           
             />
+            {() => console.log(this.state.profile)}
             <Menu.Item
               name="friends"
               as={Link}
-              to={{pathname: `/${this.state.user}/friends`}}
+              to={{pathname: `/${this.state.userName}/friends`,
+                  state:{user: this.state.profile}}}
               active={activeItem === "friends"}
               onClick={this.handleItemClick}
             />
+            
             </Menu>
 
             </Grid.Column>
