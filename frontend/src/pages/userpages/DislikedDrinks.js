@@ -11,57 +11,59 @@ import {
 } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 
-import {ingredientCard} from "../utils";
-import DrinkCard from "../rDrinkCard.js";
+import {ingredientCard, postCard} from "../utils";
+import DrinkCard from "../DrinkCard.js";
+
 import 'semantic-ui-css/semantic.min.css';
+
 
 class DislikedDrinks extends Component{
   constructor(props){
   super(props)
+  let User = props.User;
     this.state = {
-      user: this.props.user,
-    }
-    let User = props.User;
-
-    this.state = {
-    userName: User.userName,
-    posts: User.posts,
+    // userName: User.userName,
+    // posts: User.posts,
     browser: props.user,
     profile: props.match.params.profile,
     User: User,
-    Drinks: props.Drinks,
+    userLocation: props.userLocation,
+    // Drinks: props.Drinks,
     };
   }
 
   async componentDidMount(){
     
-    let userPage = this.state.profile;
+    // let userPage = this.state.profile;
+    this.getDislikedDrinks(this.state.profile);
+    // if (userPage != undefined && this.state.Drinks != undefined){
+    // let Drinks = this.state.Drinks;
+    // let likedDrinks = [];
+    // //go through the drinks with id and find ones this profile liked
+    // // Drinks.map(async (drink) => {
+    // //   await this.getLikeStatus(this.state.profile, drink.id);
+    // //   //like status should be in state
+    // //   console.log(this.state.likeStatus);
+    // //   if (this.state.likeStatus == true) {
+    // //       //console.log(drink);
+    // //       likedDrinks.push(drink);
+    // //   }
     
-    if (userPage != undefined && this.state.Drinks != undefined){
-    let Drinks = this.state.Drinks;
-    let likedDrinks = [];
-    //go through the drinks with id and find ones this profile liked
-    // Drinks.map(async (drink) => {
-    //   await this.getLikeStatus(this.state.profile, drink.id);
-    //   //like status should be in state
-    //   console.log(this.state.likeStatus);
-    //   if (this.state.likeStatus == true) {
-    //       //console.log(drink);
-    //       likedDrinks.push(drink);
-    //   }
-    
-    // }) // end of map
-    //  //end of map
-    // //putting that profiles drinks in state
-    // if (likedDrinks != undefined) {
-    //   this.setState({likedDrinks: likedDrinks});
-    // }
-    }//end if userpage !+ undef
+    // // }) // end of map
+    // //  //end of map
+    // // //putting that profiles drinks in state
+    // // if (likedDrinks != undefined) {
+    // //   this.setState({likedDrinks: likedDrinks});
+    // // }
+    // }//end if userpage !+ undef
   }
   
 
   render(){
-
+    let dislikedDrinks;
+    if(this.state.dislikedDrinks != undefined) {
+      dislikedDrinks = this.state.dislikedDrinks;
+    }
     return (
       <Container>
       <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
@@ -72,14 +74,16 @@ class DislikedDrinks extends Component{
                <Header>{this.state.profile}'s Disliked Drinks</Header>
             </Segment>
             <br/>
-            {(this.state.drinks === undefined || this.state.drinks.length < 1)
+            {(dislikedDrinks === undefined || dislikedDrinks.length < 1)
               ? <Header>No Disliked Drinks Found</Header>
-              : this.state.drinks.map((drink, index) => {
+              : dislikedDrinks.map((drink, index) => {
                   return(
                     <DrinkCard
-                    user={this.state.userName}
+                    user={this.state.profile}
                     index={index}
                     drink={drink}
+                    key={index}
+                    userLocation={this.state.userLocation}
                     />
                     // rodsDrinkCard ({
                     //   user: this.state.userName,
@@ -99,18 +103,21 @@ class DislikedDrinks extends Component{
     );
   }
 
-  async getLikeStatus(user, drinkId) {
-    await fetch(config.url.API_URL + '/user/getLikeStatus/'+user+"/"+drinkId, {
+  async getDislikedDrinks(user) {
+    await fetch(config.url.API_URL+'/user/getDislikedDrinks/'+user, {
       method: 'GET',
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { 
-          //console.log(data);
-          this.setState({likeStatus: data});
+         // console.log((data));
+          //JSON.parse
+          // let likedDrinks = [];
+          this.setState({dislikedDrinks: data});
       }).catch(console.log);
-  }
+  }// end of get liked Drinks
+
 
   isValidInput(input) {
     return !(input == undefined || input === '' || input == null);

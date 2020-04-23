@@ -469,6 +469,12 @@ public class UserController {
 		//System.out.println(mp.toString());
 		
 	}
+	@GetMapping("/getPublishedDrinks/{username}")
+	public ArrayList<Drink> getPublishedDrinks(@PathVariable String username)
+		throws JsonParseException, JsonMappingException, IOException {
+		DrinkSQL drinks = new DrinkSQL();
+		return drinks.getPublishedDrinks(username);
+	}
 	
 	
     @DeleteMapping("/delete")
