@@ -95,6 +95,16 @@ export class PostCard extends React.Component{
                 {/*This figures out if the user is logged in or not and renders a delete/edit button for you if that's the case. Otherwise it does nothing*/}
                 {this.state.user === post.userName
                     ? <GridRow style={{paddingTop: "0px"}}>
+                        <Button color='grey' onClick={(ev) => {
+                            //button
+                            let input = document.getElementById("postInput");
+                            console.log(ev)
+                            input.focus();
+
+                        }}
+                        >
+                            Edit
+                        </Button>
 
                         <Button color='red' onClick={() =>
                             fetch(config.url.API_URL + '/post/delete', {
