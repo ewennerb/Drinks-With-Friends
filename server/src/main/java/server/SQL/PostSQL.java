@@ -156,9 +156,11 @@ public class PostSQL {
 
 	public Post[] searchPost(String search) {
 		try{
-			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%" + search +"%' AND u.userId = p.userId";
-			
-			rs = smt.executeQuery(query);
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%?%' AND u.userId = p.userId";
+			psmt = conn.PreparedStatement(query);
+			psmt.setString(1, search);
+
+			//rs = smt.executeQuery(query);
 			ArrayList<Post> post = new ArrayList<>(); 
 			while(rs.next()) {
 				int id = rs.getInt("postId");
