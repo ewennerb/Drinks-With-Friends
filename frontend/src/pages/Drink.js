@@ -13,12 +13,16 @@ import {
     GridColumn, 
     GridRow,
     Form,
-    Loader
+    Loader,
+    Modal,
+    FormGroup,
+    Message
 } from "semantic-ui-react";
 import {Link, Router} from 'react-router-dom';
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import "../css/Drink.css"
 import {config} from '../config/config'
+var base64 = require('base-64');
 
 
 
@@ -27,17 +31,42 @@ class Drink extends Component{
   constructor(props){
     super(props)
     this.getDrink = this.getDrink.bind(this)
-    console.log(this.props.match.params)
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+    this.changeIngredient = this.changeIngredient.bind(this);
+    this.createIngredient = this.createIngredient.bind(this);
+    this.changeIngredientQuantity = this.changeIngredientQuantity.bind(this);
+    this.changeIngredientMeasurement = this.changeIngredientMeasurement.bind(this);
+    this.removeIngredient = this.removeIngredient.bind(this);
+    this.canPost = this.canPost.bind(this);
+    this.editDrink = this.editDrink.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
+    this.fileChange = this.fileChange.bind(this);
+    this.fileReader = new FileReader();
+    //console.log(this.props.match.params)
     this.state = {
         user: this.props.user,
-        searchText: "",
         drink: undefined,
         response: undefined,
         loaded: false,
         loggedIn: false,
         done: false,
+        editing: false,
+        drinkName: "HELP",
+        description: "",
+        selected: false,
+        ingredients: [
+            {
+                ingredient: "",
+                quantity: "",
+                measurement: ""
+            }
+        ],
+        postDisabled: false,
+        fileString: ""
         
     }
+    this.fileInputRef = React.createRef();
 
   }
   async componentDidMount() {
@@ -50,6 +79,130 @@ class Drink extends Component{
         searchable: false
     })
 }
+async handleNameChange(e){
+        console.log(e)
+        await this.setState({
+            drinkName: e.target.value
+        });
+        console.log(this.state.drinkName)
+        this.canPost();
+    }
+
+async handleDescriptionChange(event){
+    this.setState({description: event.target.value})
+}
+
+
+async createIngredient(){
+    await this.state.ingredients.push({quantity: "", measurement: "", ingredient: ""});
+    this.forceUpdate();
+    this.canPost();
+}
+
+
+async changeIngredientQuantity(event, index){
+    let fakeIngredients = this.state.ingredients;
+    fakeIngredients[index].quantity = event.target.value;
+    await this.setState({ingredients: fakeIngredients});
+}
+
+async changeIngredientMeasurement(event, index){
+    let fakeIngredients = this.state.ingredients;
+    fakeIngredients[index].measurement = event.target.value;
+    await this.setState({ingredients: fakeIngredients});
+}
+
+async changeIngredient(event, index){
+    let fakeIngredients = this.state.ingredients;
+    fakeIngredients[index].ingredient = event.target.value;
+    await this.setState({ingredients: fakeIngredients});
+    this.canPost();
+}
+
+async removeIngredient(event){
+    console.log(parseInt(event.target.className));
+    console.log(event.target.className);
+    this.state.ingredients.splice(parseInt(event.target.className), 1);
+    this.canPost();
+    this.forceUpdate();
+}
+canPost(){
+    let blankIngr = {ingredient: "", quantity: "", measurement: ""};
+    let disabled;
+    disabled = !(this.state.ingredients.every(val => val.ingredient !== "") &&
+        this.state.ingredients.length >= 1 &&
+        this.state.drinkName !== "" &&
+        this.state.drinkName !== " ");
+    
+    this.setState({
+        postDisabled: disabled
+    })
+}
+async editDrink(){
+    let photoString = "";
+    if(this.state.selected){
+        photoString = await base64.encode(this.state.fileString);
+    }
+    let tester = {
+        id: this.state.drink.id,
+        publisher: this.state.drink.publisher,
+        name: this.state.drinkName,
+        description: this.state.description,
+        ingredients: this.state.ingredients,
+        photo: photoString
+    }
+    console.log(tester)
+    await fetch(config.url.API_URL + '/drink/editDrink', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tester)
+    }).then(res => res.json()).then((data) => {
+        console.log(data);
+        this.setState({editing: false})
+        if (data.status === "ok"){
+            this.state.drink.name = this.state.drinkName
+            console.log(this.state.drink.name)
+        }
+    }).catch(console.log);
+}
+
+async handleEdit(){
+    this.setState({editing: true})
+
+
+}
+handleFileRead = (e) => {
+    this.setState({fileString: this.fileReader.result});
+};
+async fileChange(event) {
+    if(event.target.files === undefined){
+        this.setState({
+            file: undefined,
+            selected: false,
+            fileName: ""
+        })
+    }else{
+        const file = event.target.files[0];
+        const fileName = event.target.files[0].name;
+        this.fileReader = new FileReader();
+
+        this.fileReader.onload = this.handleFileRead;
+
+        await this.fileReader.readAsBinaryString(file);
+    
+
+        await this.setState({
+            file: file,
+            selected: true,
+            fileName: fileName,
+        });
+    }
+};
+
+
 async getDrink(){
     await fetch(config.url.API_URL + '/drink/'+this.props.match.params.username+'?d='+this.props.match.params.name, {
         method: 'GET',
@@ -64,7 +217,8 @@ async getDrink(){
         // })
     }).then(res => res.json()).then(async (data) => {
         console.log(data)
-        await this.setState({drink: data})
+        await this.setState({drink: data, drinkName: data.name, description: data.description, ingredients: data.ingredients})
+        
     }).catch(console.log);
     await this.setState({done: true})
 }
@@ -89,6 +243,91 @@ async getDrink(){
         }
         return(
             <div>
+                <Modal open={this.state.editing} closeOnDimmerClick={true} size="large">
+                <Form size='large'>
+                        <Segment stacked>
+                            <Form>
+                                <Button
+                                    content="Choose File"
+                                    labelPosition="left"
+                                    icon="file"
+                                    onClick={() => this.fileInputRef.current.click()}
+                                />
+                                <input
+                                    ref={this.fileInputRef}
+                                    accept="image/gif, image/jpeg, image/png"
+                                    type="file"
+                                    hidden
+                                    onChange={this.fileChange}
+                                />
+                                <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
+                                <Form.Input
+                                    content={this.state.drinkName}
+                                    onChange={this.handleNameChange}
+                                    required={true}
+                                    value={this.state.drinkName}
+                                    id="drinkName"
+                                />
+                                <Form.Input
+                                    placeholder='Description'
+                                    content={this.state.description}
+                                    value={this.state.description}
+                                    onChange={this.handleDescriptionChange}
+                                />
+                                <Button icon="plus" content={"Add Ingredients"} onClick={this.createIngredient}/>
+                                <br/>
+                                <br/>
+                                {this.state.ingredients.map((ing, index) => {
+                                    return (
+                                        <FormGroup inline>
+                                            <Form.Input
+                                                className={index.toString()}
+                                                label={"Amount"}
+                                                labelPosition="top"
+                                                width={3}
+                                                placeholder="1"
+                                                content={this.state.ingredients[index].quantity}
+                                                onChange={(e) => this.changeIngredientQuantity(e, index)}
+                                                value={this.state.ingredients[index].quantity}
+                                            />
+                                            <Form.Input
+                                                className={index.toString()}
+                                                label={"Amount"}
+                                                labelPosition="top"
+                                                width={3}
+                                                placeholder="ex. oz"
+                                                content={this.state.ingredients[index].measurement}
+                                                onChange={(e) => this.changeIngredientMeasurement(e, index)}
+                                                value={this.state.ingredients[index].measurement}
+                                            />
+                                            <Form.Input
+                                                className={index.toString()}
+                                                label={"Ingredient"}
+                                                labelPosition="top"
+                                                width={6}
+                                                placeholder="Ex. Smirnoff Vodka"
+                                                content={this.state.ingredients[index].ingredient}
+                                                onChange={(e) => this.changeIngredient(e, index)}
+                                                value={this.state.ingredients[index].ingredient}
+                                            />
+                                            <Button className={index.toString()} icon="minus" onClick={(e) => this.removeIngredient(e, index)}/>
+                                        </FormGroup>
+                                    )
+                                })}
+                                <br/>
+                                <div className='ui two buttons'>
+                                    <Button color='grey' onClick={this.handleClose}>
+                                        Cancel
+                                    </Button>
+                                    <Button color='yellow' disabled={this.state.postDisabled} onClick={() => this.editDrink()}>
+                                        Post!
+                                    </Button>
+                                </div>
+                            </Form>
+
+                        </Segment>
+                    </Form>
+                </Modal>
                 <Card style={{width: "500px"}} centered>
                     <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
                         {/*<Image*/}
@@ -127,6 +366,9 @@ async getDrink(){
                         <Card.Content extra>
                             <Rating icon='star' defaultRating={5} maxRating={5}/>
                         </Card.Content>
+                        <Button onClick={this.handleEdit}>
+
+                        </Button>
                     </Segment>
                 </Card>
             </div>  
