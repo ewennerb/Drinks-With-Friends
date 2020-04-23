@@ -110,7 +110,18 @@ public class DrinkController {
 		DrinkSQL posts = new DrinkSQL();
 		return posts.removeNotification(drinkId, username);
 
-	}
+    }
+    
+    @PostMapping("/editDrink")
+    public String editDrink(@RequestBody String newDrink) throws JsonParseException, JsonMappingException, IOException {
+        ObjectMapper om = new ObjectMapper();
+        SimpleModule sm = new SimpleModule("DrinkDeserializer", new Version(1,0,0, null,null,null));
+        sm.addDeserializer(Drink.class, new DrinkDeserializer());
+        om.registerModule(sm);
+        Drink d = om.readValue(newDrink, Drink.class);
+        DrinkSQL ds = new DrinkSQL();
+        return ds.editDrink(d);
+    }
 
     @DeleteMapping("/{name}")
     public String deleteDrink() {
@@ -274,6 +285,8 @@ public class DrinkController {
         return out;
     }
 
+    
+
     @GetMapping("/getUserRecommended/{username}")
     public String getUserRecommended(@PathVariable String username)  throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
@@ -370,6 +383,9 @@ public class DrinkController {
             System.out.println("Tags updated/ drink recommendation updated");
         }
     }
+
+    
+
 	//TODO merge like drink with user liking drink
 /*	@PostMapping("/like")
 	public String likeDrink(@RequestBody String drinkName)
