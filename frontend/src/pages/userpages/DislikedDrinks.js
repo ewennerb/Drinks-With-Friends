@@ -28,7 +28,7 @@ class DislikedDrinks extends Component{
     profile: props.match.params.profile,
     User: User,
     userLocation: props.userLocation,
-    // Drinks: props.Drinks,
+    dislikedDrinks: [],
     };
   }
 

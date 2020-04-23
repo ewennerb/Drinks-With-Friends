@@ -29,7 +29,7 @@ class LikedDrinks extends Component{
     profile: props.profile,
     userLocation: props.userLocation,
     User: User,
-    likedDrinks: {},
+    likedDrinks: [],
     // Drinks: props.Drinks,
     };
   }

@@ -251,8 +251,9 @@ class Profile extends Component{
               <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
                   userLocation={this.state.userLocation} match={match}  />}/>
               
-              <Route exact path="/:profile/map" component={Map} userLocation={this.state.userLocation}/>
-              <Route exact path="/:profile/friends" component={Friends}/>
+              <Route exact path="/:profile/map" component={({match}) => <Map User={this.state.User} profile={this.state.profile} 
+                  userLocation={this.state.userLocation} match={match}/>}/>
+               <Route exact path="/:profile/friends" component={Friends}/>
             </Switch>
           </Segment>
           </Grid.Row>
