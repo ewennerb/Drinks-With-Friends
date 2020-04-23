@@ -918,7 +918,7 @@ public class DrinkSQL {
 
 //end of rod stuff
 
-	public Statement getSmt(){
+	public PreparedStatement getSmt(){
 		return this.psmt;
 	}
 	
