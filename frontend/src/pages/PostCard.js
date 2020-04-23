@@ -23,7 +23,17 @@ export class PostCard extends React.Component{
 
     render(){
         let pfp;
+
+
         let post = this.state.post;
+
+
+        console.log("POSTCARD DEBUG");
+        console.log(post.userName);
+        console.log(post.profileImage);
+        console.log(this.props.user);
+
+
         if (post.profileImage === null || post.profileImage === "" || post.profileImage === undefined){
             pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
         }else{
