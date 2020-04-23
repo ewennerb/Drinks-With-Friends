@@ -986,6 +986,7 @@ public class UserSQL {
 							out+= "{ \"drinkName\" : \""+drinks.get(y).name +"\", \"publisher\" : \"";
 							out+= drinks.get(y).publisher+"\", \"drinkFlag\" : 1";
 							out+= "}";
+							break;
 						}				
 					}
 				}else {
@@ -995,6 +996,7 @@ public class UserSQL {
 							out+= "{ \"postId\" : \""+posts.get(z).postId +"\", \"publisher\" : \"";
 							out+= posts.get(z).text+"\", \"drinkFlag\" : 0";
 							out+= "}";
+							break;
 						}
 					}
 				}
