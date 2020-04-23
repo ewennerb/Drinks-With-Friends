@@ -53,7 +53,7 @@ export const GlobalStyles = createGlobalStyle`
         color: black !important;
     }
 
-    .confirmation > *, .confirmation > * > .ui, .confirmation > * > .ui > .ui > label,.ui.inverted.placeholder>:before {
+    .confirmation > *, .confirmation > * > .ui > .ui > label,.ui.inverted.placeholder>:before, #confirmPage, #confirmPage > form,#confirmPage > .header  {
         background: black !important;
         color: white !important;
     }
