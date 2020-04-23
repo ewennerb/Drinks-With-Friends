@@ -13,3 +13,6 @@ mvn spring-boot:run	//run server
 
 STOP SERVER
 taskkill /PID %PID% /F
+
+find pid on windows
+netstat -ano | findstr %portNum%
