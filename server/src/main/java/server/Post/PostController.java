@@ -39,7 +39,7 @@ public class PostController {
 		p.postId = g_postId;
 		
 		posts = new PostSQL();
-		String notifReturn = posts.notifyUser(g_postId, p.geolocation);
+		String notifReturn = posts.notifyUser(g_postId, p.userName);
 
 		if ( postReturn.equals("{ \"status\" : \"ok\" }") && notifReturn.equals("{ \"status\" : \"ok\" }")) {
 			return postReturn;

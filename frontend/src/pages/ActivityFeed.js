@@ -184,14 +184,14 @@ export default class ActivityFeed extends React.Component {
             this.fileReader.onload = this.handleFileRead;
 
             await this.fileReader.readAsBinaryString(file);
+        
 
-
-        await this.setState({
-            file: file,
-            selected: true,
-            fileName: fileName,
-        });
-
+            await this.setState({
+                file: file,
+                selected: true,
+                fileName: fileName,
+            });
+        }
     };
 
     canPost(){

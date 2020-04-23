@@ -43,13 +43,23 @@ public class PostSQL {
 			String query = "insert into "+ this.database+".post "+
 				"(text, image, userId, geolocation, date) "+
 				"values "+
-				"(\""+text+"\", \""+image+"\", (select userId from "+ this.database+".user where userName = \""+username+"\"), \""+geolocation+"\", \""+date+"\")";
+				"(?, ?, (select userId from "+ this.database+".user where userName = ?), ?, ?)";
 			System.out.println(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, text);
+			psmt.setString(2, image);
+			psmt.setString(3, username);
+			psmt.setString(4, geolocation);
+			psmt.setString(5, date);
 
-			int insertResult = smt.executeUpdate(query);
+			int insertResult = psmt.executeUpdate();
 
-			String query3 = "select postId from "+this.database+".post where text = \""+text+"\" and userId = (select userId from "+ this.database+".user where userName = \""+geolocation+"\")";
-			rs = smt.executeQuery(query3);
+			String query3 = "select postId from "+this.database+".post where text = ? and userId = (select userId from "+ this.database+".user where userName = ?)";
+			psmt = conn.prepareStatement(query3);
+			psmt.setString(1, text);
+			psmt.setString(2, username);
+
+			rs = psmt.executeQuery();
 
 			int retPostId = 0;
 			while(rs.next())
@@ -59,6 +69,7 @@ public class PostSQL {
 			recentPostId = retPostId;
 
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 
@@ -156,11 +167,12 @@ public class PostSQL {
 
 	public Post[] searchPost(String search) {
 		try{
-			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE '%?%' AND u.userId = p.userId";
-			psmt = conn.PreparedStatement(query);
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.text LIKE \"%\"?\"%\" AND u.userId = p.userId";
+			psmt = conn.prepareStatement(query);
 			psmt.setString(1, search);
 
 			//rs = smt.executeQuery(query);
+			rs = psmt.executeQuery();
 			ArrayList<Post> post = new ArrayList<>(); 
 			while(rs.next()) {
 				int id = rs.getInt("postId");
