@@ -85,7 +85,10 @@ public class PostSQL {
 
 	public Post[] getAllPosts(){
 		try{
-			rs = smt.executeQuery("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from "+ this.database+".post p, "+ this.database+".user u WHERE u.userId = p.userId");
+			//rs = smt.executeQuery("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from "+ this.database+".post p, "+ this.database+".user u WHERE u.userId = p.userId");
+			psmt = conn.prepareStatement("select p.postId, p.text, p.image, p.userId, u.userName as username, p.geolocation, p.date from "+ this.database+".post p, "+ this.database+".user u WHERE u.userId = p.userId");
+			rs = psmt.executeQuery();
+
 			ArrayList<Post> post = new ArrayList<>();
 
 			while(rs.next())
@@ -100,6 +103,7 @@ public class PostSQL {
 				post.add(p);
 			}
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
@@ -115,7 +119,11 @@ public class PostSQL {
 
 	public ArrayList<Post> getUserPosts(String username){
 		try{
-			rs = smt.executeQuery("select * from "+ this.database+".post p, "+ this.database+".user u where u.userName = \""+username+"\" AND u.userId = p.userId" );
+			System.out.print("select * from "+ this.database+".post p, "+ this.database+".user u where u.userName = \""+username+"\" AND u.userId = p.userId" );
+			psmt = conn.prepareStatement("select * from "+ this.database+".post p, "+ this.database+".user u where u.userName = ? AND u.userId = p.userId" );
+			psmt.setString(1, username);
+			rs = psmt.executeQuery();
+
 			ArrayList<Post> post = new ArrayList<Post>();
 
 			while(rs.next())
@@ -132,6 +140,7 @@ public class PostSQL {
 				post.add(p);
 			}
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 			return post;
@@ -143,17 +152,22 @@ public class PostSQL {
 
 	public String deletePost(int postId){
 		try{
-			String query = "delete from "+ this.database+".post where postId = \""+postId+"\"";
+			String query = "delete from "+ this.database+".post where postId = ?";
 			System.out.print(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, postId);
 			
-			int result = smt.executeUpdate(query);
+			int result = psmt.executeUpdate();
 
-			String query2 = "delete from "+this.database+".post_notification where postId = \""+postId+"\"";
-			int result2 = smt.executeUpdate(query2);
+			String query2 = "delete from "+this.database+".post_notification where postId = ?";
+			psmt = conn.prepareStatement(query2);
+			psmt.setInt(1, postId);
+
+			int result2 = psmt.executeUpdate();
 
 			//String query3 = "delete from "+this.database+".drink_map where postId = \""+postId+"\"";
 			//int result3 =smt.executeUpdate(query3);
-
+			psmt.close();
 			smt.close();
 			conn.close();
 			return "{ \"status\" : \"ok\" }";
@@ -187,6 +201,7 @@ public class PostSQL {
 				post.add(p);
 			}
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
@@ -202,9 +217,12 @@ public class PostSQL {
 
 	public Post[] getPost(int postId) {
 		try{
-			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.postId = '" + postId +"' AND u.userId = p.userId";
-			
-			rs = smt.executeQuery(query);
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.postId = ? AND u.userId = p.userId";
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, postId);
+
+
+			rs = psmt.executeQuery();
 			ArrayList<Post> post = new ArrayList<>(); 
 			while(rs.next()) {
 				int id = rs.getInt("postId");
@@ -220,6 +238,7 @@ public class PostSQL {
 				post.add(p);
 			}
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
@@ -237,10 +256,12 @@ public class PostSQL {
 		try {
 		
 			//getFollowing Users
-			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+username+"\")";
+			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = ?)";
 			System.out.println("Follower query: "+query1);
+			psmt = conn.prepareStatement(query1);
+			psmt.setString(1, username);
 
-			rs=smt.executeQuery(query1);
+			rs=psmt.executeQuery();
 
 			ArrayList<Integer> followList = new ArrayList<Integer>();
 
@@ -252,15 +273,19 @@ public class PostSQL {
 			//addRows to post_notif database
 			String query2 = "";
 			for ( int x = 0; x <followList.size(); x++){
-				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values ('"+postId+"', '"+followList.get(x)+"', 0)";
-				int updateResult = smt.executeUpdate(query2);
+				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values (?, ?, 0)";
+				psmt = conn.prepareStatement(query2);
+				psmt.setInt(1, postId);
+				psmt.setInt(2, followList.get(x));
+		
+				int updateResult = psmt.executeUpdate();
 				
 				if(updateResult == 0) {
 					return "{ \"status\" : \"Error: SQL update failed.\"}";
 				}
 			}
 
-
+			psmt.close();
 			smt.close();
 			conn.close();
 
@@ -278,11 +303,16 @@ public class PostSQL {
 		//delete post notification from db
 		//need to figure out should this return the post/drink?
 		try{
-			String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\")";
+			String query = "delete from "+this.database+".post_notification where postId = ? and followerUserId = (select userId from "+ this.database+".user where userName = ?)";
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, postId);
+			psmt.setString(2, username);
+			
 			System.out.println(query);
 
-			int result2 = smt.executeUpdate(query);
+			int result2 = psmt.executeUpdate();
 
+			psmt.close();
 			smt.close();
 			conn.close();
 		
@@ -297,7 +327,7 @@ public class PostSQL {
 		}
 
 	}
-
+	/*
 	public String insertGeotag(Post p, String addr, String locName) {
 		try{
 			//getUserId
@@ -328,7 +358,7 @@ public class PostSQL {
 			e.printStackTrace();
 			return "{ \"status\" : \"Error: SQL update failed.\"}";
 		}
-	}
+	}*/
 	
 
 }
