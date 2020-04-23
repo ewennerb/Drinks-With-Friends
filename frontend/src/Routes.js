@@ -27,6 +27,7 @@ import {
 import Drink from "./pages/Drink";
 import PopupContent from "semantic-ui-react/dist/commonjs/modules/Popup/PopupContent";
 import List from "semantic-ui-react/dist/commonjs/elements/List";
+import Sticky from "semantic-ui-react/dist/commonjs/modules/Sticky";
 
 
 export default class Routes extends React.Component {
@@ -376,7 +377,7 @@ export default class Routes extends React.Component {
                             <a href={"http://www.google.com"} onClick={window.close()}>I am baby get me out of here</a>
                         </Segment>
                     </div>
-                    <div hidden={!this.state.is21} style={{overflowY: 'scroll'}}>
+                    <div hidden={!this.state.is21}>
                         <Menu attached="top" size="huge">
                             <Menu.Item
                                 as={Link}
@@ -407,7 +408,7 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
-                                            
+
                                         />
 
                                         <Menu.Item
@@ -416,7 +417,7 @@ export default class Routes extends React.Component {
                                             name={"Activity Feed"}
                                             active={activeItem === 'Activity Feed'}
                                             onClick={this.handlePageJump}
-                                           
+
                                         />
 
                                         <Menu.Item
@@ -454,7 +455,7 @@ export default class Routes extends React.Component {
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
-                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>  
+                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
                                         {/* it doenst like this^ stackoverflow says componentdidmount for "sideeffects" */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
@@ -465,7 +466,7 @@ export default class Routes extends React.Component {
                                         <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}
                                                                                     UserObject={this.state.UserObject}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
-                                        
+
 
                                     </Switch>
                                 </Segment>

@@ -278,12 +278,16 @@ export default class Search extends React.Component{
                             if(this.state.searchVal === 'd'){
                                 console.log(result);
                                 return(
-                                    <DrinkCard
-                                        user={this.state.user}
-                                        index={index}
-                                        drink={result}
-                                        userLocation={this.state.userLocation}
-                                    />
+                                    <div>
+
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                            userLocation={this.state.userLocation}
+                                        />
+                                        <br/>
+                                    </div>
                                 )
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
@@ -304,17 +308,26 @@ export default class Search extends React.Component{
                             } else if(this.state.searchVal === 'i'){
                                 //return (ingredientCard(index, result))
                                 return(
-                                    <DrinkCard
-                                        user={this.state.user}
-                                        index={index}
-                                        drink={result}
-                                        userLocation={this.state.userLocation}
-                                    />
+                                    <div>
+
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                            userLocation={this.state.userLocation}
+                                        />
+                                        <br/>
+                                        <br/>
+                                    </div>
                                 )
                             }
                             else if (this.state.searchVal === 'p'){
                                 return (
-                                    <PostCard post={result}/>
+                                    <div>
+
+                                        <PostCard post={result}/>
+                                        <br/>
+                                    </div>
                                     // postCard(result)
                                 )
                             } else if (this.state.searchVal === 't') {
@@ -410,7 +423,7 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return (
                 <div>
-                    <Grid style={{height: '100vh'}} columns={16} centered>
+                    <Grid style={{height: '100vh', overflow: "auto"}} columns={16} centered>
                         <Grid.Column width={4} className="frontpage"/>
                         <Grid.Column width={8} >
                             <Grid.Row textAlign="center">
