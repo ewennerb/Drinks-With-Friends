@@ -747,6 +747,51 @@ public class UserSQL {
 		}
 	}
 
+	public User[] getFollowingList(String username) {
+		try{
+			String query1 = "select userId from "+this.database+".user_followers where followingUserId = (select userId from "+ this.database+".user where userName = \""+username+"\")";
+			System.out.println("Follower query: "+query1);
+
+			rs=smt.executeQuery(query1);
+
+			ArrayList<Integer> followList = new ArrayList<Integer>();
+
+			while (rs.next()) {
+				followList.add(rs.getInt("userId")); 
+			}
+
+
+			String query2 = "";
+			ArrayList<User> following = new ArrayList<User>();
+
+			if(followList.size() == 0) {
+					return null;//"{ \"status\" : \"User follows no-one.\"}";
+			}
+
+			for(int x = 0; x<followList.size(); x++){
+				query2 = "select userName, profilePhoto from "+this.database+".user where userId = \""+followList.get(x)+"\"";
+				rs = smt.executeQuery(query2);
+
+				User u = new User();
+				while(rs.next()){
+					u.userName = rs.getString("userName");
+					u.photo = rs.getString("profilePhoto");
+					following.add(u);
+				}
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+
+			User[] outUser = new User[following.size()];
+			outUser = following.toArray(outUser);
+			return outUser;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public class notification{
 		int id;
 		int followerId;

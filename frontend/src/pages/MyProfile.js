@@ -387,7 +387,6 @@ class Profile extends Component{
 
 
   async handleSubmit() {
-
     //submitting everything from the modal
     let User = this.state.User;
     //profile pic

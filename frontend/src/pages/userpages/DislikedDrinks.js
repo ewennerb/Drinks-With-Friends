@@ -13,6 +13,7 @@ import 'semantic-ui-css/semantic.min.css';
 
 import {ingredientCard, postCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
+
 import 'semantic-ui-css/semantic.min.css';
 
 

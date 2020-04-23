@@ -42,7 +42,7 @@ public class PostSQL {
 			String query = "insert into "+ this.database+".post "+
 				"(text, image, userId, geolocation, date) "+
 				"values "+
-				"(\""+text+"\", \""+image+"\", (select userId from "+ this.database+".user where userName = \""+geolocation+"\"), \""+date+"\", \""+username+"\")";
+				"(\""+text+"\", \""+image+"\", (select userId from "+ this.database+".user where userName = \""+username+"\"), \""+geolocation+"\", \""+date+"\")";
 			System.out.println(query);
 
 			int insertResult = smt.executeUpdate(query);
@@ -84,7 +84,7 @@ public class PostSQL {
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
 				int postId = rs.getInt("postId");
-				Post p = new Post(postId, text, image, userId, geolocation, date, rs.getString("username"));
+				Post p = new Post(postId, text, image, userId, rs.getString("username"), geolocation, date);
 				post.add(p);
 			}
 			rs.close();
@@ -116,7 +116,7 @@ public class PostSQL {
 				String date = rs.getString("date");
 			
 
-				Post p = new Post(postId, text, image, queryuserId, geolocation, date, "");
+				Post p = new Post(postId, text, image, queryuserId, "", geolocation, date);
 				post.add(p);
 			}
 			rs.close();
@@ -139,8 +139,8 @@ public class PostSQL {
 			String query2 = "delete from "+this.database+".post_notification where postId = \""+postId+"\"";
 			int result2 = smt.executeUpdate(query2);
 
-			String query3 = "delete from "+this.database+".drink_map where postId = \""+postId+"\"";
-			int result3 =smt.executeUpdate(query3);
+			//String query3 = "delete from "+this.database+".drink_map where postId = \""+postId+"\"";
+			//int result3 =smt.executeUpdate(query3);
 
 			smt.close();
 			conn.close();
@@ -166,8 +166,41 @@ public class PostSQL {
 				int userId = rs.getInt("userId");
 				String geolocation = rs.getString("geolocation");
 				String date = rs.getString("date");
-				Post p = new Post(id, text, image, userId, geolocation, date, rs.getString("userName"));
+				Post p = new Post(id, text, image, userId, rs.getString("userName"), geolocation, date);
 				//p.profileImage = rs.getString("profilePhoto");
+				p.name = rs.getString("name");
+				post.add(p);
+			}
+			rs.close();
+			smt.close();
+			conn.close();
+			Post[] outPost = new Post[post.size()];
+			outPost = post.toArray(outPost);
+			return outPost;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error searching post to db");
+			return null;
+		}
+	}
+
+	public Post[] getPost(int postId) {
+		try{
+			String query = "SELECT p.postId, p.text, p.image, u.userName, u.userId, p.geolocation, p.date, u.profilePhoto, u.name FROM "+ this.database+".post p, "+ this.database+".user u WHERE p.postId = '" + postId +"' AND u.userId = p.userId";
+			
+			rs = smt.executeQuery(query);
+			ArrayList<Post> post = new ArrayList<>(); 
+			while(rs.next()) {
+				int id = rs.getInt("postId");
+				String text = rs.getString("text");
+				String image = rs.getString("image");
+				int userId = rs.getInt("userId");
+				String geolocation = rs.getString("geolocation");
+				String date = rs.getString("date");
+				Post p = new Post(id, text, image, userId, rs.getString("userName"), geolocation, date);
+	
+				//add stuff to get geolocation figure out formatting
 				p.name = rs.getString("name");
 				post.add(p);
 			}
@@ -264,13 +297,13 @@ public class PostSQL {
 			System.out.print("UserId: "+userId);
 
 			//insert into drink_map
-			String query2 = "insert into "+this.database+".drink_map (userId, locationName, address, postId) values (\""+userId+"\", \""+addr+"\", \""+locName+"\", \""+p.postId+"\")";
-			System.out.println(query2);
+			//String query2 = "insert into "+this.database+".drink_map (userId, locationName, address, postId) values (\""+userId+"\", \""+addr+"\", \""+locName+"\", \""+p.postId+"\")";
+			//System.out.println(query2);
 
-			int result = smt.executeUpdate(query2);
+			//int result = smt.executeUpdate(query2);
 
-			if(result != 1)
-				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			//if(result != 1)
+			//	return "{ \"status\" : \"Error: SQL update failed.\"}";
 
 			rs.close();
 			smt.close();

@@ -149,7 +149,7 @@ public class UserController {
 
 		return updatePassword;
 	}
-
+ 
 	//this was rod i can make it cleaner if needed i was just playing around
 	@PostMapping("/updateUsername/{oldusername}")
 	public String updateUsername(@PathVariable String oldusername ,@RequestBody String userName)
@@ -217,6 +217,31 @@ public class UserController {
 
 
 		return users.getNotificationObjects(username);
+	}
+
+	@GetMapping("/getFollowing/{userName}")
+	public String getFollowingUsers(@PathVariable String userName)
+		throws JsonParseException, JsonMappingException, IOException {
+		
+		UserSQL us = new UserSQL();
+		User[] users = us.getFollowingList(userName);
+		
+
+		if(users == null) {
+			return "{\"results\": \"DNE\"}";
+		}
+
+		String out =  "{ \"results\": [ ";
+		for (User user : users ) {
+			out += new ObjectMapper().writeValueAsString(user) + ",";
+			
+		}
+
+		out = out.substring(0, out.length()-1) + "] }";
+
+		return out;
+		
+
 	}
 
 

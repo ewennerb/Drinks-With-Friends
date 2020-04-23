@@ -10,8 +10,8 @@ import {
   Card,
   Image,
 } from 'semantic-ui-react';
-
-import {ingredientCard, postCard} from "../utils";
+import {PostCard} from "../PostCard"
+import {ingredientCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
 import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
@@ -74,7 +74,7 @@ class Posts extends Component{
                 ? <Header>No Posts Found</Header>
                 : this.state.posts.map((post, index) => {
                     //console.log(post);
-                    return(postCard(post))
+                    return(<PostCard post={post}/>)
                 })
               }
                 <br/>
