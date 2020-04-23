@@ -41,7 +41,6 @@ export class PostCard extends React.Component{
         let postLocation;
 
         console.log(post);
-        console.log("Hey retard! " + post.geolocation.toString());
         if(post.geolocation !== " " && post.geolocation !== ""){
             let locString = post.geolocation.split(" - ");
             console.log(post.geolocation);
