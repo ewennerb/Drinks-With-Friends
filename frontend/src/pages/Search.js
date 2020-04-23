@@ -46,20 +46,6 @@ export default class Search extends React.Component{
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
-        await navigator.geolocation.getCurrentPosition(
-            async(position) => {
-                const { latitude, longitude } = position.coords;
-                console.log(latitude);
-                console.log(longitude);
-                await this.setState({
-                    userLocation: { lat: latitude, lng: longitude },
-                    done: false
-                });
-            },
-            () => {
-                this.setState({ done: false });
-            }
-        );
         await this.getDOTD();
         await this.setState({
             loaded: false,
@@ -424,7 +410,7 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return (
                 <div>
-                    <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
+                    <Grid style={{height: '100vh'}} columns={16} centered>
                         <Grid.Column width={4} className="frontpage"/>
                         <Grid.Column width={8} >
                             <Grid.Row textAlign="center">
@@ -432,7 +418,7 @@ export default class Search extends React.Component{
                                 <br/>
 
                                 {/*This is a method from utils.js that renders drink of the day now*/}
-                                {/* {dotdCard(this.state.dotd)} */}
+                                 {dotdCard(this.state.dotd)}
 
                                 <br/>
                                 <br/>

@@ -257,7 +257,7 @@ export default class Routes extends React.Component {
                             <a href={"http://www.google.com"} onClick={window.close()}>I am baby get me out of here</a>
                         </Segment>
                     </div>
-                    <div hidden={!this.state.is21}>
+                    <div hidden={!this.state.is21} style={{overflowY: 'scroll'}}>
                         <Menu attached="top" size="huge">
                             <Menu.Item
                                 as={Link}
