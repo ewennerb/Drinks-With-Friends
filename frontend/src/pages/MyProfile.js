@@ -149,6 +149,15 @@ class Profile extends Component{
     } else {
       //follow button
       console.log("that not u");
+      editProfile =
+      <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+      <Button animated="fade" onClick={this.handleOpen}  >
+      <Button.Content visible>Follow</Button.Content>
+      <Button.Content hidden>
+      <Icon name="edit"/>
+      </Button.Content>
+      </Button>
+    </Grid.Column>
     }
     //check if fav drink is undefined or empty
     if (this.isValidInput(this.state.favoriteDrink)){
