@@ -343,7 +343,6 @@ public class PostSQL {
 			int result2 = psmt.executeUpdate();
 
 			psmt.close();
-			smt.close();
 			conn.close();
 			
 			System.out.println("UPDATEd POST");

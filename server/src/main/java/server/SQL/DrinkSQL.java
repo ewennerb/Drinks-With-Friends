@@ -918,7 +918,7 @@ public class DrinkSQL {
 
 //end of rod stuff
 
-	public Statement getSmt(){
+	public PreparedStatement getSmt(){
 		return this.psmt;
 	}
 	
@@ -1233,6 +1233,41 @@ public class DrinkSQL {
 		outDrink = dnames.toArray(outDrink);
 		
 		return outDrink;
+	}
+
+	public String editDrink(Drink d){
+		try {
+			smt.close();
+			String query = "UPDATE " + this.database + ".drink SET name = ?, description = ?, stockPhoto = ? " +
+				"WHERE drinkId = ?";
+			PreparedStatement psmt_temp = conn.prepareStatement(query);
+			psmt_temp.setString(1, d.name);
+			psmt_temp.setString(2, d.description);
+			psmt_temp.setString(3, d.photo);
+			psmt_temp.setInt(4, d.id);
+			System.out.println(d.toString());
+			int status = psmt_temp.executeUpdate();
+			psmt_temp.close();
+			conn.close();
+			if (status == 1) {
+				return "{ 'status': 'ok'}";
+			} else {
+				return "{ 'status': 'error updating drink'}";
+			}
+			//closes in getDrink(dname, publisher)
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+			return "{ 'status': 'error updating drink'}";
+		}
 	}
 
 }
