@@ -43,7 +43,12 @@ public class Drink{
         }
         out+= "\n";
         out += "publisher: " + this.publisher + "\n";
-        out += "photo: " + this.photo + "\n";
+        if (this.photo.length() > 30){
+            out += "photo: " + this.photo.substring(0, 30) + "\n";
+        } else {
+            out += "photo: " + this.photo + "\n";
+        }
+        
         out += "likes: " + (likes) + " dislikes: " + (dislikes) + "\n";
         return out;
     }

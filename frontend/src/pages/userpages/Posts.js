@@ -10,9 +10,9 @@ import {
   Card,
   Image,
 } from 'semantic-ui-react';
-import {PostCard} from "../PostCard"
+import {PostCard} from "../PostCard.js"
 import {ingredientCard} from "../utils";
-import DrinkCard from "../DrinkCard.js";
+import DrinkCard from "../rDrinkCard.js";
 import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
 
@@ -28,8 +28,8 @@ class Posts extends Component{
       profile: props.profile,
       userLocation: props.userLocation,
       User: User,
-        loaded: false
-
+      profileOwner: props.profileOwner,
+      loaded: false
     };
 
   }
@@ -47,18 +47,6 @@ class Posts extends Component{
     })
   //   //should have posts and drinks
   //   console.log(this.state.posts);
-  //   let userDrinks =[];
-  //   if (this.state.Drinks != undefined) {
-  //   this.state.Drinks.map((drink) => {
-  //     // console.log(index)
-  //     if (drink.publisher === userPage){
-  //           console.log(drink);
-  //           userDrinks.push(drink);
-  //     }
-  //   })
-  //   //putting that profiles drinks in state
-  //   this.setState({userDrinks: userDrinks});
-  //   }
   //  }
   }
 
@@ -101,6 +89,7 @@ class Posts extends Component{
                                               index={index}
                                               drink={drink}
                                               userLocation={this.state.userLocation}
+                                              profileOwner={this.state.profileOwner}
                                           />
                                           // rodsDrinkCard ({
                                           //   user: this.state.userName,
@@ -122,8 +111,6 @@ class Posts extends Component{
               <Segment basic loading placeholder/>
           )
       }
-
-
 
   }// end of render
 
