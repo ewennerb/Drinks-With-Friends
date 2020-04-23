@@ -327,6 +327,40 @@ public class PostSQL {
 		}
 
 	}
+
+	public String updatePost(Post post){
+		try {
+			String query = "update "+this.database+".post set text = ? , image = ? ,  date = ? where postId= ? ";			
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, post.text);
+			psmt.setString(2, post.image);
+			psmt.setString(3, post.date);
+			psmt.setInt(4, post.postId);
+			
+			System.out.println(query);
+			System.out.println(psmt);
+
+			int result2 = psmt.executeUpdate();
+
+			psmt.close();
+			smt.close();
+			conn.close();
+			
+			System.out.println("UPDATEd POST");
+			System.out.println(post);
+			if (result2 == 0)
+				return "{ \"status\" : \"Error: SQL update failed.\"}";
+			else
+				return "{ \"status\" : \"ok\" }";
+	
+		} catch (Exception e){
+			e.printStackTrace();
+			return "ope";
+		}
+
+	}
+
+
 	/*
 	public String insertGeotag(Post p, String addr, String locName) {
 		try{
