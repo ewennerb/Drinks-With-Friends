@@ -48,7 +48,6 @@ class Profile extends Component{
     this.state = {
       modalOpen: false, 
       activeItem: "posts",
-      userName: localStorage.getItem("username"),
       browser: localStorage.getItem("username"),
       profile: props.match.params.profile,
       User: {},
@@ -147,6 +146,9 @@ class Profile extends Component{
           </Button>
         </Grid.Column>
 
+    } else {
+      //follow button
+      console.log("that not u");
     }
     //check if fav drink is undefined or empty
     if (this.isValidInput(this.state.favoriteDrink)){
@@ -168,15 +170,15 @@ class Profile extends Component{
           <Grid.Row>
           <Grid.Column  
             as={Link}
-            to={{pathname: `/${this.state.userName}/posts`}}
+            to={{pathname: `/${this.state.profile}/posts`}}
           >
           {pfp}
 
           </Grid.Column>
           
           <Grid.Column textAlign="left">
-            <h2>{this.ifNullthenEmpty(this.state.name)}</h2>
-            <h3>&nbsp;{this.ifNullthenEmpty(this.state.userName)}</h3>
+            <h2>{this.ifNullthenEmpty(this.state.User.name)}</h2>
+            <h3>&nbsp;{this.ifNullthenEmpty(this.state.profile)}</h3>
             {/* bio */}
             <p>{this.state.bio}</p>
             {/* favorite drink */}
@@ -197,28 +199,28 @@ class Profile extends Component{
             //  this one will be hard to decide how to do 
               name="posts"
               as={Link}
-              to={{pathname: `/${this.state.userName}/posts` }}
+              to={{pathname: `/${this.state.profile}/posts` }}
               active={activeItem === "posts"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="likedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/likedDrinks`}}
+              to={{pathname: `/${this.state.profile}/likedDrinks`}}
               active={activeItem === "likedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="dislikedDrinks"
               as={Link}
-              to={{pathname: `/${this.state.userName}/dislikedDrinks`}}
+              to={{pathname: `/${this.state.profile}/dislikedDrinks`}}
               active={activeItem === "dislikedDrinks"}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name="map"
               as={Link}
-              to={{pathname: `/${this.state.user}/map`}}
+              to={{pathname: `/${this.state.profile}/map`}}
               active={activeItem === "map"}
               onClick={this.handleItemClick}
           
@@ -226,7 +228,7 @@ class Profile extends Component{
             <Menu.Item
               name="friends"
               as={Link}
-              to={{pathname: `/${this.state.user}/friends`}}
+              to={{pathname: `/${this.state.profile}/friends`}}
               active={activeItem === "friends"}
               onClick={this.handleItemClick}
             />
@@ -245,11 +247,11 @@ class Profile extends Component{
               {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
                  Drinks={this.state.Drinks} match={match}  />} /> */}
               <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
-                 userLocation={this.state.userLocation} match={match}  />} />
+                 userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />} />
               <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
-                  userLocation={this.state.userLocation} match={match}  />}/>
+                  userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
               <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
-                  userLocation={this.state.userLocation} match={match}  />}/>
+                  userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
               
               <Route exact path="/:profile/map" component={({match}) => <Map User={this.state.User} profile={this.state.profile} 
                   userLocation={this.state.userLocation} match={match}/>}/>
@@ -298,7 +300,7 @@ class Profile extends Component{
           <Form.Input
             fluid icon='user'
             iconPosition='left'
-            placeholder={this.state.userName}
+            placeholder={this.state.profile}
             onChange={this.handleUsernameChange}
           />
           {/* password chang einput */}
@@ -368,7 +370,7 @@ class Profile extends Component{
   }
   async handleUsernameChange(event) {
     const value = event.target.value;
-    await this.setState({userName: value});
+    await this.setState({profile: value});
   }
 
   async handlePasswordChange(event) {
@@ -400,7 +402,7 @@ class Profile extends Component{
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            userName: this.state.userName,
+            userName: this.state.profile,
             password: '',
             phoneNumber: '',
             name: '',
@@ -415,8 +417,9 @@ class Profile extends Component{
         }).catch(console.log);
     }
 
-    //username
-    if (this.state.userName !== User.userName){
+    //username //profile is current profile user.username 
+    if (this.state.profile !== User.userName){
+      //url is /oldusername
     await fetch(config.url.API_URL+'/user/updateUsername/'+User.userName, {
         method: 'POST',
         headers: {
@@ -424,7 +427,7 @@ class Profile extends Component{
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            userName: this.state.userName,
+            userName: this.state.profile,
             password: this.state.password,
             phoneNumber: '',
             name: '',
@@ -434,9 +437,9 @@ class Profile extends Component{
         }).then(res => res.json()).then((data) => {
           console.log("UPDATE USERNAME");
           console.log(data);
-          this.setState({response: data, browser: this.state.userName, profile: this.state.userName});
+          this.setState({response: data,  });
           console.log(this.state);
-          localStorage.setItem('username', this.state.userName)
+          localStorage.setItem('username', this.state.profile)
           localStorage.setItem('is21', true)
           localStorage.setItem('authorized', true);
           //window.location.replace('/'+this.state.userName);
@@ -478,7 +481,7 @@ class Profile extends Component{
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          userName: this.state.userName,
+          userName: this.state.profile,
           password: '',
           phoneNumber: '',
           name: '',
@@ -521,7 +524,7 @@ class Profile extends Component{
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          userName: this.state.userName,
+          userName: this.state.profile,
           password: '',
           phoneNumber: '',
           name: '',

@@ -24,7 +24,7 @@ class LikedDrinks extends Component{
     this.state = {
     // userName: User.userName,
     // posts: User.posts,
-    browser: props.user,
+    browser: props.browser,
     //profile: props.match.params.profile,
     profile: props.profile,
     userLocation: props.userLocation,
