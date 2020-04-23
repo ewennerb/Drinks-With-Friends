@@ -1235,4 +1235,48 @@ public class DrinkSQL {
 		return outDrink;
 	}
 
+	public String editDrink(Drink d){
+		try {
+			smt.close();
+			String query = "UPDATE " + this.database + ".drink SET name = ?, description = ?" + ((d.photo.equals("")) ? " " : ", stockPhoto = ? ") +
+				"WHERE drinkId = ?";
+			System.out.println(query);
+			PreparedStatement psmt_temp = conn.prepareStatement(query);
+			psmt_temp.setString(1, d.name);
+			psmt_temp.setString(2, d.description);
+			
+			if (d.photo.equals("")){
+				psmt_temp.setInt(3, d.id);
+			} else {
+				psmt_temp.setString(3, d.photo);
+				psmt_temp.setInt(4, d.id);
+			}
+			
+			System.out.println(d.toString());
+			int status = psmt_temp.executeUpdate();
+			psmt_temp.close();
+			conn.close();
+			String msg = "";
+			if (status == 1) {
+				msg = "{ status: 'ok'}";
+			} else {
+				msg =  "{ status: 'error updating drink'}";
+			}
+			System.out.println(msg + " status: " +status);
+			return msg;
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				smt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+			return "{ 'status': 'error updating drink'}";
+		}
+	}
+
 }
