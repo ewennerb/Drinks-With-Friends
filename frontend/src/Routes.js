@@ -7,6 +7,7 @@ import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
+import Post from "./pages/Post"
 import ResetPassword from "./pages/ResetPassword";
 import {config} from './config/config'
 import {ThemeProvider} from 'styled-components';
@@ -28,6 +29,7 @@ import Drink from "./pages/Drink";
 import PopupContent from "semantic-ui-react/dist/commonjs/modules/Popup/PopupContent";
 import List from "semantic-ui-react/dist/commonjs/elements/List";
 import Sticky from "semantic-ui-react/dist/commonjs/modules/Sticky";
+import Posts from "./pages/userpages/Posts";
 
 
 export default class Routes extends React.Component {
@@ -272,7 +274,7 @@ export default class Routes extends React.Component {
                                         message = " published a new drink recipe";
                                         icon = "beer"
                                     }else{
-                                        link = "/" + notif.publisher + "/post/" + notif.postId;
+                                        link = "/post/" + notif.publisher + "/" + notif.postId;
                                         icon = "envelope outline";
                                         message = " published a new post";
                                     }
@@ -462,6 +464,7 @@ export default class Routes extends React.Component {
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
                                         {/* im so sorry for fucking up the username and user i shouldve fixed it way earlier */}
                                         <Route path="/:username/drink/:name" component={Drink}/>
+                                        <Route path="/post/:publisher/:postId" component={Post}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
                                         <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}
                                                                                     UserObject={this.state.UserObject}/>}/>
