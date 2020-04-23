@@ -170,19 +170,27 @@ export default class ActivityFeed extends React.Component {
     };
 
     async fileChange(event) {
-        const file = event.target.files[0];
-        const fileName = event.target.files[0].name;
-        this.fileReader = new FileReader();
+        if(event.target.files === undefined){
+            this.setState({
+                file: undefined,
+                selected: false,
+                fileName: ""
+            })
+        }else{
+            const file = event.target.files[0];
+            const fileName = event.target.files[0].name;
+            this.fileReader = new FileReader();
 
-        this.fileReader.onload = this.handleFileRead;
+            this.fileReader.onload = this.handleFileRead;
 
-        await this.fileReader.readAsBinaryString(file);
+            await this.fileReader.readAsBinaryString(file);
 
-        await this.setState({
-            file: file,
-            selected: true,
-            fileName: fileName,
-        });
+            await this.setState({
+                file: file,
+                selected: true,
+                fileName: fileName,
+            });
+        }
     };
 
     canPost(){
@@ -401,7 +409,7 @@ export default class ActivityFeed extends React.Component {
 
         if(!this.state.mapSegment){
             if(this.state.geoTag === {} || this.state.geoTag === undefined){
-                console.log("segment active")
+                console.log("segment active");
                 mapSeg = <div>
                     <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
                 </div>
@@ -609,6 +617,7 @@ export default class ActivityFeed extends React.Component {
                                         ref={this.fileInputRef}
                                         type="file"
                                         hidden
+                                        accept="image/gif, image/jpeg, image/png"
                                         width="100%"
                                         onChange={this.fileChange}
                                     />
