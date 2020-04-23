@@ -238,7 +238,7 @@ export default class Routes extends React.Component {
                 {/* This is the navigation bar */}
                 <BrowserRouter>
                     <div hidden={this.state.is21} className="confirmation">
-                        <Segment style={{width: "100%", height: "100vh"}} placeholder inverted>
+                        <Segment style={{width: "100%", height: "100vh"}} placeholder inverted id="confirmPage">
                             <Header size="huge">Confirm Your Age</Header>
                             <Header size="large">We require our users to be 21 years old or over</Header>
                             <br/>

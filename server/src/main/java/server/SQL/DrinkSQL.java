@@ -246,6 +246,7 @@ public class DrinkSQL {
 
 			}
 			rs.close();
+			smt.close();
 			conn.close();
 			//add to Array
 			Drink[] outDrink = new Drink[drink.size()];
