@@ -1,10 +1,16 @@
 import React from "react";
-import {Card, Image, List, Loader, FeedLike, Icon, Menu} from "semantic-ui-react";
+import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment, Search} from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
-
 import {config} from '../config/config'
+import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header";
+import Map from "./MapContainer";
+import GeoSearch from "./geoSearch";
 
-export default class rDrinkCard extends React.Component {
+import "../css/Drink.css"
+//rods version
+
+export default class DrinkCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,19 +20,32 @@ export default class rDrinkCard extends React.Component {
             drink: this.props.drink,
             likes: this.props.drink.likes,
             dislikes: this.props.drink.dislikes,
+            userLocation: this.props.userLocation,
             ready: false,
             isLiked: false,
             isDisliked: false,
-            // passState: props.passState,
-            dislikedDrinks: [],
-            likedDrinks: [],
+            shareModal: false,
+            mapModal: false,
+            isLoading: false,
+            searchInput: "",
+            profileOwner: this.props.profileOwner,
+            editModal:false,
         };
+        this.location = {};
         this.likeDislikeRequestor = this.likeDislikeRequestor.bind(this);
         this.handleLikeDislike = this.handleLikeDislike.bind(this);
+        this.openMap = this.openMap.bind(this);
+        this.closeMap = this.closeMap.bind(this);
+        this.openShare = this.openShare.bind(this);
+        this.closeShare = this.closeShare.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
+
+        this.handleEditDrink = this.handleEditDrink.bind(this);
     }
 
 
     async componentDidMount() {
+
         let userData;
 
         await fetch(config.url.API_URL + "/user/" + this.props.user, {
@@ -65,6 +84,7 @@ export default class rDrinkCard extends React.Component {
                 drink: this.props.drink,
                 likes: this.props.drink.likes,
                 dislikes: this.props.drink.dislikes,
+                userLocation: this.props.userLocation,
                 ready: true,
                 isLiked: isLiked,
                 isDisliked: isDisliked
@@ -94,8 +114,9 @@ export default class rDrinkCard extends React.Component {
         }).catch(console.log);
     }
 
-    async handleLikeDislike(option){
 
+
+    async handleLikeDislike(option){
         const body = JSON.stringify({
             userName: this.state.user.userName,
             phoneNumber: this.state.user.phoneNumber,
@@ -124,23 +145,11 @@ export default class rDrinkCard extends React.Component {
                     //Do normal like
                     this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/on", option);
                 }
-                //tryinng to give liked drinks to profile
-                this.passState({
-                    publisher: this.state.drink.publisher,
-                    name: this.state.drink.name
-                },)
 
                 this.setState({isLiked: true, isDisliked: false})
             } else {
                 this.likeDislikeRequestor(body, config.url.API_URL + "/user/likeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({isLiked: false, isDisliked: false})
-                //removelike
-                this.passState({
-                    publisher: this.state.drink.publisher,
-                    name: this.state.drink.name,
-                    flag: "removeLike"
-                },)
-
             }
         }else{
             if(!this.state.isDisliked) {
@@ -152,23 +161,10 @@ export default class rDrinkCard extends React.Component {
                     this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/on" , option);
                 }
                 this.setState({isLiked: false, isDisliked: true})
-                //dislike
-                this.passState("",{
-                    publisher: this.state.drink.publisher,
-                    name: this.state.drink.name
-                })
-
             }else{
                 //Undo DisLike
                 this.likeDislikeRequestor(body, config.url.API_URL + "/user/dislikeDrink/" + this.state.drink.id + "/off", option);
                 this.setState({ isLiked: false, isDisliked: false});
-                //remove dislike
-                this.passState("",{
-                    publisher: this.state.drink.publisher,
-                    name: this.state.drink.name,
-                    flag: "removeDislike"
-                })
-
             }
         }
     }
@@ -189,12 +185,46 @@ export default class rDrinkCard extends React.Component {
         }
     }
 
+    openShare(){
+        this.setState({shareModal: true});
+    }
+
+    closeShare(){
+        this.setState({shareModal: false});
+    }
+
+
+    openMap(){
+        this.setState({mapModal: true});
+    }
+
+    closeMap(){
+        this.setState({mapModal: false});
+    }
+
+
+    handleSearchChange(event) {
+        // console.log(google);
+        const value = event.target.value;
+        // console.log(value);
+        this.setState({searchInput: value, isLoading: true});
+    }
+
+    handleEditDrink() {
+        this.setState({
+        editModal: true
+      }) 
+    }
+
 
     render(){
-        console.log(this.state.user);
+        // console.log(this.state.user);
+        let theseProps = this.props;
+        console.log(this.state.userLocation);
         let {user, drink, index, ready} = this.state;
-        let drinkPic, likes;
+        let drinkPic, likes, editDrink;
         if(ready){
+            console.log(user);
             if (user !== undefined) {
 
                 let lColor = this.likeColor();
@@ -236,47 +266,100 @@ export default class rDrinkCard extends React.Component {
             }else{
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
             }
-
+            //whether to render edit button or not
+            if(this.state.profileOwner){
+                editDrink = 
+                    <Button animated="fade" onClick={this.handleEditDrink}  >
+                    <Button.Content visible>Edit Drink</Button.Content>
+                    <Button.Content hidden>
+                    <Icon name="edit"/>
+                    </Button.Content>
+                    </Button>
+                
+            } else {
+                editDrink = <p/>;
+            }
             return(
-                <Link to={(`/${drink.publisher}`)}   replace>
-                <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
-                {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
-                <Card.Content>
-                
-                <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}> <Link style={{textDecoration: "none", color: "black"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link></Card.Header>
-                <Card.Meta textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none", color: "grey"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
-                </Card.Content>
-                <Card.Content textAlign="left">
-                {drinkPic}
                 <div>
-                <p><strong>Description: </strong></p>
-                <Card.Description data-testid={"drink-description-" + index.toString()}>{drink.description}</Card.Description>
-                
+                    <Modal open={this.state.shareModal} onClose={this.closeShare} closeOnEscape={false} size="mini" centered closeIcon>
+                        <Header textAlign="left">Share Via:</Header>
+                        {/*Todo: Actually plug in a legit URL and all the other paramters*/}
+                        <Segment basic textAlign="center">
+                            <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                                <FacebookIcon size={32}/>
+                            </FacebookShareButton>&nbsp;
+                            <TwitterShareButton title={"Drinks With Friends"} url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                                <TwitterIcon size={32}/>
+                            </TwitterShareButton>&nbsp;
+                            {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
+                            <EmailShareButton subject="Check out this drink I found!" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                                <EmailIcon size={32}/>
+                            </EmailShareButton>
+                        </Segment>
+                    </Modal>
+                    {/*<Modal open={this.state.mapModal} onClose={this.closeMap} closeOnEscape={false} centered closeIcon size="large">*/}
+                    {/*    <h1>Goodle Maps</h1>*/}
+                    {/*    <div style={{ margin: '100px' }}>*/}
+                    {/*        <GeoSearch*/}
+                    {/*            google={this.props.google}*/}
+                    {/*            center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}*/}
+                    {/*        />*/}
+                    {/*        <Map*/}
+                    {/*            google={this.props.google}*/}
+                    {/*            center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}*/}
+                    {/*            height='300px'*/}
+                    {/*            zoom={15}*/}
+                    {/*        />*/}
+
+
+                    {/*    </div>*/}
+                    {/*</Modal>*/}
+                    <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
+                        {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
+                        <Card.Content>
+
+                            <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
+                                <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
+                                <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
+                                <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.openMap}/>
+                                <br/>
+                                {editDrink}
+                            </Card.Header>
+
+                            <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
+                        </Card.Content>
+                        <Card.Content textAlign="left">
+                            {drinkPic}
+                            <div>
+                                <p><strong>Description: </strong></p>
+                                <Card.Description data-testid={"drink-description-" + index.toString()}>{drink.description}</Card.Description>
+
+                            </div>
+
+                            <div>
+                                <br/>
+                                <p><strong>Ingredients: </strong></p>
+                                <Card.Content>
+                                    <List bulleted >
+                                        {drink.ingredients.map((ingr, idx) => {
+                                            return (
+                                                <p key={idx} data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
+                                                    {ingr.quantity} {ingr.measurement} {ingr.ingredient}
+                                                </p>
+                                            )
+                                        })}
+                                    </List>
+                                </Card.Content>
+                            </div>
+                          
+                        </Card.Content>
+
+                        <Card.Content>
+                            {likes}
+                        </Card.Content>
+                    </Card>
                 </div>
-                
-                <div>
-                <br/>
-                <p><strong>Ingredients: </strong></p>
-                <Card.Content>
-                <List bulleted>
-                {drink.ingredients.map((ingr, idx) => {
-                return (
-                <p data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
-                {ingr.quantity} {ingr.measurement} {ingr.ingredient}
-                </p>
-                )
-                })}
-                </List>
-                </Card.Content>
-                </div>
-                </Card.Content>
-                
-                <Card.Content>
-                {likes}
-                </Card.Content>
-                </Card>
-                
-                </Link>
+
             );
         }else{
             return(
