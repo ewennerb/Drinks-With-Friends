@@ -112,9 +112,6 @@ class Posts extends Component{
           )
       }
 
-
-
->>>>>>> c39c7c8ddb48d249d1a3e222632b7d79d4807659
   }// end of render
 
 
