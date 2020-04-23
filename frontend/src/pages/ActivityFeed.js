@@ -9,7 +9,8 @@ import {
     FormGroup, Icon, Message, GridRow, GridColumn, Item
 } from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {postCard, postCardDelete} from "./utils";
+import {postCardDelete} from "./utils";
+import {PostCard} from "./PostCard"
 import Map from "./MapContainer";
 import {config} from '../config/config'
 var base64 = require('base-64');
@@ -169,19 +170,28 @@ export default class ActivityFeed extends React.Component {
     };
 
     async fileChange(event) {
-        const file = event.target.files[0];
-        const fileName = event.target.files[0].name;
-        this.fileReader = new FileReader();
+        if(event.target.files === undefined){
+            this.setState({
+                file: undefined,
+                selected: false,
+                fileName: ""
+            })
+        }else{
+            const file = event.target.files[0];
+            const fileName = event.target.files[0].name;
+            this.fileReader = new FileReader();
 
-        this.fileReader.onload = this.handleFileRead;
+            this.fileReader.onload = this.handleFileRead;
 
-        await this.fileReader.readAsBinaryString(file);
+            await this.fileReader.readAsBinaryString(file);
+        
 
-        await this.setState({
-            file: file,
-            selected: true,
-            fileName: fileName,
-        });
+            await this.setState({
+                file: file,
+                selected: true,
+                fileName: fileName,
+            });
+        }
     };
 
     canPost(){
@@ -344,6 +354,13 @@ export default class ActivityFeed extends React.Component {
         var n = String(mm + '/' + dd + '/' + yyyy);
         console.log(n, this.state.user);
 
+        let geolocation;
+        if (this.state.geoTag === undefined || this.state.geoTag === {}) {
+            geolocation = " "
+        }else{
+            geolocation = this.state.geoTag.name + " - " + this.state.geoTag.vicinity;
+        }
+
         await fetch(config.url.API_URL + '/post/', {
             method: 'POST',
             headers: {
@@ -355,7 +372,7 @@ export default class ActivityFeed extends React.Component {
                 image: photoString,
                 userId: 0,
                 userName: this.state.user,
-                geolocation: " ",
+                geolocation: geolocation,
                 date: n,
             })
         }).then(res => res.json()).then((data) => {
@@ -363,35 +380,8 @@ export default class ActivityFeed extends React.Component {
             this.setState({response: data, modalOpen2: false})
             //window.location.replace('/feed');
         }).catch(console.log);
+        window.location.reload(false);
 
-        let address, locName;
-        if (this.state.geoTag === undefined || this.state.geoTag === {}){
-            address = "%20";
-            locName = "%20";
-        }else{
-            address = encodeURIComponent(this.state.geoTag.vicinity);
-            locName = encodeURIComponent(this.state.geoTag.name);
-        }
-
-        await fetch(config.url.API_URL + '/post/' + address + '/' + locName, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                text: this.state.postText,
-                image: photoString,
-                userId: 0,
-                userName: this.state.user,
-                geolocation: " ",
-                date: n,
-            })
-        }).then(res => res.json()).then((data) => {
-            console.log(data);
-            this.setState({response: data, modalOpen2: false})
-            window.location.replace('/feed');
-        }).catch(console.log);
     };
 
     async setResponse() {
@@ -421,7 +411,7 @@ export default class ActivityFeed extends React.Component {
 
         if(!this.state.mapSegment){
             if(this.state.geoTag === {} || this.state.geoTag === undefined){
-                console.log("segment active")
+                console.log("segment active");
                 mapSeg = <div>
                     <Button icon="plus" content="Add a Location" onClick={this.addMap}/>
                 </div>
@@ -486,7 +476,7 @@ export default class ActivityFeed extends React.Component {
 
             <div>
                 {notUser}
-                <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose} size="large" style={{"height": "90vh"}}>
+                <Modal open={this.state.modalOpen} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose} size="large">
                     <Modal.Header>
                         <Form>
                             <Form.Group inline>
@@ -520,6 +510,7 @@ export default class ActivityFeed extends React.Component {
                                 />
                                 <input
                                     ref={this.fileInputRef}
+                                    accept="image/gif, image/jpeg, image/png"
                                     type="file"
                                     hidden
                                     onChange={this.fileChange}
@@ -629,6 +620,7 @@ export default class ActivityFeed extends React.Component {
                                         ref={this.fileInputRef}
                                         type="file"
                                         hidden
+                                        accept="image/gif, image/jpeg, image/png"
                                         width="100%"
                                         onChange={this.fileChange}
                                     />
@@ -711,18 +703,23 @@ export default class ActivityFeed extends React.Component {
                         <GridColumn style={{width: "auto"}}>
                             {this.state.results === undefined
                                 ? <Header textAlign="center">No Results Found</Header>
-                                :this.state.results.map((result, index) => {
-                                    if (result.userName === this.state.user) {
-                                        console.log(result);
-                                        return (
-                                            postCardDelete(result)
-                                        )
-                                    }
-                                    return (
-                                        postCard(result)
-                                    )
+                                : this.state.results.map((result, index) => {
+                                    return (<PostCard post={this.state.results[index]} user={this.state.user}/>)
                                 })
                             }
+
+                            {/*    :*/}
+                            {/*        if (result.userName === this.state.user) {*/}
+                            {/*            console.log(result);*/}
+                            {/*            return (*/}
+                            {/*                postCardDelete(result)*/}
+                            {/*            )*/}
+                            {/*        }*/}
+                            {/*        return (*/}
+                            {/*            <PostCard post={this.state.results[index]}/>*/}
+                            {/*        )*/}
+                            {/*    })*/}
+                            {/*}*/}
                         </GridColumn>
                     </GridRow>
                 </Grid>

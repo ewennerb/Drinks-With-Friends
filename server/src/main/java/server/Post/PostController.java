@@ -39,7 +39,7 @@ public class PostController {
 		p.postId = g_postId;
 		
 		posts = new PostSQL();
-		String notifReturn = posts.notifyUser(g_postId, p.geolocation);
+		String notifReturn = posts.notifyUser(g_postId, p.userName);
 
 		if ( postReturn.equals("{ \"status\" : \"ok\" }") && notifReturn.equals("{ \"status\" : \"ok\" }")) {
 			return postReturn;
@@ -48,7 +48,7 @@ public class PostController {
 		}
 
 	}
-
+	/*
 	@PostMapping("/{address}/{locationName}")
 	public String insertGeotag(@RequestBody String username, @PathVariable String address, @PathVariable String locationName)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -63,7 +63,7 @@ public class PostController {
 		PostSQL posts = new PostSQL();
 		String insertGeotagString = posts.insertGeotag(p, address, locationName);
 		return insertGeotagString;
-	}
+	}*/
 
 	//Need to include postId and username of logged in user in request body
 	@PostMapping("/notificationClicked/{postId}/{username}")
@@ -115,7 +115,18 @@ public class PostController {
 
 		return om.writeValueAsString(posts.getUserPosts(username));
 	}
+	@GetMapping("/getPost/{postId}")
+	public String getPost(@PathVariable int postId)
+		throws JsonParseException, JsonMappingException, IOException {
+		
+		PostSQL ps = new PostSQL();
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostSerializer", new Version(1, 0, 0, null, null, null));
+		sm.addSerializer(Post.class, new PostSerializer());
+		om.registerModule(sm);
 
+		return om.writeValueAsString(ps.getPost(postId));
+	}
 	
 
 	@PostMapping("/delete")
@@ -149,6 +160,25 @@ public class PostController {
 		out = out.substring(0, out.length()-1) + "] }";
 		
         return out;
-    }
+	}
+	
+	@PostMapping("/update/{postId}")
+	public String updatePost(@PathVariable int postId, @RequestBody String username)
+		throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("PostDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(Post.class, new PostDeserializer());
+		om.registerModule(sm);
+			//deserilaize it
+		Post p = om.readValue(username, Post.class);
+		p.postId = postId;
+		System.out.println(p);
+
+		PostSQL posts = new PostSQL();
+		posts.updatePost(p);
+		
+		return "";
+	}
 
 }

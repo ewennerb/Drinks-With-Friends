@@ -10,8 +10,8 @@ import {
   Card,
   Image,
 } from 'semantic-ui-react';
-
-import {ingredientCard, postCard} from "../utils";
+import {PostCard} from "../PostCard"
+import {ingredientCard} from "../utils";
 import DrinkCard from "../DrinkCard.js";
 import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
@@ -24,11 +24,11 @@ class Posts extends Component{
     this.state = {
       // userName: User.userName,
       // posts: User.posts,
-      browser: props.user,
-      profile: props.match.params.profile,
+      browser: props.browser,
+      profile: props.profile,
+      userLocation: props.userLocation,
       User: User,
-      // allDrinks: props.allDrinks,
-      // Drinks: props.Drinks,
+
     };
 
   }
@@ -37,7 +37,8 @@ class Posts extends Component{
   //   let userPage = this.state.profile;
     
   //   if (userPage != undefined){
-  //   await this.getPosts();
+  await this.getPosts(this.state.profile);
+  await this.getPublishedDrinks(this.state.profile);
   //   //should have posts and drinks
   //   console.log(this.state.posts);
   //   let userDrinks =[];
@@ -73,7 +74,7 @@ class Posts extends Component{
                 ? <Header>No Posts Found</Header>
                 : this.state.posts.map((post, index) => {
                     //console.log(post);
-                    return(postCard(post))
+                    return(<PostCard post={post}/>)
                 })
               }
                 <br/>
@@ -83,16 +84,16 @@ class Posts extends Component{
 
               <br/>
               
-              {(this.state.userDrinks == undefined || this.state.userDrinks.length < 1)
+              {(this.state.publishedDrinks == undefined || this.state.publishedDrinks.length < 1)
                 ? <Header>No Drinks Found</Header>
-                : this.state.userDrinks.map((drink, index) => {
+                : this.state.publishedDrinks.map((drink, index) => {
                     // console.log(drink);
                     return(
                       <DrinkCard
                         user={this.state.userName}
                         index={index}
                         drink={drink}
-                        passState={this.state.passState}
+                        userLocation={this.state.userLocation}
                       />
                       // rodsDrinkCard ({
                       //   user: this.state.userName,
@@ -112,10 +113,23 @@ class Posts extends Component{
   }// end of render
 
 
-  async getPosts() {
+
+
+  isValidInput(input) {
+    return !(input == undefined || input === '' || input == null);
+  }
+  
+  ifNullthenEmpty(str) {
+    if(str === null || str === undefined || str === ''){
+      return '';
+    } else {
+      return str;
+    }
+  }
+
+  async getPosts(userName) {
     //get posts
-    let User = this.state.User;
-    let userName = this.state.userName;
+  
     if (this.isValidInput(userName)){
     
       await fetch(config.url.API_URL + '/post/'+userName, {
@@ -134,21 +148,25 @@ class Posts extends Component{
 
     
   }// end of getposts
-
-  isValidInput(input) {
-    return !(input == undefined || input === '' || input == null);
-  }
-  
-  ifNullthenEmpty(str) {
-    if(str === null || str === undefined || str === ''){
-      return '';
-    } else {
-      return str;
-    }
+  async getPublishedDrinks(user) {
+    await fetch(config.url.API_URL + '/user/getPublishedDrinks/'+user, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+      }).then(res => res.json()).then((data) => { 
+          console.log((data));
+          //JSON.parse
+          // let likedDrinks = [];
+          this.setState({publishedDrinks: data});
+      }).catch(console.log);
   }
   
 
 }
+
+
 
 export default Posts;
 //ejs drinkcard

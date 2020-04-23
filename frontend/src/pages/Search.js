@@ -3,7 +3,8 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, minimalDrinkCard, userCard, postCard, userCardFollowed} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, userCardFollowed} from "./utils";
+import {PostCard} from "./PostCard"
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import {config} from '../config/config'
@@ -45,20 +46,6 @@ export default class Search extends React.Component{
 
     //Gets the drink of the day as soon as the page loads
     async componentDidMount() {
-        await navigator.geolocation.getCurrentPosition(
-            async(position) => {
-                const { latitude, longitude } = position.coords;
-                console.log(latitude);
-                console.log(longitude);
-                await this.setState({
-                    userLocation: { lat: latitude, lng: longitude },
-                    done: false
-                });
-            },
-            () => {
-                this.setState({ done: false });
-            }
-        );
         await this.getDOTD();
         await this.setState({
             loaded: false,
@@ -291,12 +278,16 @@ export default class Search extends React.Component{
                             if(this.state.searchVal === 'd'){
                                 console.log(result);
                                 return(
-                                    <DrinkCard
-                                        user={this.state.user}
-                                        index={index}
-                                        drink={result}
-                                        userLocation={this.state.userLocation}
-                                    />
+                                    <div>
+
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                            userLocation={this.state.userLocation}
+                                        />
+                                        <br/>
+                                    </div>
                                 )
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
@@ -317,17 +308,27 @@ export default class Search extends React.Component{
                             } else if(this.state.searchVal === 'i'){
                                 //return (ingredientCard(index, result))
                                 return(
-                                    <DrinkCard
-                                        user={this.state.user}
-                                        index={index}
-                                        drink={result}
-                                        userLocation={this.state.userLocation}
-                                    />
+                                    <div>
+
+                                        <DrinkCard
+                                            user={this.state.user}
+                                            index={index}
+                                            drink={result}
+                                            userLocation={this.state.userLocation}
+                                        />
+                                        <br/>
+                                        <br/>
+                                    </div>
                                 )
                             }
                             else if (this.state.searchVal === 'p'){
                                 return (
-                                    postCard(result)
+                                    <div>
+
+                                        <PostCard post={result}/>
+                                        <br/>
+                                    </div>
+                                    // postCard(result)
                                 )
                             } else if (this.state.searchVal === 't') {
                                 return(
@@ -375,7 +376,8 @@ export default class Search extends React.Component{
                                 }
                                 else if (this.state.searchVal === 'p'){
                                     return (
-                                        postCard(result)
+                                        <PostCard post={result}/>
+                                        // postCard(result)
                                     )
                                 } 
                             })
@@ -421,7 +423,7 @@ export default class Search extends React.Component{
             //IF dotd not ready return loader
             return (
                 <div>
-                    <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
+                    <Grid style={{height: '100vh', overflow: "auto"}} columns={16} centered>
                         <Grid.Column width={4} className="frontpage"/>
                         <Grid.Column width={8} >
                             <Grid.Row textAlign="center">
@@ -429,7 +431,7 @@ export default class Search extends React.Component{
                                 <br/>
 
                                 {/*This is a method from utils.js that renders drink of the day now*/}
-                                {dotdCard(this.state.dotd)}
+                                 {dotdCard(this.state.dotd)}
 
                                 <br/>
                                 <br/>
@@ -553,7 +555,3 @@ export default class Search extends React.Component{
         }
     }
 }
-
-
-
-

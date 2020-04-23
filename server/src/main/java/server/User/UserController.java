@@ -469,51 +469,14 @@ public class UserController {
 		//System.out.println(mp.toString());
 		
 	}
+	@GetMapping("/getPublishedDrinks/{username}")
+	public ArrayList<Drink> getPublishedDrinks(@PathVariable String username)
+		throws JsonParseException, JsonMappingException, IOException {
+		DrinkSQL drinks = new DrinkSQL();
+		return drinks.getPublishedDrinks(username);
+	}
 	
 	
-	
-
-
-//	@PostMapping("/removeLikeDrink/{drinkId}")
-//	public String removeLikeDrink(@PathVariable int drinkId, @RequestBody String userName)
-//			throws JsonParseException, JsonMappingException, IOException {
-//
-//		ObjectMapper om = new ObjectMapper();
-//		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-//		sm.addDeserializer(User.class, new UserDeserializer());
-//		om.registerModule(sm);
-//		User u = om.readValue(userName, User.class);
-//
-//		UserSQL users = new UserSQL();
-//		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
-//		DrinkSQL ds = new DrinkSQL();
-//		ds.removeLikeDrink(drinkId, 1);
-//
-//		return users.removeLikeDrink(u.userName, drinkId, 1);
-//	}
-//
-//	@PostMapping("/removeDislikeDrink/{drinkId}")
-//	public String removeDislikeDrink(@PathVariable int drinkId, @RequestBody String userName)
-//			throws JsonParseException, JsonMappingException, IOException {
-//
-//		ObjectMapper om = new ObjectMapper();
-//		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
-//		sm.addDeserializer(User.class, new UserDeserializer());
-//		om.registerModule(sm);
-//		User u = om.readValue(userName, User.class);
-//
-//		UserSQL users = new UserSQL();
-//		System.out.print("favoriteDrink: "+u.userName+" --- DrinkId: "+drinkId);
-//
-//		DrinkSQL ds = new DrinkSQL();
-//		ds.removeLikeDrink(drinkId, -1);
-//
-//		return users.removeLikeDrink(u.userName, drinkId, -1);
-//	}
-//
-
-
-
     @DeleteMapping("/delete")
     public String deleteUser() {
         //find a single user

@@ -9,8 +9,10 @@ import {
   Segment,
 
 } from 'semantic-ui-react'
+
 import {ingredientCard, postCard} from "../utils";
-import DrinkCard from "../rDrinkCard.js";
+import DrinkCard from "../DrinkCard.js";
+
 import 'semantic-ui-css/semantic.min.css';
 import {config} from '../../config/config'
 class LikedDrinks extends Component{
@@ -22,33 +24,31 @@ class LikedDrinks extends Component{
     this.state = {
     // userName: User.userName,
     // posts: User.posts,
-    browser: props.user,
-    profile: props.match.params.profile,
+    browser: props.browser,
+    //profile: props.match.params.profile,
+    profile: props.profile,
+    userLocation: props.userLocation,
     User: User,
+    likedDrinks: [],
     // Drinks: props.Drinks,
     };
   }
 
   async componentDidMount(){
-    if (this.state.User != undefined){
-      this.getLikedDrinks(this.state.profile);
-      console.log(this.state.likedDrinks)
-
-    }
+    // if (this.state.User != undefined){
+    //   if (this.state.likedDrinks == undefined){
+    //   this.getLikedDrinks(this.state.profile);
+    //   console.log(this.state.likedDrinks)
+    //   }
+    console.log("LIKED DRINKS DID MOUNT");
+    await this.getLikedDrinks(this.state.profile);
+    // }
     // let userPage = this.state.profile;
     
     // if (userPage != undefined && this.state.Drinks != undefined){
     // let Drinks = this.state.Drinks;
     // //let likedDrinks = [];
 
-    // await this.getLikedDrinks(userPage);
-    // //console.log(this.state.likedDrinks);
-    // let likedDrinks = this.state.likedDrinks;
-    // for(let id in likedDrinks) {
-    //     console.log(id)
-    //     console.log(likedDrinks[id])
-    // }
-    
     //go through the drinks with id and find ones this profile liked
     
     
@@ -63,10 +63,7 @@ class LikedDrinks extends Component{
   
 
   render(){
-    let likedDrinks;
-    if(this.state.likedDrinks != undefined) {
-      likedDrinks = this.state.likedDrinks;
-    }
+ 
     return (
       <Container>
       <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
@@ -77,14 +74,16 @@ class LikedDrinks extends Component{
                <Header>{this.state.profile}'s Liked Drinks</Header>
             </Segment>
             <br/>
-            {/* {(likedDrinks === undefined || this.state.likedDrinks.length < 1)
+            {(this.state.likedDrinks === undefined || this.state.likedDrinks.length < 1)
               ? <Header>No Liked Drinks Found</Header>
-              : likedDrinks.map((drink, index) => {
+              : this.state.likedDrinks.map((drink, index) => {
                   return(
                     <DrinkCard
-                    user={this.state.userName}
+                    user={this.state.profile}
                     index={index}
                     drink={drink}
+                    key={index}
+                    userLocation={this.state.userLocation}
                     />
                     // rodsDrinkCard ({
                     //   user: this.state.userName,
@@ -93,7 +92,7 @@ class LikedDrinks extends Component{
                     // })
                   )
               })
-            } */}
+            }
             <br/>
           </Grid.Row>
         </Grid.Column>
@@ -114,14 +113,10 @@ class LikedDrinks extends Component{
           'Content-Type': 'application/json',
       },
       }).then(res => res.json()).then((data) => { 
-          //console.log(JSON.parse(data));
+          console.log((data));
           //JSON.parse
-          let likedDrinks = [];
-          for (let [key, value] of Object.entries(data)){
-            console.log(key + " " + value)
-            likedDrinks.push(JSON.parse(value));
-          }
-          this.setState({likedDrinks: likedDrinks});
+          // let likedDrinks = [];  
+          this.setState({likedDrinks: data});
       }).catch(console.log);
   }
 
