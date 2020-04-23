@@ -289,7 +289,7 @@ class Profile extends Component{
           />
           {/* <Form.Input
             type="file"
-            accept="image/*"
+            accept="image/gif, image/jpeg, image/png"
             id="imageselector"
             onChange={this.handleFileSelect}
           /> */}

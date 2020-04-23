@@ -184,6 +184,7 @@ export default class ActivityFeed extends React.Component {
             this.fileReader.onload = this.handleFileRead;
 
             await this.fileReader.readAsBinaryString(file);
+        
 
             await this.setState({
                 file: file,
@@ -508,6 +509,7 @@ export default class ActivityFeed extends React.Component {
                                 />
                                 <input
                                     ref={this.fileInputRef}
+                                    accept="image/gif, image/jpeg, image/png"
                                     type="file"
                                     hidden
                                     onChange={this.fileChange}
