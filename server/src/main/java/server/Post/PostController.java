@@ -39,7 +39,7 @@ public class PostController {
 		p.postId = g_postId;
 		
 		posts = new PostSQL();
-		String notifReturn = posts.notifyUser(g_postId, p.geolocation);
+		String notifReturn = posts.notifyUser(g_postId, p.userName);
 
 		if ( postReturn.equals("{ \"status\" : \"ok\" }") && notifReturn.equals("{ \"status\" : \"ok\" }")) {
 			return postReturn;
@@ -48,7 +48,7 @@ public class PostController {
 		}
 
 	}
-
+	/*
 	@PostMapping("/{address}/{locationName}")
 	public String insertGeotag(@RequestBody String username, @PathVariable String address, @PathVariable String locationName)
 			throws JsonParseException, JsonMappingException, IOException {
@@ -63,7 +63,7 @@ public class PostController {
 		PostSQL posts = new PostSQL();
 		String insertGeotagString = posts.insertGeotag(p, address, locationName);
 		return insertGeotagString;
-	}
+	}*/
 
 	//Need to include postId and username of logged in user in request body
 	@PostMapping("/notificationClicked/{postId}/{username}")
