@@ -51,7 +51,7 @@ class Profile extends Component{
       browser: localStorage.getItem("username"),
       profile: props.match.params.profile,
       User: {},
-      
+      profileOwner: false,
     }
   }
 
@@ -73,6 +73,9 @@ class Profile extends Component{
     );
     this.getUser(this.state.profile);
     
+    if (this.state.profile === this.state.browser) {
+      this.setState({profileOwner: true});
+    }
     // if (User != undefined){
     //   if (User.likedDrinks == undefined){
     //     await this.getLikedDrinks(this.state.profile);
@@ -132,8 +135,8 @@ class Profile extends Component{
     let favoriteDrink = <p/>;
     let pfp;
     //methods
-    console.log(this.state)
-    console.log(this.state.profile === this.state.browser)
+    //console.log(this.state)
+    //console.log(this.state.profile === this.state.browser)
     if (this.state.profile === this.state.browser) {
         //allow the option to edit profile
         editProfile = 
@@ -149,6 +152,15 @@ class Profile extends Component{
     } else {
       //follow button
       console.log("that not u");
+      editProfile =
+      <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+      <Button animated="fade" onClick={this.handleOpen}  >
+      <Button.Content visible>Follow</Button.Content>
+      <Button.Content hidden>
+      <Icon name="edit"/>
+      </Button.Content>
+      </Button>
+    </Grid.Column>
     }
     //check if fav drink is undefined or empty
     if (this.isValidInput(this.state.favoriteDrink)){
@@ -251,7 +263,7 @@ class Profile extends Component{
               {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
                  Drinks={this.state.Drinks} match={match}  />} /> */}
               <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
-                 userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />} />
+                 userLocation={this.state.userLocation} browser={this.state.browser} profileOwner={this.state.profileOwner} match={match}  />} />
               <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
                   userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
               <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
