@@ -25,6 +25,8 @@ import {
     Popup
 } from "semantic-ui-react"
 import Drink from "./pages/Drink";
+import PopupContent from "semantic-ui-react/dist/commonjs/modules/Popup/PopupContent";
+import List from "semantic-ui-react/dist/commonjs/elements/List";
 
 
 export default class Routes extends React.Component {
@@ -44,6 +46,7 @@ export default class Routes extends React.Component {
             is21: false,
             checked: false,
             profile: undefined,
+            notifications: [],
         };
 
     }
@@ -106,6 +109,8 @@ export default class Routes extends React.Component {
             loggedIn: loggedIn
         });
     }
+
+
     async componentWillMount(){
         this.state.is21 = localStorage.getItem('is21') === 'true';
         if (localStorage.getItem('username') === '' || localStorage.getItem('authorized') === 'false'){
@@ -118,13 +123,15 @@ export default class Routes extends React.Component {
                 'Content-Type': 'application/json'
             },
         }).then(res => res.json()).then((data) => {
-            console.log('LOGGED ON')
-            console.log(data)
-            this.setState({response: data})
-            this.setState({darkMode: data.darkMode === 1})
+            console.log('LOGGED ON');
+            console.log(data);
+            this.setState({response: data, darkMode: data.darkMode === 1});
+            // this.setState({darkMode: data.darkMode === 1})
         }).catch(console.log);
         this.setState({loggedIn: true, user: localStorage.getItem('username')});
     }
+
+
 
     //rod changed it to component did mount bc it kept sayingwill mount is whats the word defected
     async componentDidMount(){
@@ -140,25 +147,72 @@ export default class Routes extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-        }).then(res => res.json()).then((data) => {
-            console.log('LOGGED ON')
-            this.setState({response: data,
-                          UserObject: data,
-                          loggedIn: true,
-                         user: localStorage.getItem("username") ,
-                })
-            
+        }).then(res => res.json()).then(async (data) => {
+            console.log('LOGGED ON');
+
+
+            //Gets notifications if there are any that need to be received
+            if(data.userName !== undefined) {
+                let notifications = await this.getNotifications(data.userName);
+                console.log(notifications);
+                this.setState({response: data,
+                    userObject: data,
+                    loggedIn: true,
+                    user: localStorage.getItem("username"),
+                    notifications: notifications.results
+                });
+            }
+            //Todo: Get notifications here
+
         }).catch(console.log);
 
     }
     /*Rod added this trying to figure out other user's profiles */
-    async componentDidMount() {
-        //capital U is the object :^)
-        if (this.state.loggedIn && this.state.user !== undefined){
-            await this.getUser(this.state.user);
-            let User = this.state.User;
-        }
+    // async componentDidMount() {
+    //     //capital U is the object :^)
+    //     if (this.state.loggedIn && this.state.user !== undefined){
+    //         await this.getUser(this.state.user);
+    //         let User = this.state.User;
+    //     }
+    // }
+
+
+
+    async getNotifications(user){
+        let n = [];
+        await fetch(config.url.API_URL + '/user/getNotifications/' + this.state.user, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json()).then(async (data) => {
+            console.log("====== Notifications ========");
+            console.log(data);
+            console.log("=============================");
+            n = data;
+        });
+        return n;
     }
+
+
+    async clearNotification(notification, link, index){
+        //Todo: Figure out how to actually do this right
+        await fetch(config.url.API_URL + "/post/notificationClicked/" + notification.postId + "/" + this.state.user, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json()).then(async (data) => {
+            let arr = this.state.notifications;
+            arr.splice(index, 1);
+            this.setState({notifications: arr})
+        }).catch(() => console.log("Failed to delete notification"));
+    }
+
+
+
     render(){
         let logOrProfile;
         let logOrRegister;
@@ -175,17 +229,81 @@ export default class Routes extends React.Component {
             />;
 
              //Todo: Need to figure out how to get notifications and display them here
-             //Todo: Need to figure out what
-             notifBell = <Menu.Item>
-                 <Popup
-                     trigger={<Icon.Group>
-                         <Icon name='bell outline'/>
-                         <Icon name="circle" color="yellow" corner/>
-                         </Icon.Group>}
-                     content="You have no notifications. Go fuck urself"
-                     position="bottom center"
-                 />
-             </Menu.Item>;
+
+            console.log(this.state.notifications);
+            if(this.state.notifications === undefined || this.state.notifications.length === 0){
+                notifBell = <Menu.Item>
+                    <Popup
+                        trigger={
+                            <Icon.Group>
+                                <Icon name='bell outline'/>
+                                {/*<Icon name="circle" color="yellow" corner/>*/}
+                            </Icon.Group>}
+                        // content="You have no notifications. Go fuck urself"
+                        position="bottom center"
+                    >
+                        <PopupContent>
+                            <Segment basic style={{height: "20%", overflow: "scrollY"}} >
+                                You have no new notifications
+                            </Segment>
+                        </PopupContent>
+                    </Popup>
+                </Menu.Item>;
+            }else{
+                notifBell = <Menu.Item>
+                <Popup
+                    trigger={
+                        <Icon.Group>
+                            <Icon name='bell outline'/>
+                            <Icon name="circle" color="yellow" corner/>
+                        </Icon.Group>
+                    }
+                    hoverable={true}
+                    position="bottom center"
+                >
+                    <PopupContent>
+                        {/*<Segment basic style={{overflow: "scrollY"}}>*/}
+                            <List celled>
+                                {this.state.notifications.map((notif, index) => {
+                                    let link, message, icon;
+                                    if(notif.drinkFlag === 1){
+                                        link = "/" + notif.publisher + "/drink/" + notif.postId;
+                                        message = " published a new drink recipe";
+                                        icon = "beer"
+                                    }else{
+                                        link = "/" + notif.publisher + "/post/" + notif.postId;
+                                        icon = "envelope outline";
+                                        message = " published a new post";
+                                    }
+                                    return(
+                                        <div>
+                                            <List.Item>
+                                                <Header as="h4" color="grey" floated="left">
+                                                    <Icon name={icon} color="grey"/>
+                                                    <Header.Content>
+                                                        <Link to={"/" + notif.publisher}>{notif.publisher}</Link>
+                                                        <Header.Subheader>
+                                                            {message}
+                                                        </Header.Subheader>
+                                                    </Header.Content>
+                                                </Header>
+                                                <div style={{textAlign: "center"}}>
+                                                    <div style={{display: "inline-block"}}>
+                                                        <p>
+                                                            <Link to={link} onClick={() => this.clearNotification(notif, link, index)}>view</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a onClick={() => this.clearNotification(notif, link, index)}>dismiss</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </List.Item>
+                                        </div>
+                                    )
+                                })}
+                            </List>
+                    </PopupContent>
+                </Popup>
+                </Menu.Item>;
+            }
+
 
 
              logOrRegister = <Menu.Item
@@ -213,6 +331,7 @@ export default class Routes extends React.Component {
                 active={activeItem === 'Register'}
                 
             />
+            notifBell = <div/>
         }
         let toggleSwitch =
             <div className="toggle-switch">
@@ -238,7 +357,7 @@ export default class Routes extends React.Component {
                 {/* This is the navigation bar */}
                 <BrowserRouter>
                     <div hidden={this.state.is21} className="confirmation">
-                        <Segment style={{width: "100%", height: "100vh"}} placeholder inverted>
+                        <Segment style={{width: "100%", height: "100vh"}} placeholder inverted id="confirmPage">
                             <Header size="huge">Confirm Your Age</Header>
                             <Header size="large">We require our users to be 21 years old or over</Header>
                             <br/>
@@ -257,7 +376,7 @@ export default class Routes extends React.Component {
                             <a href={"http://www.google.com"} onClick={window.close()}>I am baby get me out of here</a>
                         </Segment>
                     </div>
-                    <div hidden={!this.state.is21}>
+                    <div hidden={!this.state.is21} style={{overflowY: 'scroll'}}>
                         <Menu attached="top" size="huge">
                             <Menu.Item
                                 as={Link}
