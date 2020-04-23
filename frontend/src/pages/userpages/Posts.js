@@ -24,8 +24,8 @@ class Posts extends Component{
     this.state = {
       // userName: User.userName,
       // posts: User.posts,
-      browser: props.user,
-      profile: props.match.params.profile,
+      browser: props.browser,
+      profile: props.profile,
       userLocation: props.userLocation,
       User: User,
 
