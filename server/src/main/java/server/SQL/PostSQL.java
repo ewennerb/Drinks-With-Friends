@@ -13,7 +13,7 @@ public class PostSQL {
 
 	private String url;
 	private Connection conn;
-	Statement smt;
+	//Statement smt;
 	PreparedStatement psmt;
 	ResultSet rs;
 	private String database;
@@ -27,7 +27,7 @@ public class PostSQL {
 			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
 			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 		
-			smt = conn.createStatement();
+			//smt = conn.createStatement();
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -70,7 +70,7 @@ public class PostSQL {
 
 			rs.close();
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 
 			return "{ \"status\" : \"ok\" }";	
@@ -104,7 +104,7 @@ public class PostSQL {
 			}
 			rs.close();
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
 			outPost = post.toArray(outPost);
@@ -141,7 +141,7 @@ public class PostSQL {
 			}
 			rs.close();
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 			return post;
 		}catch(Exception e){
@@ -168,7 +168,7 @@ public class PostSQL {
 			//String query3 = "delete from "+this.database+".drink_map where postId = \""+postId+"\"";
 			//int result3 =smt.executeUpdate(query3);
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 			return "{ \"status\" : \"ok\" }";
 		}catch(Exception e){
@@ -202,7 +202,7 @@ public class PostSQL {
 			}
 			rs.close();
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
 			outPost = post.toArray(outPost);
@@ -239,7 +239,7 @@ public class PostSQL {
 			}
 			rs.close();
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
 			outPost = post.toArray(outPost);
@@ -286,7 +286,7 @@ public class PostSQL {
 			}
 
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 
 			return "{ \"status\" : \"ok\" }";
@@ -313,7 +313,7 @@ public class PostSQL {
 			int result2 = psmt.executeUpdate();
 
 			psmt.close();
-			smt.close();
+			//smt.close();
 			conn.close();
 		
 		

@@ -16,7 +16,8 @@ public class DrinkSQL {
 
 	private String url;
 	private Connection conn;
-	Statement smt;
+	//Statement smt;
+	PreparedStatement psmt;
 	ResultSet rs;
 	public int topResultDrinkId = 0;
 	private String database;
@@ -33,7 +34,7 @@ public class DrinkSQL {
 			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
 			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 			
-			smt = conn.createStatement();
+			//smt = conn.createStatement();
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -52,7 +53,8 @@ public class DrinkSQL {
 			//String url = "jdbc:mysql://localhost:3306/";
 			//Connection conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");
 			//Statement smt = conn.createStatement();
-			rs = smt.executeQuery("select * from "+ this.database+".drink");
+			psmt = conn.prepareStatement("select * from "+ this.database+".drink");
+			rs = psmt.executeQuery();
 
 			while (rs.next())
 			{
@@ -65,10 +67,12 @@ public class DrinkSQL {
 				String publisher=rs.getString("publisher");
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\""; // to get only official drinks set publisher to DrinksWithFriends or Null
-
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?"; // to get only official drinks set publisher to DrinksWithFriends or Null
+				
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, publisher);
+				ResultSet rs2 = smt2.executeQuery();
 				
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
@@ -93,13 +97,13 @@ public class DrinkSQL {
 				
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			
 			conn.close();
-			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+			if (!(rs.isClosed() && psmt.isClosed() && conn.isClosed())){
 				System.out.println("drink all is not closed");
 				System.out.println("	rs: " + rs.isClosed());
-				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	smt: " + psmt.isClosed());
 				System.out.println("	conn: " + conn.isClosed());
 			}
 
@@ -107,12 +111,12 @@ public class DrinkSQL {
 			e.printStackTrace();
 			try {
 				rs.close();
-				smt.close();
+				psmt.close();
 				conn.close();
-				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+				if (!(rs.isClosed() && psmt.isClosed() && conn.isClosed())){
 					System.out.println("drink all exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
-					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	smt: " + psmt.isClosed());
 					System.out.println("	conn: " + conn.isClosed());
 				}
 			} catch (SQLException se) {
@@ -125,9 +129,13 @@ public class DrinkSQL {
 	public Drink getDrink(String drinkName, String owner){
 		try{
 
-			String query = "select * from "+ this.database+".drink where name = \""+drinkName+"\" AND publisher = \"" + owner+"\"";
+			String query = "select * from "+ this.database+".drink where name = ? AND publisher = ?";
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, drinkName);
+			psmt.setString(2, owner);
+
+			rs = psmt.executeQuery();
 			Drink drink = new Drink();
 			int drinkId = -1;
 			while (rs.next())
@@ -140,10 +148,12 @@ public class DrinkSQL {
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
+					"WHERE drink_id = ? AND username = ?";
 				System.out.println(query_ingreds);
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, owner);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				while (rs2.next()){
@@ -163,13 +173,13 @@ public class DrinkSQL {
 			rs.close();
 			updateLookedAt(drinkId);
 
-			smt.close();
+			psmt.close();
 			conn.close();
 			
-			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+			if (!(rs.isClosed() && psmt.isClosed() && conn.isClosed())){
 				System.out.println("drink find is not closed");
 				System.out.println("	rs: " + rs.isClosed());
-				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	smt: " + psmt.isClosed());
 				System.out.println("	conn: " + conn.isClosed());
 			}
 			return drink;
@@ -179,12 +189,12 @@ public class DrinkSQL {
 			e.printStackTrace();
 			try {
 				rs.close();
-				smt.close();
+				psmt.close();
 				conn.close();
-				if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+				if (!(rs.isClosed() && psmt.isClosed() && conn.isClosed())){
 					System.out.println("drink find exception is not closed");
 					System.out.println("	rs: " + rs.isClosed());
-					System.out.println("	smt: " + smt.isClosed());
+					System.out.println("	smt: " + psmt.isClosed());
 					System.out.println("	conn: " + conn.isClosed());
 				}
 			} catch (SQLException se) {
@@ -206,9 +216,12 @@ public class DrinkSQL {
 		try{
 			
 			String query = "SELECT * FROM "+ this.database+".drink d "+
-				"where d.drinkId in (select drink_id from "+ this.database+".drink_ingredient where ingredient like \""+searchString+"\")";
+				"where d.drinkId in (select drink_id from "+ this.database+".drink_ingredient where ingredient like ?)";
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, searchString.toString());
+			
+			rs = psmt.executeQuery();
 
 			//ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 			ArrayList<Drink> drink = new ArrayList<Drink>();
@@ -224,9 +237,11 @@ public class DrinkSQL {
 				
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, publisher);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -246,7 +261,7 @@ public class DrinkSQL {
 
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 			//add to Array
 			Drink[] outDrink = new Drink[drink.size()];
@@ -277,11 +292,13 @@ public class DrinkSQL {
 	
 			String query = "";
 			if ( flag == 0 )
-				query = "Select * FROM "+ this.database+".drink WHERE name LIKE \"" + searchString + "\"";
+				query = "Select * FROM "+ this.database+".drink WHERE name LIKE ?";
 			else if ( flag == 1 )
-				query = "Select * FROM "+ this.database+".drink WHERE name LIKE \"" + searchString + "\" and publisher = \"IBA_Official\"";
+				query = "Select * FROM "+ this.database+".drink WHERE name LIKE ? and publisher = \"IBA_Official\"";
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, searchString.toString());
+			rs = psmt.executeQuery();
 			ArrayList<Drink> drink = new ArrayList<Drink>();
 
 			while (rs.next())
@@ -308,9 +325,11 @@ public class DrinkSQL {
 				
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, publisher);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -331,7 +350,7 @@ public class DrinkSQL {
 			}
 			
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 			//ArrayList<Drink> similar = new ArrayList<Drink>();
 			if ( matchFlag == 1 ) {
@@ -367,11 +386,13 @@ public class DrinkSQL {
 		try{
 			String query = "SELECT d.drinkId, d.name, d.stockPhoto, d.description, d.likes, d.dislikes, d.publisher "+
 				"FROM "+ this.database+".drink d, "+ this.database+".drink_tags dt "+
-				"where tag_id in (select tag_id from "+ this.database+".drink_tags dt2 where dt2.drink_id = \""+topResultDrinkId+"\") "+
+				"where tag_id in (select tag_id from "+ this.database+".drink_tags dt2 where dt2.drink_id = ?) "+
 				"and d.drinkId = dt.drink_id";
 
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, topResultDrinkId);
+			rs = psmt.executeQuery();
 		
 			while (rs.next())
 			{
@@ -385,9 +406,11 @@ public class DrinkSQL {
 	
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, publisher);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -460,7 +483,7 @@ public class DrinkSQL {
 				finalSorted.add(k);
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[finalSorted.size()];
 			outDrink = finalSorted.toArray(outDrink);
@@ -478,15 +501,20 @@ public class DrinkSQL {
 			String query = "INSERT into "+ this.database+".drink "+
 				"(name, stockphoto, description, likes, dislikes, publisher) "+
 				"VALUES "+
-				"(\""+d.name+"\", \""+d.photo+"\", \""+d.description+"\", "+0+", "+0+ ", \"" + d.publisher+"\")";
+				"(?, ?, ?, 0, 0, ?)";
 
 			System.out.println(query);
-			int success = smt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+			psmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			psmt.setString(1, d.name);
+			psmt.setString(2, d.photo);
+			psmt.setString(3, d.description);
+			psmt.setString(4, d.publisher);
+			int success = psmt.executeUpdate();
 			if (success == 0) {
 				System.out.println("add drink fail");
 				return false;
 			}
-			ResultSet gk = smt.getGeneratedKeys();
+			ResultSet gk = psmt.getGeneratedKeys();
 			long id = -1;
 			while (gk.next()) {
 				id = gk.getInt(1);
@@ -496,9 +524,16 @@ public class DrinkSQL {
 				query = "";
 				query += "INSERT INTO "+ this.database+".drink_ingredient (username, drink_id, ingredient, measurement, quantity) "+
 				"VALUES "+
-				"(\""+d.publisher+"\", \""+id+"\", \""+i.ingredient+"\", \"" + i.measurement+"\", \""+ i.quantity+"\");";
-				Statement smt2 = conn.createStatement();
-				success = smt2.executeUpdate(query);
+				"(?, ?, ?, ?, ?);";
+				System.out.println(query);
+
+				PreparedStatement smt2 = conn.prepareStatement(query);
+				smt2.setString(1, d.publisher);
+				smt2.setLong(2, id);
+				smt2.setString(3, i.ingredient);
+				smt2.setString(4, i.measurement);
+				smt2.setString(5, i.quantity);
+				success = smt2.executeUpdate();
 				if (success == 0) {
 					System.out.println("add ingredients fail");
 					return false;
@@ -506,8 +541,11 @@ public class DrinkSQL {
 				smt2.close();
 			}
 
-			String query3 = "select drinkId from "+this.database+".drink where publisher = \""+d.publisher+"\" and name = \""+d.name+"\"";
-			rs = smt.executeQuery(query3);
+			String query3 = "select drinkId from "+this.database+".drink where publisher = ? and name = ?";
+			psmt = conn.prepareStatement(query3);
+			psmt.setString(1, d.publisher);
+			psmt.setString(2, d.name);
+			rs = psmt.executeQuery();
 
 			int retPostId = 0;
 			while(rs.next())
@@ -519,7 +557,7 @@ public class DrinkSQL {
 
 			rs.close();
 
-			smt.close();
+			psmt.close();
 			conn.close();
 			
 		} catch (Exception e) {
@@ -531,10 +569,13 @@ public class DrinkSQL {
 
 	public String notifyUser(int drinkId, String publisher) {
 		try {
-			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = \""+publisher+"\")";
+			String query1 = "select followingUserId from "+this.database+".user_followers where userId = (select userId from "+ this.database+".user where userName = ?)";
 			System.out.println("Follower query: "+query1);
 
-			rs=smt.executeQuery(query1);
+			psmt = conn.prepareStatement(query1);
+			psmt.setString(1, publisher);
+
+			rs=psmt.executeQuery();
 
 			ArrayList<Integer> followList = new ArrayList<Integer>();
 
@@ -546,8 +587,11 @@ public class DrinkSQL {
 			//addRows to post_notif database
 			String query2 = "";
 			for ( int x = 0; x <followList.size(); x++){
-				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values ('"+drinkId+"', '"+followList.get(x)+"', 1)";
-				int updateResult = smt.executeUpdate(query2);
+				query2 = "insert into "+ this.database+".post_notification (postId, followerUserId, drinkFlag) values (?, ?, 1)";
+				psmt = conn.prepareStatement(query2);
+				psmt.setInt(1, drinkId);
+				psmt.setInt(2, followList.get(x));
+				int updateResult = psmt.executeUpdate();
 				
 				if(updateResult == 0) {
 					return "{ \"status\" : \"Error: SQL update failed.\"}";
@@ -555,7 +599,7 @@ public class DrinkSQL {
 			}
 
 
-			smt.close();
+			psmt.close();
 			conn.close();
 
 			return "{ \"status\" : \"ok\" }";
@@ -570,12 +614,15 @@ public class DrinkSQL {
 		//delete post notification from db
 		//need to figure out should this return the post/drink?
 		try{
-			String query = "delete from "+this.database+".post_notification where postId = \""+postId+"\" and followerUserId = (select userId from "+ this.database+".user where userName = \""+username+"\") and drinkFlag = 1";
+			String query = "delete from "+this.database+".post_notification where postId = ? and followerUserId = (select userId from "+ this.database+".user where userName = ?) and drinkFlag = 1";
 			System.out.println(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, postId);
+			psmt.setString(2, username);
 
-			int result2 = smt.executeUpdate(query);
+			int result2 = psmt.executeUpdate();
 
-			smt.close();
+			psmt.close();
 			conn.close();
 		
 		
@@ -598,16 +645,19 @@ public class DrinkSQL {
 		try {
 			String query = "SELECT DISTINCT d.name, d.publisher " +
 			"FROM "+ this.database+".drink d "+
-			"WHERE d.name like \""+let+"%\" " + 
+			"WHERE d.name like ?\"%\" " + 
 			"ORDER BY d.name ASC";
 
-			rs = smt.executeQuery(query);
+			psmt =conn.prepareStatement(query);
+			psmt.setString(1, String.valueOf(let));
+
+			rs = psmt.executeQuery();
 			while (rs.next()) {
 				dnames.add(rs.getString("name"));
 				dnames.add(rs.getString("publisher"));
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 		} catch (Exception e) {
 
@@ -623,9 +673,12 @@ public class DrinkSQL {
 		try {
 
 			String query = "Select d.name, d.publisher, d.stockPhoto, d.description, d.drinkId, d.likes, d.dislikes"+
-			" FROM "+ this.database+".drink_recommendation dr, "+ this.database+".user u, "+ this.database+".drink d WHERE u.userName = '" + username + "' AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
+			" FROM "+ this.database+".drink_recommendation dr, "+ this.database+".user u, "+ this.database+".drink d WHERE u.userName = ? AND dr.user_id = u.userId AND d.drinkId = dr.drink_id";
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, username);
+
+			rs = psmt.executeQuery();
 			ArrayList<Drink> drink = new ArrayList<Drink>();
 			
 			while (rs.next())
@@ -640,9 +693,11 @@ public class DrinkSQL {
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, publisher);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				if (rs2 != null){
@@ -663,7 +718,7 @@ public class DrinkSQL {
 
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 			Drink[] outDrink = new Drink[drink.size()];
 			outDrink = drink.toArray(outDrink);
@@ -677,15 +732,19 @@ public class DrinkSQL {
 		String query = "";
 		try{
 			if (toggle.equals("on")){
-				query = "update "+ this.database+".drink set likes = likes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes + 1 where drinkId = ?";
 			}else if (toggle.equals("off")){
-				query = "update "+ this.database+".drink set likes = likes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes - 1 where drinkId = ?";
 			}else if (toggle.equals("flip")){
-				query = "update "+ this.database+".drink set likes = likes + 1, dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes + 1, dislikes = dislikes - 1 where drinkId = ?";
 			}
-			int updateResult = smt.executeUpdate(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, drinkId);
 
-			rs = smt.executeQuery("select * from "+ this.database+".drink where drinkId = \""+drinkId+"\"");
+			int updateResult = psmt.executeUpdate();
+			psmt = conn.prepareStatement("select * from "+ this.database+".drink where drinkId = ?");
+			psmt.setInt(1, drinkId);
+			rs = psmt.executeQuery();
 			int updatedLikes = -1;
 			int updatedDislikes = -1;
 			while (rs.next()){
@@ -693,7 +752,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 //			if(updateResult == 1) {
 				return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -714,16 +773,19 @@ public class DrinkSQL {
 		String query = "";
 		try{
 			if(toggle.equals("on")){
-				query = "update "+ this.database+".drink set dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set dislikes = dislikes + 1 where drinkId = ?";
 			}else if (toggle.equals("off")){
-				query = "update "+ this.database+".drink set dislikes = dislikes - 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set dislikes = dislikes - 1 where drinkId = ?";
 			}else if (toggle.equals("flip")){
-				query = "update "+ this.database+".drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = \""+drinkId+"\"";
+				query = "update "+ this.database+".drink set likes = likes - 1, dislikes = dislikes + 1 where drinkId = ?";
 			}
-			
-			int updateResult = smt.executeUpdate(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, drinkId);
 
-			rs = smt.executeQuery("select * from "+ this.database+".drink where drinkId = \""+drinkId+"\"");
+			int updateResult = psmt.executeUpdate();
+			psmt = conn.prepareStatement("select * from "+ this.database+".drink where drinkId = ?");
+			psmt.setInt(1, drinkId);
+			rs = psmt.executeQuery();
 			int updatedLikes = -1;
 			int updatedDislikes = -1;
 			while (rs.next()){
@@ -731,7 +793,7 @@ public class DrinkSQL {
 				updatedDislikes = rs.getInt("dislikes");
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 //			if(updateResult == 1) {
 			return "{ \"likes\" : \""+ updatedLikes + "\", \"dislikes\": \"" + updatedDislikes + "\"}";
@@ -751,9 +813,11 @@ public class DrinkSQL {
 	public Drink getDrink(int drinkId){
 		try {
 			Drink drink = new Drink();
-			String query = "SELECT * from "+ this.database+".drink where drinkId = "+ drinkId ;
+			String query = "SELECT * from "+ this.database+".drink where drinkId = ?";
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, drinkId);
+			rs = psmt.executeQuery();
 			// Drink drink = new Drink();
 			while (rs.next()) {
 			//int drinkId=rs.getInt("drinkId");
@@ -766,10 +830,11 @@ public class DrinkSQL {
 
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
 					"FROM "+ this.database+".drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
-				//System.out.println(query_ingreds);
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, owner);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				while (rs2.next()){
@@ -788,13 +853,13 @@ public class DrinkSQL {
 			}
 			
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 				
-			if (!(rs.isClosed() && smt.isClosed() && conn.isClosed())){
+			if (!(rs.isClosed() && psmt.isClosed() && conn.isClosed())){
 				System.out.println("getdrinkbyid is not closed");
 				System.out.println("	rs: " + rs.isClosed());
-				System.out.println("	smt: " + smt.isClosed());
+				System.out.println("	smt: " + psmt.isClosed());
 				System.out.println("	conn: " + conn.isClosed());
 			}
 			return drink;
@@ -808,9 +873,11 @@ public class DrinkSQL {
 		try {
 			ArrayList<Drink> drinks = new ArrayList<Drink>();
 			Drink drink = new Drink();
-			String query = "select * from test_schema.drink where publisher = '"+ user + "'" ;
+			String query = "select * from test_schema.drink where publisher = ?" ;
 			System.out.println(query);
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			psmt.setString(1, user);
+			rs = psmt.executeQuery();
 
 			while (rs.next()) {
 				int drinkId=rs.getInt("drinkId");
@@ -822,11 +889,12 @@ public class DrinkSQL {
 				int dislikes=rs.getInt("dislikes");
 	
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
-					"WHERE drink_id = "+ drinkId + " AND username = \"" + owner + "\"";
-				//System.out.println(query_ingreds);
-				Statement smt2 = conn.createStatement();
-				ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"FROM "+ this.database+".drink_ingredient " +
+					"WHERE drink_id = ? AND username = ?";
+				PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+				smt2.setInt(1, drinkId);
+				smt2.setString(2, owner);
+				ResultSet rs2 = smt2.executeQuery();
 				ArrayList<Ingredient> ii = new ArrayList<>();
 				Ingredient[] ingreds;
 				while (rs2.next()){
@@ -839,6 +907,7 @@ public class DrinkSQL {
 				System.out.println(drink);
 				drinks.add(drink);
 			}
+			psmt.close();
 			conn.close();
 			return drinks;
 		} catch (Exception e){
@@ -850,7 +919,7 @@ public class DrinkSQL {
 //end of rod stuff
 
 	public Statement getSmt(){
-		return this.smt;
+		return this.psmt;
 	}
 	
 	public Connection getConn(){
@@ -863,8 +932,8 @@ public class DrinkSQL {
 		//get 15 most likeDrink
 		String query = "SELECT * FROM test_schema.drink ORDER BY likes DESC LIMIT 15";
 		System.out.println(query);
-
-		rs = smt.executeQuery(query);
+		psmt = conn.prepareStatement(query);
+		rs = psmt.executeQuery();
 
 		ArrayList<Drink> drink = new ArrayList<Drink>();
 		while (rs.next()) {
@@ -877,10 +946,12 @@ public class DrinkSQL {
 			String publisher=rs.getString("publisher");
 				
 			String query_ingreds = "SELECT quantity, measurement, ingredient " +
-				"FROM test_schema.drink_ingredient " +
-				"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
-			Statement smt2 = conn.createStatement();
-			ResultSet rs2 = smt2.executeQuery(query_ingreds);
+					"FROM "+ this.database+".drink_ingredient " +
+					"WHERE drink_id = ? AND username = ?";
+			PreparedStatement smt2 = conn.prepareStatement(query_ingreds);
+			smt2.setInt(1, drinkId);
+			smt2.setString(2, publisher);
+			ResultSet rs2 = smt2.executeQuery();
 			ArrayList<Ingredient> ii = new ArrayList<>();
 			Ingredient[] ingreds;
 			if (rs2 != null){
@@ -907,7 +978,7 @@ public class DrinkSQL {
 			}
 		}
 
-
+		psmt.close();
 		conn.close();
 		//add to Array
 		Drink[] outDrink = new Drink[retList.size()];
@@ -999,18 +1070,19 @@ public class DrinkSQL {
 		try {
 			
 			String query = "SELECT * FROM " + this.database + ".dotd";
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			rs = psmt.executeQuery();
 			while (rs.next()) {
 				oDrinks.add(rs.getInt("drinkId"));
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
 				rs.close();
-				smt.close();
+				psmt.close();
 				conn.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
@@ -1026,16 +1098,19 @@ public class DrinkSQL {
 			String query;
 			if (trunc_flag) {
 				query = "TRUNCATE table " + this.database + ".dotd";
-				smt.executeUpdate(query);
+				psmt = conn.prepareStatement(query);
+				psmt.executeUpdate();
 			}
-			query = "INSERT INTO " + this.database + ".dotd (drinkId) VALUES (" + drink_id + ");";
-			smt.executeUpdate(query);
-			smt.close();
+			query = "INSERT INTO " + this.database + ".dotd (drinkId) VALUES (?);";
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, drink_id);
+			psmt.executeUpdate();
+			psmt.close();
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
-				smt.close();
+				psmt.close();
 				conn.close();
 			} catch(SQLException se) {
 				se.printStackTrace();
@@ -1048,7 +1123,8 @@ public class DrinkSQL {
 		try {
 			String query = "SELECT * FROM "+ this.database+".dotd dt, "+this.database+".drink d, "+this.database +".drink_ingredient di" +
 				" WHERE dt.drinkId = d.drinkId AND dt.iddotd = (SELECT MAX(iddotd) FROM "+this.database+".dotd) AND di.drink_id = d.drinkId";
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			rs = psmt.executeQuery();
 			Drink d;
 			boolean f = true;
 			ArrayList<Ingredient> ii = new ArrayList<>();
@@ -1079,7 +1155,7 @@ public class DrinkSQL {
 			Ingredient[] ingred = new Ingredient[ii.size()];
 			ingred = ii.toArray(ingred);
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 			d = new Drink(drinkId, name, des, ingred, photo, likes, dislikes, publisher);
 			return d;
@@ -1090,7 +1166,7 @@ public class DrinkSQL {
 				if (rs != null) {
 					rs.close();
 				}
-				smt.close();
+				psmt.close();
 				conn.close();
 				return new Drink(-1, "Add Your Drink!", "Describe Your Drink!", new Ingredient[]{new Ingredient("What's in it?","","")}, "", 0,0,"Could be you!");
 			} catch (SQLException se) {
@@ -1103,8 +1179,10 @@ public class DrinkSQL {
 	public void updateLookedAt(int drinkid){
 		try {
 			String query = "UPDATE " + this.database + ".drink SET lookedUp = lookedUp + 1 " +
-				"WHERE drinkId = " + drinkid;
-			smt.executeUpdate(query);
+				"WHERE drinkId = ?";
+			psmt = conn.prepareStatement(query);
+			psmt.setInt(1, drinkid);
+			psmt.executeUpdate();
 			//closes in getDrink(dname, publisher)
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1118,8 +1196,8 @@ public class DrinkSQL {
 		try {
 			String query = "SELECT * FROM " + this.database + ".drink " +
 				"ORDER BY lookedUp DESC LIMIT 10";
-
-			rs = smt.executeQuery(query);
+			psmt = conn.prepareStatement(query);
+			rs = psmt.executeQuery();
 			while (rs.next()) {
 				dnames.add(
 					new Drink(
@@ -1136,7 +1214,7 @@ public class DrinkSQL {
 				//Drink(int id, String name, String description, Ingredient[] ingredients, String photo, int likes, int dislikes, String publisher)
 			}
 			rs.close();
-			smt.close();
+			psmt.close();
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1144,7 +1222,7 @@ public class DrinkSQL {
 				if (rs != null) {
 					rs.close();
 				}
-				smt.close();
+				psmt.close();
 				conn.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
