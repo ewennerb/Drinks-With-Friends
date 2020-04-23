@@ -38,20 +38,30 @@ export const userCard = (index, username, photo, loggedInUsername) => {
                             </Link>
                         </Button>
                         <Button basic color='blue' onClick={() =>
-                            fetch(config.url.API_URL + '/follow/' + username, {
+                            fetch(config.url.API_URL + '/user/follow/' + username, {
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({
-                                text: "",
-                                image: "",
-                                userName: loggedInUsername,
-                                userId: 0,
-                                geolocation: "",
-                                date: "",
-                                postId: 0
+                                    userName: loggedInUsername,
+                                    phoneNumber: "",
+                                    password: "",
+                                    name: "",
+                                    email: "",
+                                    photo: "",
+                                    bio: "",
+                                    likedDrinks: "",
+                                    dislikedDrinks: "",
+                                    favoritedDrink: "",
+                                    publishedDrinks: "",
+                                    postHistory: "",
+                                    friendsList: "",
+                                    dateCreated: "",
+                                    lastLogin: "",
+                                    response: undefined,
+                                    darkMode: 0
                         })
                         }).then(res => res.json()).then((data) => {
                                 console.log(data);
@@ -100,20 +110,30 @@ export const userCardFollowed = (index, username, photo, loggedInUsername) => {
                             </Link>
                         </Button>
                         <Button basic color='red' onClick={() =>
-                            fetch(config.url.API_URL + '/unfollow/' + username, { //NEED TO SEND THE RIGHT CALL
+                            fetch(config.url.API_URL + '/user/unfollow/' + username, { //NEED TO SEND THE RIGHT CALL
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({
-                                text: "",
-                                image: "",
                                 userName: loggedInUsername,
-                                userId: 0,
-                                geolocation: "",
-                                date: "",
-                                postId: 0
+                                    phoneNumber: "",
+                                    password: "",
+                                    name: "",
+                                    email: "",
+                                    photo: "",
+                                    bio: "",
+                                    likedDrinks: "",
+                                    dislikedDrinks: "",
+                                    favoritedDrink: "",
+                                    publishedDrinks: "",
+                                    postHistory: "",
+                                    friendsList: "",
+                                    dateCreated: "",
+                                    lastLogin: "",
+                                    response: undefined,
+                                    darkMode: 0
                         })
                         }).then(res => res.json()).then((data) => {
                                 console.log(data);
