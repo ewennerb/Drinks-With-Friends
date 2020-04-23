@@ -3,7 +3,8 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, minimalDrinkCard, userCard, postCard, userCardFollowed} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, userCardFollowed} from "./utils";
+import {PostCard} from "./PostCard"
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import {config} from '../config/config'
@@ -301,7 +302,6 @@ export default class Search extends React.Component{
                                 // return (drinkCard(index, result.name, result.description, result.photo, result.ingredients, result.publisher))
                             }else if(this.state.searchVal === 'u') {
                                 console.log(result.followedFlag)
-                                return (userCard(index, result.userName, result.photo))
 
                                 //console.log("result.userName: " + result.userName);
                                 //console.log("this.props.user.userName: " + this.state.user);
@@ -309,10 +309,10 @@ export default class Search extends React.Component{
                                     console.log("yourself!");
                                 }
                                 else if (result.followedFlag == 1) { //if user IS already followed by user, display unfollow card
-                                    return (userCardFollowed(index, result.userName, result.photo, this.props.userName))
+                                    return (userCardFollowed(index, result.userName, result.photo, this.state.user))
                                 }
                                 else { //else, display the normal card
-                                    return (userCard(index, result.userName, result.photo, this.props.userName))
+                                    return (userCard(index, result.userName, result.photo, this.state.user))
                                 }
 
                             } else if(this.state.searchVal === 'i'){
@@ -328,7 +328,8 @@ export default class Search extends React.Component{
                             }
                             else if (this.state.searchVal === 'p'){
                                 return (
-                                    postCard(result)
+                                    <PostCard post={result}/>
+                                    // postCard(result)
                                 )
                             } else if (this.state.searchVal === 't') {
                                 return(
@@ -376,7 +377,8 @@ export default class Search extends React.Component{
                                 }
                                 else if (this.state.searchVal === 'p'){
                                     return (
-                                        postCard(result)
+                                        <PostCard post={result}/>
+                                        // postCard(result)
                                     )
                                 } 
                             })
@@ -554,7 +556,3 @@ export default class Search extends React.Component{
         }
     }
 }
-
-
-
-

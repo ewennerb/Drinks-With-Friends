@@ -9,7 +9,7 @@ import {
   Segment,
 
 } from 'semantic-ui-react'
-import {ingredientCard, postCard} from "../utils";
+import {ingredientCard, } from "../utils";
 import DrinkCard from "../rDrinkCard.js";
 import 'semantic-ui-css/semantic.min.css';
 import {config} from '../../config/config'
