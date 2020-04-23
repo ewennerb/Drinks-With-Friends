@@ -274,23 +274,23 @@ export default class DrinkCard extends React.Component {
                             </EmailShareButton>
                         </Segment>
                     </Modal>
-                    <Modal open={this.state.mapModal} onClose={this.closeMap} closeOnEscape={false} centered closeIcon size="large">
-                        <h1>Goodle Maps</h1>
-                        <div style={{ margin: '100px' }}>
-                            <GeoSearch
-                                google={this.props.google}
-                                center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
-                            />
-                            <Map
-                                google={this.props.google}
-                                center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}
-                                height='300px'
-                                zoom={15}
-                            />
+                    {/*<Modal open={this.state.mapModal} onClose={this.closeMap} closeOnEscape={false} centered closeIcon size="large">*/}
+                    {/*    <h1>Goodle Maps</h1>*/}
+                    {/*    <div style={{ margin: '100px' }}>*/}
+                    {/*        <GeoSearch*/}
+                    {/*            google={this.props.google}*/}
+                    {/*            center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}*/}
+                    {/*        />*/}
+                    {/*        <Map*/}
+                    {/*            google={this.props.google}*/}
+                    {/*            center={{lat: this.state.userLocation.lat, lng: this.state.userLocation.lng}}*/}
+                    {/*            height='300px'*/}
+                    {/*            zoom={15}*/}
+                    {/*        />*/}
 
 
-                        </div>
-                    </Modal>
+                    {/*    </div>*/}
+                    {/*</Modal>*/}
                     <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
                         {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
                         <Card.Content>

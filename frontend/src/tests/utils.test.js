@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter} from "react-router-dom";
 import {Image} from "semantic-ui-react";
-import {dotdCard, drinkCard, userCard, postCard} from "../pages/utils";
+import {dotdCard, userCard, PostCard} from "../pages/utils";
 import {render, getByTestId, queryByTestId} from "@testing-library/react";
 import b64Img from "./resources/4horsemen.js"
 
@@ -95,7 +95,7 @@ test('User post renders correctly', () => {
         image: "",
         name: "Jest's name"
     }
-    const {container} = render(<BrowserRouter>{postCard(sameplePostCard)}</BrowserRouter>);
+    const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-card-0")).toBeDefined();
 });
 
@@ -109,7 +109,7 @@ test('User post fields render correctly', () => {
         image: null,
         name: "Jest's name"
     }
-    const {container} = render(<BrowserRouter>{postCard(sameplePostCard)}</BrowserRouter>);
+    const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
@@ -128,7 +128,7 @@ test('User post images render correctly', () => {
         image: null,
         name: "Jest's name"
     }
-    const {container} = render(<BrowserRouter>{postCard(sameplePostCard)}</BrowserRouter>);
+    const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
@@ -146,7 +146,7 @@ test('User post user image renders correctly', () => {
         image: null,
         name: "Jest's name"
     }
-    const {container} = render(<BrowserRouter>{postCard(sameplePostCard)}</BrowserRouter>);
+    const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
@@ -164,7 +164,7 @@ test('User post fields render correctly', () => {
         image: null,
         name: "Jest's name"
     }
-    const {container} = render(<BrowserRouter>{postCard(sameplePostCard)}</BrowserRouter>);
+    const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
