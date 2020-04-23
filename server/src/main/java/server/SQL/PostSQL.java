@@ -201,6 +201,7 @@ public class PostSQL {
 				post.add(p);
 			}
 			rs.close();
+			psmt.close();
 			smt.close();
 			conn.close();
 			Post[] outPost = new Post[post.size()];
