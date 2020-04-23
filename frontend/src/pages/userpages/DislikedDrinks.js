@@ -24,11 +24,11 @@ class DislikedDrinks extends Component{
     this.state = {
     // userName: User.userName,
     // posts: User.posts,
-    browser: props.user,
+    browser: props.browser,
     profile: props.match.params.profile,
     User: User,
     userLocation: props.userLocation,
-    // Drinks: props.Drinks,
+    dislikedDrinks: [],
     };
   }
 
