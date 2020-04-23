@@ -14,6 +14,7 @@ public class PostSQL {
 	private String url;
 	private Connection conn;
 	Statement smt;
+	PreparedStatement psmt;
 	ResultSet rs;
 	private String database;
 	public int recentPostId = 0;
