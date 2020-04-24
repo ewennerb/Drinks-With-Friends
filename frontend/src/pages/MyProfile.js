@@ -328,7 +328,6 @@ class Profile extends Component{
           fluid icon='lock'
           iconPosition='left'
           placeholder='Password'
-          value={this.state.password}
           onChange={this.handlePasswordChange}
           />
           {/* bio change input */}
@@ -476,7 +475,7 @@ class Profile extends Component{
           'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          userName: this.state.userName,
+          userName: this.state.profile,
           password: this.state.password,
           phoneNumber: '',
           name: '',
