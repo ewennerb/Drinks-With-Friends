@@ -21,11 +21,11 @@ public class PostSQL {
 
 	public PostSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		//url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
 		
 		try{
-			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
-			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 		
 			//smt = conn.createStatement();
 			
@@ -34,7 +34,7 @@ public class PostSQL {
 			
 		}
 		database = "test_schema";		//development
-		//database = "hiqietg4casioadz";	//production
+		database = "hiqietg4casioadz";	//production
 
 	}
 
