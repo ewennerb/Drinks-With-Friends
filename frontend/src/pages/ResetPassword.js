@@ -67,7 +67,7 @@ class ResetPassword extends React.Component {
                 <Grid.Column style={{maxWidth: 450}}>
 
                     <Header as='h2' color='grey' textAlign='center'>
-                        Log-in to your account
+                        Reset Your Password
                     </Header>
 
                     <Form size='large'>
