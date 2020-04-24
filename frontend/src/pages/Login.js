@@ -13,7 +13,6 @@ class Login extends React.Component {
         this.handleOpenUser = this.handleOpenUser.bind(this);
         this.handleOpenPass = this.handleOpenPass.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        console.log(this.props.history);
         this.state = {
 
             modalOpen: false,
@@ -24,7 +23,8 @@ class Login extends React.Component {
             fUser: false, //if forgot username is clicked
             fPass: false, //if forgot password is clicked
             response: '',
-            msg: ''
+            msg: '',
+            logBool: ""
         };
     }
 
@@ -341,29 +341,40 @@ class Login extends React.Component {
 
     //when the "login" button is clicked
     async handleSubmit() {
-        await fetch(config.url.API_URL + '/user/' + this.state.username, {
-            method: 'GET',
+        await fetch(config.url.API_URL + '/user/login', {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                userName: this.state.username,
+                phoneNumber: '',
+                password: this.state.password,
+                name: '',
+                email: '',
+            })
         }).then(res => res.json()).then((data) => {
-            this.setState({response: data})
-        }).catch(console.log);
+            console.log(data);
+            this.setState({logBool: data})
+            
+        }).catch(console.log)
 
-        if (this.state.response.password !== this.state.password) {
-            this.setState({msg: "Username or Password is Incorrect" });
-            console.log("You're a shitty hacker")
-            localStorage.setItem('username', '')
-        } else {
-            this.setState({loggedIn: true, user: this.state.response.userName});
+        if (this.state.logBool.status == "ok.") {
             console.log("Password is correct");
+            this.setState({loggedIn: true, user: this.state.username});
             localStorage.setItem('username', this.state.username)
             localStorage.setItem('is21', true)
             localStorage.setItem('authorized', true);
         }
-    };
+        else{
+            this.setState({msg: "Username or Password is Incorrect"});
+            localStorage.setItem('username', '');
+            console.log("WRONG PASS");
 
+        }
+    };
+    
 }
 
 export default Login
