@@ -62,5 +62,10 @@
     "jest": "24.9.0",
     "jest-css-modules": "^2.1.0",
     "react-test-renderer": "^16.13.1"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    }
   }
 }

@@ -76,11 +76,11 @@ const testSetup = () => {
 
 
 
-test("Renders loader without crashing", (done) => {
-    const {container} = render(<DrinkCard drink={drink}/>);
-    expect(getByTestId(container, "drink-loader")).toBeDefined();
-    done();
-});
+// test("Renders loader without crashing", (done) => {
+//     const {container} = render(<DrinkCard drink={drink}/>);
+//     expect(getByTestId(container, "drink-loader")).toBeDefined();
+//     done();
+// });
 
 
 test("Renders drink with no user passed", (done) => {
