@@ -44,7 +44,11 @@ class Friends extends Component{
       results = data;
   }).catch(console.log);
 
-  return results;
+  if(results.results === "DNE"){
+    //console.log(" I WANT TO FUCKING DIE")
+    return [];
+  }
+  return results.results;
 
   }
 
@@ -67,15 +71,15 @@ class Friends extends Component{
 
       search = 
       <div>
-      {this.state.results === undefined
+      {this.state.results == undefined || this.state.results.length < 1
         ? <Header textAlign="center">No Results Found</Header>
 
-        : this.state.results.results.map((result, index) => {
+        : Array.from(this.state.results).map((result, index) => {
 
-            console.log(result.followedFlag)
+           // console.log(result.followedFlag)
 
             if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
-                console.log("yourself!");
+               // console.log("yourself!");
             }
             else { //if user IS already followed by user, display unfollow card
                 return (userCardFollowed(index, result.userName, result.photo, this.state.user))
