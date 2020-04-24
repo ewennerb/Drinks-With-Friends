@@ -23,7 +23,8 @@ class Login extends React.Component {
             fUser: false, //if forgot username is clicked
             fPass: false, //if forgot password is clicked
             response: '',
-            msg: ''
+            msg: '',
+            logBool: ""
         };
     }
 
@@ -341,7 +342,7 @@ class Login extends React.Component {
     //when the "login" button is clicked
     async handleSubmit() {
         await fetch(config.url.API_URL + '/user/login', {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -354,12 +355,24 @@ class Login extends React.Component {
                 email: '',
             })
         }).then(res => res.json()).then((data) => {
-            this.setState({loggedIn: true, user: this.state.response.userName});
+            console.log(data);
+            this.setState({logBool: data})
+            
+        }).catch(console.log)
+
+        if (this.state.logBool.status == "ok.") {
             console.log("Password is correct");
+            this.setState({loggedIn: true, user: this.state.username});
             localStorage.setItem('username', this.state.username)
             localStorage.setItem('is21', true)
             localStorage.setItem('authorized', true);
-        }).catch(console.log)
+        }
+        else{
+            this.setState({msg: "Username or Password is Incorrect"});
+            localStorage.setItem('username', '');
+            console.log("WRONG PASS");
+
+        }
     };
     
 }
