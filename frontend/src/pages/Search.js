@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import DrinkCard from "./DrinkCard.js"
 import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
-import {dotdCard, minimalDrinkCard, userCard, userCardFollowed} from "./utils";
+import {dotdCard, minimalDrinkCard, userCard, userCardFollowed, userCardNeither} from "./utils";
 import {PostCard} from "./PostCard"
 import "../css/Search.css"
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
@@ -322,8 +322,10 @@ export default class Search extends React.Component{
 
                                 //console.log("result.userName: " + result.userName);
                                 //console.log("this.props.user.userName: " + this.state.user);
-                                if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
-                                    console.log("yourself!");
+                                if (result.userName == this.state.user || this.state.user == undefined) { //If when searching and yourself comes up, do not display
+                                    console.log("yourself! or not logged in");
+                                    return(userCardNeither(index, result.userName, result.photo));
+
                                 }
                                 else if (result.followedFlag == 1) { //if user IS already followed by user, display unfollow card
                                     return (userCardFollowed(index, result.userName, result.photo, this.state.user))
