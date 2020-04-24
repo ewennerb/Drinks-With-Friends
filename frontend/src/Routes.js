@@ -201,7 +201,27 @@ export default class Routes extends React.Component {
 
     async clearNotification(notification, link, index){
         //Todo: Figure out how to actually do this right
-        await fetch(config.url.API_URL + "/post/notificationClicked/" + notification.postId + "/" + this.state.user, {
+        let url;
+        console.log("undoing drink");
+        if (notification.drinkFlag === 1){
+            let drinkId;
+            await fetch(config.url.API_URL + "/drink/search?s=" + encodeURIComponent(notification.drinkName),{
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => res.json()).then(async (data) => {
+                console.log(data);
+                drinkId = data.results[0].id;
+            }).catch(console.log);
+            url = config.url.API_URL + "/drink/notificationClicked/" + drinkId + "/" + this.state.user;
+        }else{
+            url = config.url.API_URL + "/post/notificationClicked/" + notification.postId + "/" + this.state.user;
+        }
+
+
+        await fetch(url, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -270,7 +290,7 @@ export default class Routes extends React.Component {
                                 {this.state.notifications.map((notif, index) => {
                                     let link, message, icon;
                                     if(notif.drinkFlag === 1){
-                                        link = "/" + notif.publisher + "/drink/" + notif.postId;
+                                        link = "/" + notif.publisher + "/drink/" + notif.drinkName;
                                         message = " published a new drink recipe";
                                         icon = "beer"
                                     }else{

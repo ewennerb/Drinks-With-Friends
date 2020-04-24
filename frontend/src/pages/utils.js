@@ -28,6 +28,9 @@ export const userCard = (index, username, photo, loggedInUsername) => {
     //Todo: Add photo functionality
     console.log("Index: " + index.toString());
 
+    let newPath;
+    newPath = "/" + username;
+
     return(
         
         <Card centered data-testid={"user-card-" + index.toString()}>
@@ -42,9 +45,8 @@ export const userCard = (index, username, photo, loggedInUsername) => {
                 </Card.Content>
                 <Card.Content extra>
                     <div className='ui two buttons'>
-                        <Button basic color='grey'>
-                           
-                            <Link style={{textDecoration: "none", color: "grey"}} to={(`${username}`)}>
+                        <Button basic color='grey' onClick={() => {window.location.href = newPath}}>
+                            <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
                                     View Profile
                             </p>
@@ -101,6 +103,8 @@ export const userCardFollowed = (index, username, photo, loggedInUsername) => {
         pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
         }
     //Todo: Add photo functionality
+    let newPath;
+    newPath = "/" + username;
     return(
         <Card centered data-testid={"user-card-" + index.toString()}>
             <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
@@ -116,7 +120,7 @@ export const userCardFollowed = (index, username, photo, loggedInUsername) => {
                     <div className='ui two buttons'>
                         <Button basic color='grey'>
                            
-                            <Link style={{textDecoration: "none", color: "grey"}} to={(`${username}`)}>
+                            <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
                                     View Profile
                             </p>

@@ -532,7 +532,7 @@ export default class DrinkCard extends React.Component {
                                 {/*Todo: Rod - Put your flag in the 'hidden' value and your method to open the modal in the onClick here */}
                                 
                                 {this.state.editable && <Icon link name="edit" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.handleEdit}/>}
-                                
+
 
                             </Card.Header>
 
