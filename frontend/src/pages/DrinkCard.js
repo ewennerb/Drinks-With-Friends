@@ -509,7 +509,7 @@ export default class DrinkCard extends React.Component {
                             <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={shareURL}>
                                 <FacebookIcon size={32}/>
                             </FacebookShareButton>&nbsp;
-                            <TwitterShareButton title={"Drinks With Friends"} url={shareURL}>
+                            <TwitterShareButton title={"Check out this drink I found! "+shareURL} url={shareURL}>
                                 <TwitterIcon size={32}/>
                             </TwitterShareButton>&nbsp;
                             {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
