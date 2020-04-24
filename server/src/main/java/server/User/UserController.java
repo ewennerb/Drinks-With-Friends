@@ -101,6 +101,16 @@ public class UserController {
 		if(dbPass == "")
 			return "{ \"status\" : \"Error: Login Failed.\"}";
 		//byte[] saltSubstr = dbPass.substring(0, dbPass.indexOf(".")).getBytes();
+		if(!dbPass.contains(".")){
+			System.out.println("No hashedPass");
+			//for our use cuz no hashed pass
+			String testHashedPass = hashPass(dbPass, null, 1);
+			user = new UserSQL();
+			return user.updatePassword(u.userName, testHashedPass);
+			//return "{ \"status\" : \"ok.\"}";
+		}
+
+
 		String saltSubstr = dbPass.substring(0, dbPass.indexOf("."));
 		System.out.println("Salt string from database: "+saltSubstr);
 
