@@ -1,9 +1,11 @@
 import React from 'react';
 import {BrowserRouter} from "react-router-dom";
 import {Image} from "semantic-ui-react";
-import {dotdCard, userCard, PostCard} from "../pages/utils";
+import {dotdCard, userCard} from "../pages/utils";
+import {PostCard} from "../pages/PostCard"
 import {render, getByTestId, queryByTestId} from "@testing-library/react";
 import b64Img from "./resources/4horsemen.js"
+import 'regenerator-runtime/runtime'
 
 const ingredients = [
     {
@@ -64,22 +66,22 @@ test('Drink of the Day Fields Render Correctly', () => {
 
 
 test('User Card Renders', () => {
-    const {container} = render(userCard(0, 'test-username', ""));
+    const {container} = render(<BrowserRouter>{userCard(0, 'test-username', "", "not-user")}</BrowserRouter>);
     expect(getByTestId(container, "user-card-0")).toBeDefined();
 });
 
 
 test('User card fields render correctly', () => {
-    const {container} = render(userCard(0, 'test-username', ""));
-    expect(getByTestId(container, "user-name-0").textContent).toEqual("test-username");
+    const {container} = render(<BrowserRouter>{userCard(0, 'test-username', "", "not-user")}</BrowserRouter>);
+    expect(getByTestId(container, "user-name-0").textContent).toEqual("@test-username");
     expect(getByTestId(container, "user-placeholder-img-0")).toBeDefined();
     expect(queryByTestId(container, "user-b64-img-0")).toBeNull();
 });
 
 
 test('User card renders b64 image', () => {
-    const {container} = render(userCard(0, "test-username", b64Img));
-    expect(getByTestId(container, "user-name-0").textContent).toEqual("test-username");
+    const {container} = render(<BrowserRouter>{userCard(0, 'test-username', b64Img, "not-user")}</BrowserRouter>);
+    expect(getByTestId(container, "user-name-0").textContent).toEqual("@test-username");
     expect(queryByTestId(container, "user-placeholder-img-0")).toBeNull();
     expect(getByTestId(container, "user-b64-img-0")).toBeDefined();
 });
@@ -93,8 +95,8 @@ test('User post renders correctly', () => {
         date: "3/30/2020",
         profileImage: "",
         image: "",
-        name: "Jest's name"
-    }
+        name: "Jestname"
+    };
     const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
     expect(getByTestId(container, "post-card-0")).toBeDefined();
 });
@@ -110,7 +112,7 @@ test('User post fields render correctly', () => {
         name: "Jest's name"
     }
     const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
-    expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
+    expect(getByTestId(container, "post-name-0").textContent).toEqual("(Jest's name)");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
     expect(getByTestId(container, "post-user-placeholder-img-0")).toBeDefined();
@@ -129,7 +131,7 @@ test('User post images render correctly', () => {
         name: "Jest's name"
     }
     const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
-    expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
+    expect(getByTestId(container, "post-name-0").textContent).toEqual("(Jest's name)");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
     expect(queryByTestId(container, "post-user-b64-img-0")).toBeDefined();
@@ -147,13 +149,15 @@ test('User post user image renders correctly', () => {
         name: "Jest's name"
     }
     const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
-    expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
+    expect(getByTestId(container, "post-name-0").textContent).toEqual("(Jest's name)");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
     expect(queryByTestId(container, "post-user-b64-img-0")).toBeDefined();
     expect(queryByTestId(container, "user-div-img-0")).toBeDefined();
     
 });
+
+
 test('User post fields render correctly', () => {
     let sameplePostCard = {
         text: "This is some sample text for testing, LATEE DAAA",
@@ -165,7 +169,7 @@ test('User post fields render correctly', () => {
         name: "Jest's name"
     }
     const {container} = render(<BrowserRouter><PostCard post={sameplePostCard}/></BrowserRouter>);
-    expect(getByTestId(container, "post-name-0").textContent).toEqual("Jest's name");
+    expect(getByTestId(container, "post-name-0").textContent).toEqual("(Jest's name)");
     expect(getByTestId(container, "post-username-0").textContent).toEqual("@Jest");
     expect(getByTestId(container, "post-text-0").textContent).toEqual("This is some sample text for testing, LATEE DAAA");
     expect(queryByTestId(container, "post-user-placeholder-img-0")).toBeDefined();

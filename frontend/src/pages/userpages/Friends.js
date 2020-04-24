@@ -49,7 +49,6 @@ class Friends extends Component{
     return [];
   }
   return results.results;
-
   }
 
   async componentDidMount() {
@@ -76,14 +75,17 @@ class Friends extends Component{
 
         : Array.from(this.state.results).map((result, index) => {
 
-           // console.log(result.followedFlag)
+            console.log(result.followedFlag)
 
-            if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
-               // console.log("yourself!");
+            if (result.userName == this.state.user || this.state.user == undefined) { //If when searching and yourself comes up, do not display
+                console.log("yourself! or not logged in");
+                return (userCardNeither(index, result.userName, result.photo));
             }
             else { //if user IS already followed by user, display unfollow card
                 return (userCardFollowed(index, result.userName, result.photo, this.state.user))
             }
+
+
             
 
         })

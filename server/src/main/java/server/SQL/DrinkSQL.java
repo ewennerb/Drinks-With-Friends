@@ -1241,9 +1241,11 @@ public class DrinkSQL {
 
 	public String editDrink(Drink d){
 		try {
+
 			if (psmt != null) {
 				psmt.close();
 			}
+
 			String query = "UPDATE " + this.database + ".drink SET name = ?, description = ?" + ((d.photo.equals("")) ? " " : ", stockPhoto = ? ") +
 				"WHERE drinkId = ?";
 			System.out.println(query);

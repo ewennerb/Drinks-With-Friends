@@ -76,14 +76,32 @@ const testSetup = () => {
 
 
 
-test("Renders loader without crashing", (done) => {
-    const {container} = render(<DrinkCard drink={drink}/>);
-    expect(getByTestId(container, "drink-loader")).toBeDefined();
-    done();
-});
+
 
 
 test("Renders drink with no user passed", (done) => {
+    const {didMount, spyDidMount} = testSetup();
+    //This waits for componentDidMount to do something before going
+    expect(spyDidMount).toHaveBeenCalled();
+    didMount.then(() => {
+        // updating the wrapper
+        wrapper.update();
+
+        //Find the elements on the drink and see if they really exist
+        expect(wrapper.find('[data-testid=\"drink-share\"]').exists());
+        expect(wrapper.find('[data-testid=\"drink-img-placeholder\"]').exists());
+        expect(wrapper.find('[data-testid=\"drink-name\"]').exists());
+        expect(wrapper.find('[data-testid=\"drink-ingredient-list\"]').exists());
+        expect(wrapper.find('[data-testid=\"drink-likeDislike-loggedOut\"]').exists());
+
+        spyDidMount.mockRestore();
+        fetch.mockClear();
+        done();
+    });
+});
+
+
+test("Renders drink with a user passed", (done) => {
     const {didMount, spyDidMount} = testSetup();
     //This waits for componentDidMount to do something before going
     expect(spyDidMount).toHaveBeenCalled();

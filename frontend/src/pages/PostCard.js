@@ -1,7 +1,15 @@
 import React from "react";
-import {Button, Card, CardContent, Grid, GridRow, Header, Icon, Image, Segment} from "semantic-ui-react";
+import {Button, Card, CardContent, Grid, GridRow, Header, Icon, Image, Modal, Segment} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {config} from "../config/config";
+import {
+    EmailIcon,
+    EmailShareButton,
+    FacebookIcon,
+    FacebookShareButton,
+    TwitterIcon,
+    TwitterShareButton
+} from "react-share";
 
 export class PostCard extends React.Component{
 
@@ -10,8 +18,11 @@ export class PostCard extends React.Component{
         this.state = {
             user: this.props.user,
             post: this.props.post,
-            geoTag: undefined
+            geoTag: undefined,
+            shareModal: false
         }
+        this.openShare = this.openShare.bind(this);
+        this.closeShare = this.closeShare.bind(this);
     }
 
     async componentDidMount(){
@@ -20,6 +31,18 @@ export class PostCard extends React.Component{
             post: this.props.post
         });
     }
+
+    openShare(){
+        this.setState({
+            shareModal: true
+        })
+    }
+
+    closeShare(){
+        this.setState({
+            shareModal: false
+        })
+    };
 
     render(){
         let pfp;
@@ -42,7 +65,7 @@ export class PostCard extends React.Component{
         let text_image;
         if (post.image === null || post.image === "" || post.image === undefined){
 
-            text_image = <div  data-testid={"user-div-img-0"}/>
+            text_image = <div  data-testid={"post-placeholder-img-0"}/>
 
         }else{
             text_image = <Image size="large" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
@@ -78,91 +101,113 @@ export class PostCard extends React.Component{
         }
 
         let x = "/" + post.userName;
+        let shareURL =  "fiveo-clocksomewhere.web.app/post/" + encodeURIComponent(post.userName) + "/" + encodeURIComponent(post.postId);
+        console.log(shareURL);
 
         return(
-            <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
-                <Card.Content>
-                    {this.state.user === post.userName
-                        ? <div className='ui two icons right floated inline'>
-                            <Icon link color='grey' name="trash" onClick={() =>
-                                fetch(config.url.API_URL + '/post/delete', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        text: "",
-                                        image: "",
-                                        userName: post.userName,
-                                        userId: 0,
-                                        geolocation: "",
-                                        date: "",
-                                        postId: post.postId
-                                    })
-                                }).then(res => res.json()).then((data) => {
-                                    console.log(data);
-                                    window.location.replace('/feed');
-                                }).catch(console.log)
-                            }/>
-                        </div>
+            <div>
+                <Modal open={this.state.shareModal} onClose={this.closeShare} closeOnEscape={false} size="mini" centered closeIcon>
+                    <Header textAlign="left">Share Via:</Header>
+                    {/*Todo: Actually plug in a legit URL and all the other paramters*/}
+                    <Segment basic textAlign="center">
+                        <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={shareURL}>
+                            <FacebookIcon size={32}/>
+                        </FacebookShareButton>&nbsp;
+                        <TwitterShareButton title={"Drinks With Friends"} url={shareURL}>
+                            <TwitterIcon size={32}/>
+                        </TwitterShareButton>&nbsp;
+                        {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
+                        <EmailShareButton subject="Check out this drink I found!" url={shareURL}>
+                            <EmailIcon size={32}/>
+                        </EmailShareButton>
+                    </Segment>
+                </Modal>
+                <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
+                    <Card.Content>
+                        {this.state.user === post.userName
+                            ? <div className='ui two icons right floated inline'>
+                                <Icon link color='grey' name="trash" onClick={() =>
+                                    fetch(config.url.API_URL + '/post/delete', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            text: "",
+                                            image: "",
+                                            userName: post.userName,
+                                            userId: 0,
+                                            geolocation: "",
+                                            date: "",
+                                            postId: post.postId
+                                        })
+                                    }).then(res => res.json()).then((data) => {
+                                        console.log(data);
+                                        window.location.replace('/feed');
+                                    }).catch(console.log)
+                                }/>
+                                <Icon link name="share" onClick={this.openShare}/>
+                            </div>
 
-                        : <div/>
-                    }
-                    {text_image}
+                            : <div/>
+                        }
+                        {text_image}
 
 
-                    <Header as="h4" textAlign="left" data-testid={"user-name-"} dividing>
-                        {pfp}
-                        <div className="left aligned">
-                            <Header.Content>
-                                    <Link to={x}>@{post.userName}</Link>
+                        <Header as="h4" textAlign="left" dividing>
+                            {pfp}
+                            <div className="left aligned">
+                                <Header.Content>
+                                    <Link to={x} data-testid={"post-username-0"}>@{post.userName}</Link>
                                     <div className="meta">
-                                        <p style={{fontSize: "75%"}}>({post.name})</p>
+                                        <p style={{fontSize: "75%"}} data-testid={"post-name-0"}>({post.name})</p>
                                     </div>
-                            </Header.Content>
-                            <Header.Subheader>{post.text}</Header.Subheader>
-                        </div>
+                                </Header.Content>
+                                <Header.Subheader data-testid={"post-text-0"}>{post.text}</Header.Subheader>
+                            </div>
 
-                    </Header>
-                    <Card.Meta>
-                        {postLocation}
-                    </Card.Meta>
-                </Card.Content>
+                        </Header>
+                        <Card.Meta>
+                            {postLocation}
+                        </Card.Meta>
+                    </Card.Content>
 
 
 
-                {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
-                {/*    <Link to={x}>*/}
-                {/*        <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>*/}
-                {/*            {pfp}*/}
-                {/*        </CardContent>*/}
-                {/*    </Link>*/}
-                {/*    <Grid columns={1}>*/}
-                {/*        <GridRow style={{paddingBottom: "0px"}}>*/}
-                {/*            <Link style={{textDecoration: "none"}} to={x}>*/}
-                {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>*/}
-                {/*                    @{post.userName}*/}
-                {/*                </p>*/}
-                {/*            </Link>*/}
-                {/*        </GridRow>*/}
-                {/*        <GridRow  style={{paddingTop: "0px"}}>*/}
-                {/*            <Link style={{textDecoration: "none", color: "grey"}} to={x}>*/}
-                {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>*/}
-                {/*                    {post.name}*/}
-                {/*                </p>*/}
-                {/*            </Link>*/}
-                {/*        </GridRow>*/}
-                {/*        <GridRow>*/}
-                {/*            {postLocation}*/}
-                {/*        </GridRow>*/}
-                {/*    </Grid>*/}
+                    {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
+                    {/*    <Link to={x}>*/}
+                    {/*        <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>*/}
+                    {/*            {pfp}*/}
+                    {/*        </CardContent>*/}
+                    {/*    </Link>*/}
+                    {/*    <Grid columns={1}>*/}
+                    {/*        <GridRow style={{paddingBottom: "0px"}}>*/}
+                    {/*            <Link style={{textDecoration: "none"}} to={x}>*/}
+                    {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>*/}
+                    {/*                    @{post.userName}*/}
+                    {/*                </p>*/}
+                    {/*            </Link>*/}
+                    {/*        </GridRow>*/}
+                    {/*        <GridRow  style={{paddingTop: "0px"}}>*/}
+                    {/*            <Link style={{textDecoration: "none", color: "grey"}} to={x}>*/}
+                    {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>*/}
+                    {/*                    {post.name}*/}
+                    {/*                </p>*/}
+                    {/*            </Link>*/}
+                    {/*        </GridRow>*/}
+                    {/*        <GridRow>*/}
+                    {/*            {postLocation}*/}
+                    {/*        </GridRow>*/}
+                    {/*    </Grid>*/}
 
-                {/*</Segment>*/}
+                    {/*</Segment>*/}
 
-                {/*This figures out if the user is logged in or not and renders a delete/edit button for you if that's the case. Otherwise it does nothing*/}
+                    {/*This figures out if the user is logged in or not and renders a delete/edit button for you if that's the case. Otherwise it does nothing*/}
 
-            </Card>
+                </Card>
+            </div>
+
         )
     }
 };

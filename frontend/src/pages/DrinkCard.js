@@ -6,7 +6,7 @@ import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterS
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 import Map from "./MapContainer";
 import GeoSearch from "./geoSearch";
-import "../css/Drink.css"
+// import "../css/Drink.css"
 var base64 = require('base-64');
 
 export default class DrinkCard extends React.Component {
@@ -412,8 +412,8 @@ export default class DrinkCard extends React.Component {
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-img-placeholder"}/>
             }
 
-            let shareURL =  "fiveo-clocksomewhere.web.app/" + drink.publisher + "/drink/" + drink.name;
-            shareURL = encodeURIComponent(shareURL);
+
+            let shareURL =  "fiveo-clocksomewhere.web.app/" + encodeURIComponent(drink.publisher) + "/drink/" + encodeURIComponent(drink.name);
 
             return(
                 <div>
@@ -509,7 +509,7 @@ export default class DrinkCard extends React.Component {
                             <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={shareURL}>
                                 <FacebookIcon size={32}/>
                             </FacebookShareButton>&nbsp;
-                            <TwitterShareButton title={"Drinks With Friends"} url={shareURL}>
+                            <TwitterShareButton title={"Check out this drink I found! "+shareURL} url={shareURL}>
                                 <TwitterIcon size={32}/>
                             </TwitterShareButton>&nbsp;
                             {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
