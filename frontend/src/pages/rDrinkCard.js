@@ -1,14 +1,16 @@
 import React from "react";
-import {Card, Image, List, Loader, FeedLike, Icon, Menu, Modal, Button, Form, Segment, Search} from "semantic-ui-react";
+import {Card, Image, List, Loader, FeedLike, Icon, Menu,
+     Modal, Button, Form, Segment, Search, Container,
+    FormGroup, Message, } from "semantic-ui-react";
 import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
 import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon} from "react-share";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
-import Map from "./MapContainer";
-import GeoSearch from "./geoSearch";
 
 import "../css/Drink.css"
 //rods version
+var base64 = require('base-64');
+
 
 export default class DrinkCard extends React.Component {
     constructor(props) {
@@ -28,8 +30,26 @@ export default class DrinkCard extends React.Component {
             mapModal: false,
             isLoading: false,
             searchInput: "",
+            //rods
             profileOwner: this.props.profileOwner,
             editModal:false,
+            //stuff for modal
+            postText: "",
+            postDisabled: true,
+            postDisabled2: true,
+            file: {},
+            fileString: "",
+            fileName: "",
+            selected: false,
+            drinkName: "",
+            description: "",
+            ingredients: [
+                {
+                    ingredient: "",
+                    quantity: "",
+                    measurement: ""
+                }
+            ],
         };
         this.location = {};
         this.likeDislikeRequestor = this.likeDislikeRequestor.bind(this);
@@ -40,7 +60,18 @@ export default class DrinkCard extends React.Component {
         this.closeShare = this.closeShare.bind(this);
         this.handleSearchChange = this.handleSearchChange.bind(this);
 
-        this.handleEditDrink = this.handleEditDrink.bind(this);
+        //this.handleEditDrink = this.handleEditDrink.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleFileRead = this.handleFileRead.bind(this);
+        this.changeIngredient = this.changeIngredient.bind(this);
+        this.createIngredient = this.createIngredient.bind(this);
+        this.changeIngredientQuantity = this.changeIngredientQuantity.bind(this);
+        this.changeIngredientMeasurement = this.changeIngredientMeasurement.bind(this);
+        this.removeIngredient = this.removeIngredient.bind(this);
+        this.postDrink = this.postDrink.bind(this);
+        this.fileChange = this.fileChange.bind(this);
+        this.fileReader = new FileReader();
     }
 
 
@@ -215,6 +246,17 @@ export default class DrinkCard extends React.Component {
         editModal: true
       }) 
     }
+    handleClose() {
+        this.setState({
+            editModal: false,   
+        })
+      }
+    
+    handleOpen() {
+          this.setState({
+            editModal: true
+        }) 
+      }
 
 
     render(){
@@ -269,7 +311,7 @@ export default class DrinkCard extends React.Component {
             //whether to render edit button or not
             if(this.state.profileOwner){
                 editDrink = 
-                    <Button animated="fade" onClick={this.handleEditDrink}  >
+                    <Button animated="fade" onClick={this.handleOpen}  >
                     <Button.Content visible>Edit Drink</Button.Content>
                     <Button.Content hidden>
                     <Icon name="edit"/>
@@ -358,8 +400,96 @@ export default class DrinkCard extends React.Component {
                             {likes}
                         </Card.Content>
                     </Card>
-                </div>
 
+
+
+                {/* rods modal */}
+                
+            <Modal open={this.state.editModal} closeOnDimmerClick={false} closeOnEscape={false} onClose={this.handleClose} size="large">
+            <Modal.Header>
+                Edit a Drink
+            </Modal.Header>
+            <Form size='large'>
+                <Segment stacked>
+                    <Form>
+                        <Button
+                            content="Choose File"
+                            labelPosition="left"
+                            icon="file"
+                            onClick={() => this.fileInputRef.current.click()}
+                        />
+                        <input
+                            ref={this.fileInputRef}
+                            accept="image/gif, image/jpeg, image/png"
+                            type="file"
+                            hidden
+                            onChange={this.fileChange}
+                        />
+                        <Message hidden={!this.state.selected} >{this.state.fileName}</Message>
+                        <Form.Input
+                            placeholder='Drink Name'
+                            content={this.state.drinkName}
+                            onChange={this.handleNameChange}
+                            required={true}
+                        />
+                        <Form.Input
+                            placeholder='Description'
+                            content={this.state.description}
+                            onChange={this.handleDescriptionChange}
+                        />
+                        <Button icon="plus" content={"Add Ingredients"} onClick={this.createIngredient}/>
+                        <br/>
+                        <br/>
+                        {this.state.ingredients.map((ing, index) => {
+                            return (
+                                <FormGroup inline>
+                                    <Form.Input
+                                        className={index.toString()}
+                                        label={"Amount"}
+                                        labelPosition="top"
+                                        width={3}
+                                        placeholder="1"
+                                        content={this.state.ingredients[index].quantity}
+                                        onChange={(e) => this.changeIngredientQuantity(e, index)}
+                                    />
+                                    <Form.Input
+                                        className={index.toString()}
+                                        label={"Amount"}
+                                        labelPosition="top"
+                                        width={3}
+                                        placeholder="ex. oz"
+                                        content={this.state.ingredients[index].measurement}
+                                        onChange={(e) => this.changeIngredientMeasurement(e, index)}
+                                    />
+                                    <Form.Input
+                                        className={index.toString()}
+                                        label={"Ingredient"}
+                                        labelPosition="top"
+                                        width={6}
+                                        placeholder="Ex. Smirnoff Vodka"
+                                        content={this.state.ingredients[index].ingredient}
+                                        onChange={(e) => this.changeIngredient(e, index)}
+                                    />
+                                    <Button className={index.toString()} icon="minus" onClick={(e) => this.removeIngredient(e, index)}/>
+                                </FormGroup>
+                            )
+                        })}
+                        <br/>
+                        <div className='ui two buttons'>
+                            <Button color='grey' onClick={this.handleClose}>
+                                Cancel
+                            </Button>
+                            <Button color='yellow' disabled={this.state.postDisabled} onClick={() => this.postDrink()}>
+                                Post!
+                            </Button>
+                        </div>
+                    </Form>
+
+                </Segment>
+            </Form>
+                </Modal>
+                {/* end of modal */}
+            </div>//parentelement
             );
         }else{
             return(
@@ -367,6 +497,117 @@ export default class DrinkCard extends React.Component {
             )
         }
     }
+
+    //rods
+    handleFileRead = (e) => {
+        this.setState({fileString: this.fileReader.result});
+    };
+
+    
+    async fileChange(event) {
+        if(event.target.files === undefined){
+            this.setState({
+                file: undefined,
+                selected: false,
+                fileName: ""
+            })
+        }else{
+            const file = event.target.files[0];
+            const fileName = event.target.files[0].name;
+            this.fileReader = new FileReader();
+
+            this.fileReader.onload = this.handleFileRead;
+
+            await this.fileReader.readAsBinaryString(file);
+        
+
+            await this.setState({
+                file: file,
+                selected: true,
+                fileName: fileName,
+            });
+        }
+    };
+    canPost(){
+        let blankIngr = {ingredient: "", quantity: "", measurement: ""};
+        let disabled;
+        console.log(this.state.ingredients);
+        disabled = !(this.state.ingredients.every(val => val.ingredient !== "") &&
+            this.state.ingredients.length >= 1 &&
+            this.state.drinkName !== "" &&
+            this.state.drinkName !== " ");
+        this.setState({
+            postDisabled: disabled
+        })
+    }
+    async createIngredient(){
+        await this.state.ingredients.push({quantity: "", measurement: "", ingredient: ""});
+        this.forceUpdate();
+        this.canPost();
+    }
+    async changeIngredientQuantity(event, index){
+        let fakeIngredients = this.state.ingredients;
+        fakeIngredients[index].quantity = event.target.value;
+        await this.setState({ingredients: fakeIngredients});
+    }
+
+    async changeIngredientMeasurement(event, index){
+        let fakeIngredients = this.state.ingredients;
+        fakeIngredients[index].measurement = event.target.value;
+        await this.setState({ingredients: fakeIngredients});
+    }
+
+    async changeIngredient(event, index){
+        let fakeIngredients = this.state.ingredients;
+        fakeIngredients[index].ingredient = event.target.value;
+        await this.setState({ingredients: fakeIngredients});
+        this.canPost();
+    }
+
+    async removeIngredient(event){
+        console.log(parseInt(event.target.className));
+        console.log(event.target.className);
+        this.state.ingredients.splice(parseInt(event.target.className), 1);
+        this.canPost();
+        this.forceUpdate();
+    }
+
+    async handleNameChange(event){
+        await this.setState({
+            drinkName: event.target.value
+        });
+        this.canPost();
+    }
+
+    async handleDescriptionChange(event){
+        this.setState({
+            description: event.target.value
+        });
+    }
+    async postDrink(){
+        let photoString = "";
+        if(this.state.selected){
+            photoString = await base64.encode(this.state.fileString);
+        }
+        
+        await fetch(config.url.API_URL + '/drink/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                publisher: this.state.user,
+                name: this.state.drinkName,
+                description: this.state.description,
+                ingredients: this.state.ingredients,
+                photo: photoString
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data);
+            this.setState({response: data, modalOpen: false})
+        }).catch(console.log);
+    };
 
 }
 
