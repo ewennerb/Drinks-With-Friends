@@ -117,7 +117,7 @@ export const userCardFollowed = (index, username, photo, loggedInUsername) => {
                    
                 </Card.Content>
                 <Card.Content extra>
-                    <div className='ui two buttons'>
+                    <div className='ui two buttons' onClick={() => {window.location.href=newPath}}>
                         <Button basic color='grey'>
                            
                             <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
