@@ -84,7 +84,6 @@ async handleNameChange(e){
         await this.setState({
             drinkName: e.target.value
         });
-        console.log(this.state.drinkName)
         this.canPost();
     }
 
@@ -163,8 +162,7 @@ async editDrink(){
         console.log(data);
         this.setState({editing: false})
         if (data.status === "ok"){
-            this.state.drink.name = this.state.drinkName
-            console.log(this.state.drink.name)
+            window.location.replace('/'+this.state.drink.publisher + '/drink/' + this.state.drinkName) 
         }
     }).catch(console.log);
 }
@@ -217,7 +215,9 @@ async getDrink(){
         // })
     }).then(res => res.json()).then(async (data) => {
         console.log(data)
+        
         await this.setState({drink: data, drinkName: data.name, description: data.description, ingredients: data.ingredients})
+        
         
     }).catch(console.log);
     await this.setState({done: true})

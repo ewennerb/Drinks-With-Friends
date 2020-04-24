@@ -1172,20 +1172,43 @@ public class DrinkSQL {
 			} else {
 				psmt_temp.setString(3, d.photo);
 				psmt_temp.setInt(4, d.id);
-			}
-			
+			}			
 			System.out.println(d.toString());
 			int status = psmt_temp.executeUpdate();
-			psmt_temp.close();
-			conn.close();
+			query = "DELETE FROM " + this.database + ".drink_ingredient " +
+				"WHERE drink_id = ? AND username = ?";
+			
+			psmt_temp = conn.prepareStatement(query);
+			psmt_temp.setInt(1, d.id);
+			psmt_temp.setString(2, d.publisher);
+
+			status = psmt_temp.executeUpdate();
 			String msg = "";
-			if (status == 1) {
-				msg = "{ status: 'ok'}";
-			} else {
-				msg =  "{ status: 'error updating drink'}";
+			for (Ingredient in : d.ingredients) {
+				query = "INSERT INTO "+ this.database+".drink_ingredient (username, drink_id, ingredient, measurement, quantity) "+
+					"VALUES (?, ?, ?, ?, ?)";
+				psmt_temp = conn.prepareStatement(query);
+				psmt_temp.setString(1, d.publisher);
+				psmt_temp.setInt(2, d.id);
+				psmt_temp.setString(3, in.ingredient);
+				psmt_temp.setString(4, in.measurement);
+				psmt_temp.setString(5, in.quantity);
+				status = psmt_temp.executeUpdate();
+				
+				if (status != 1 && msg.length() == 0) {
+					msg = "error updating drink";
+				}
+			}
+
+
+
+			conn.close();
+			if (msg.length() == 0){
+				msg = "ok";
 			}
 			System.out.println(msg + " status: " +status);
-			return msg;
+			return "{ \"status\": \""+msg+"\"}";
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -1197,7 +1220,7 @@ public class DrinkSQL {
 			} catch (SQLException se) {
 				se.printStackTrace();
 			}
-			return "{ 'status': 'error updating drink'}";
+			return "{ \"status\": \"error updating drink\"}";
 		}
 	}
 
