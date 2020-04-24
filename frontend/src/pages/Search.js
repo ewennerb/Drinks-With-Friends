@@ -247,7 +247,16 @@ export default class Search extends React.Component{
                 'Content-Type': 'application/json',
             },
         }).then(res => res.json()).then(async (data) => {
-            this.setState({results: data.results})
+            console.log("DATA.LENGTH: " + data.results.length);
+            if (data.results.length > 1) {
+                let tempResults;
+                tempResults = [];
+                tempResults[0] = data.results[0];
+                this.setState({results: tempResults});
+            }
+            else {
+                this.setState({results: data.results})
+            }
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
 
