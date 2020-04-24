@@ -67,7 +67,6 @@ export default class DrinkCard extends React.Component {
                         'Content-Type': 'application/json',
                     },
                 }).then(res => res.json()).then(async (data) => {
-                    console.log(data);
                     isLiked = data.isLiked;
                     isDisliked = data.isDisliked;
                 }).catch(console.log);
@@ -93,7 +92,6 @@ export default class DrinkCard extends React.Component {
 
 
     async likeDislikeRequestor(body, url, option) {
-        console.log(url);
         await fetch(url, {
             method: 'POST',
             headers: {
@@ -130,7 +128,6 @@ export default class DrinkCard extends React.Component {
             lastLogin: this.state.user.lastLogin,
         });
 
-        console.log(this.state.drink);
         if (option === "like") {
             if (!this.state.isLiked) {
                 //If disliked and like gets hit, flip
@@ -199,21 +196,16 @@ export default class DrinkCard extends React.Component {
 
 
     handleSearchChange(event) {
-        // console.log(google);
         const value = event.target.value;
-        // console.log(value);
         this.setState({searchInput: value, isLoading: true});
     }
 
 
     render(){
-        // console.log(this.state.user);
         let theseProps = this.props;
-        console.log(this.state.userLocation);
         let {user, drink, index, ready} = this.state;
         let drinkPic, likes;
         if(ready){
-            console.log(user);
             if (user !== undefined) {
 
                 let lColor = this.likeColor();
@@ -251,9 +243,9 @@ export default class DrinkCard extends React.Component {
 
             //Figures out if the drink comes with an image or not
             if(drink.photo !== ""){
-                drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${drink.photo}`} data-testid={"drink-b64-img-" + index.toString()}/>
+                drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${drink.photo}`}/>
             }else{
-                drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
+                drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"}/>
             }
 
             let shareURL = config.url.API_URL + "/" + drink.publisher + "/drink/" + drink.name;
@@ -293,11 +285,11 @@ export default class DrinkCard extends React.Component {
 
                     {/*    </div>*/}
                     {/*</Modal>*/}
-                    <Card centered style={{width: "450px"}} data-testid={"drink-card-" + index.toString()}>
+                    <Card centered style={{width: "450px"}}>
                         {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
                         <Card.Content>
 
-                            <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
+                            <Card.Header textAlign="left">
                                 <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
                                 {/*Todo: Rod - Put your flag in the 'hidden' value and your method to open the modal in the onClick here */}
@@ -307,13 +299,13 @@ export default class DrinkCard extends React.Component {
 
                             </Card.Header>
 
-                            <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
+                            <Card.Meta className="pub" textAlign="left"> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
                         </Card.Content>
                         <Card.Content textAlign="left">
                             {drinkPic}
                             <div>
                                 <p><strong>Description: </strong></p>
-                                <Card.Description data-testid={"drink-description-" + index.toString()}>{drink.description}</Card.Description>
+                                <Card.Description >{drink.description}</Card.Description>
 
                             </div>
 
@@ -324,7 +316,7 @@ export default class DrinkCard extends React.Component {
                                     <List bulleted >
                                         {drink.ingredients.map((ingr, idx) => {
                                             return (
-                                                <p key={idx} data-testid={"drink-"+ index.toString() + "-ingredient-" + idx.toString()}>
+                                                <p key={idx} >
                                                     {ingr.quantity} {ingr.measurement} {ingr.ingredient}
                                                 </p>
                                             )
