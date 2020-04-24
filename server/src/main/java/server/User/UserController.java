@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import server.SQL.UserSQL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.security.*;
@@ -34,9 +35,10 @@ public class UserController {
 	int count = 0;
 
 	//@GetMapping("/hashPassword/{password}/{salty}")
-	public String hashPass(String password, String salt2)
+	public String hashPass(String password, byte[] salt2, int flag)
 		throws IOException{
-		
+		//flag = 1, insert User
+		//flag = 0, login user
 		MessageDigest ms;
 		StringBuilder stringBuilder = new StringBuilder();
 		String out = "";
@@ -46,21 +48,21 @@ public class UserController {
 			SecureRandom r = new SecureRandom();
 			byte[] salt = new byte[16];
 			r.nextBytes(salt);
-	/*		if(count == 0)
-				g_salt = salt;
-			if(password.equals("2Pokemon")){
-				System.out.println("Salt: "+salt);
-				if(count++ > 0)
-					salt = g_salt;
-			}*/
-			System.out.println("Salt2: "+salt+" count: "+count);
-			if(salt2.equals("")){
-				System.out.println("Salt is empty!");
-			}else{
-				//salt = salt2;
-			}
 
-			ms.update(salt);
+		
+			//System.out.println("Salt array "+Arrays.toString(salt));
+			//System.out.println("Salt concat array: "+Arrays.toString(salt)+"thisistestforconcatingation");
+			String append = "";
+			if(flag==1){//insert
+				System.out.println("Salt is empty!");
+				append = Arrays.toString(salt);
+			}else{//login
+				salt = salt2;//.getBytes();
+				System.out.println("salt from parm "+new String(salt));
+				append = new String(salt);
+			}
+			//System.out.println("Salt3: "+salt+" count: "+count);
+			ms.update(append.getBytes());
 
 			byte[] hashedPass = ms.digest(password.getBytes(StandardCharsets.UTF_8));
 
@@ -68,9 +70,13 @@ public class UserController {
 			for (byte b : hashedPass){
 				stringBuilder.append(String.format("%02x", b));
 			}
-			System.out.println("SB output: "+stringBuilder);
+			System.out.println("Final salt: "+new String(salt));
+			//String saltString = new String(salt);
 
-			out = salt+"."+stringBuilder.toString();
+			out = append+"."+stringBuilder.toString();
+			//salt = null;
+			//salt2 = null;
+			//hashedPass = null;
 		}catch(Exception e){
 			e.printStackTrace();
 			return "ERROr";
@@ -91,12 +97,28 @@ public class UserController {
 
 		UserSQL user = new UserSQL();
 		String dbPass = user.login(u.userName, u.password);
-		//String saltSub = dbPass.substring(0, dbPass.indexOf("."));
-		//System.out.println("SALT: "+saltSub);
+		
+		byte[] bytes = "test".getBytes();
+		String s = new String(bytes);
+		byte[] arr2 = s.getBytes();
+		String r = new String(arr2);
+		System.out.println("s1: "+s+"..... s2: "+r);
 
-		//String testHashedPass = hashPass(u.password, "");
+		//byte[] saltSubstr = dbPass.substring(0, dbPass.indexOf(".")).getBytes();
+		String saltSubstr = dbPass.substring(0, dbPass.indexOf("."));
+		System.out.println("Salt string from database: "+saltSubstr);
 
-		if( dbPass.equals(u.password)){
+		byte[] byteSalt = saltSubstr.getBytes();
+		
+		//for(int x=0; x<16)
+		//System.out.println("SALT: "+Arrays.toString(byteSalt));
+
+		String testHashedPass = hashPass(u.password, byteSalt, 0);
+		System.out.println("Input pass: "+testHashedPass);
+
+		System.out.println("Actual Pass: "+dbPass);
+
+		if( dbPass.equals(testHashedPass)){
 			return "{ \"status\" : \"ok.\"}";
 		} else {
 			return "{ \"status\" : \"Error: Login Failed.\"}";
@@ -200,9 +222,10 @@ public class UserController {
 		om.registerModule(sm);
 		User u = om.readValue(username, User.class);
 		//System.out.print(u.toString());
+		String testHashedPass = hashPass(u.password, null, 1);
 
 		UserSQL users = new UserSQL();
-		String insert  = users.insertUser(u.userName, u.password, u.name, u.email, u.phoneNumber);	
+		String insert  = users.insertUser(u.userName, testHashedPass, u.name, u.email, u.phoneNumber);	
 
 	    return insert;
     }
@@ -220,7 +243,9 @@ public class UserController {
 		System.out.println(u.name.toString());
 
 		UserSQL users = new UserSQL();
-		String updatePassword = users.updatePassword(u.userName, u.password);
+
+		String testHashedPass = hashPass(u.password, null, 1);
+		String updatePassword = users.updatePassword(u.userName, testHashedPass);
 
 		return updatePassword;
 	}
