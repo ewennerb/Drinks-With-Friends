@@ -21,6 +21,7 @@ export default class Search extends React.Component{
         this.handleRandomModalOpen = this.handleRandomModalOpen.bind(this);
         this.getRecommended = this.getRecommended.bind(this);
         this.getTrendingDrinks = this.getTrendingDrinks.bind(this);
+        this.handleTopDrinks = this.handleTopDrinks.bind(this);
 
         this.state = {
             user: this.props.user,
@@ -40,6 +41,7 @@ export default class Search extends React.Component{
             randomDrink: "",
             randomNum: 0,
             userLocation: {},
+            topDrinkList: []
         }
     }
 
@@ -248,6 +250,22 @@ export default class Search extends React.Component{
             this.setState({results: data.results})
         }).catch(this.setState({results: []}));
         this.setState({loaded: true});
+
+    }
+
+    async handleTopDrinks() { //Paul Added
+        this.setState({openRandomModal: true, searchVal: 'd'});
+
+        await fetch(config.url.API_URL + '/drink/mostLiked', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(res => res.json()).then(async (data) => {
+            console.log(data);
+            await this.setState({results: data.results})
+        }).catch(console.log);
 
     }
 
@@ -526,6 +544,7 @@ export default class Search extends React.Component{
                                     <Button color='yellow' onClick={this.getSearchResults} width={8} content="Search"/>
                                     <Button color='yellow' onClick={this.getRecommended} width={8} content="For You"/>
                                     <Button color='yellow' onClick={this.handleRandomModalOpen} width={8} content="Random Drink"/>
+                                    <Button color='yellow' onClick={this.handleTopDrinks} width={8} content="Top Liked Drinks"/>
                                 </div>
                                 <br/>
                                 <br/>
