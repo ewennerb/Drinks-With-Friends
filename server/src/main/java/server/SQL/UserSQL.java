@@ -80,6 +80,30 @@ public class UserSQL {
 		}
 	}
 
+	public String login(String userName, String password){
+		try{
+			psmt = conn.prepareStatement("select password from "+this.database+".user where userName = ?");
+			psmt.setString(1, userName);
+			//password hashing
+			rs = psmt.executeQuery();
+
+			String password1 = "";
+			while(rs.next()){
+				password1 = rs.getString("password");
+			}
+			rs.close();
+			psmt.close();
+			conn.close();
+			
+			return password1;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			
+			return "{ \"status\" : \"Error: Login Failed.\"}";
+		}
+	}
+
 
 	public User getUser(String name){
 		try{
