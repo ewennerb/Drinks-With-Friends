@@ -12,7 +12,7 @@ import {
 } from 'semantic-ui-react';
 import {PostCard} from "../PostCard.js"
 import {ingredientCard} from "../utils";
-import DrinkCard from "../rDrinkCard.js";
+import DrinkCard from "../DrinkCard.js";
 import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
 
@@ -82,14 +82,12 @@ class Posts extends Component{
                               {(this.state.publishedDrinks == undefined || this.state.publishedDrinks.length < 1)
                                   ? <Header>No Drinks Found</Header>
                                   : this.state.publishedDrinks.map((drink, index) => {
-                                      // console.log(drink);
+                                      console.log(this.state);
                                       return(
                                           <DrinkCard
-                                              user={this.state.userName}
-                                              index={index}
-                                              drink={drink}
-                                              userLocation={this.state.userLocation}
-                                              profileOwner={this.state.profileOwner}
+                                                user={this.state.browser}
+                                                index={index}
+                                                drink={drink}
                                           />
                                           // rodsDrinkCard ({
                                           //   user: this.state.userName,

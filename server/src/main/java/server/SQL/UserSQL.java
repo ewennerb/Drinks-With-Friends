@@ -312,7 +312,7 @@ public class UserSQL {
 			int updateResult = psmt.executeUpdate();
 			if(updateResult == 1){
 				//System.out.print("********* ITS !");
-				return "{ \"status\" : \"ok\" }";
+				return "{ \"status\" : \"ok.\" }";
 			}else if (updateResult == 0) {
 				System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
@@ -344,7 +344,7 @@ public class UserSQL {
 				//System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL user update failed.\"}";
 			}
-
+			
 			String query1 = "update "+ this.database+".drink set publisher = ? where publisher = ?";
 			psmt = conn.prepareStatement(query1);
 			psmt.setString(1, newUsername);
