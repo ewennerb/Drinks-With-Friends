@@ -11,6 +11,7 @@ import {
 import {Link} from "react-router-dom";
 import {postCardDelete} from "./utils";
 import {PostCard} from "./PostCard"
+import DrinkCard from "./DrinkCard.js"
 import Map from "./MapContainer";
 import {config} from '../config/config'
 var base64 = require('base-64');
@@ -46,6 +47,7 @@ export default class ActivityFeed extends React.Component {
         this.addMap = this.addMap.bind(this);
         this.delMap = this.delMap.bind(this);
         this.addGeotag = this.addGeotag.bind(this);
+        this.handleDrinkFilter = this.handleDrinkFilter.bind(this);
         this.state = {
             user: this.props.user || localStorage.getItem('username'),
             modalOpen: false,
@@ -74,6 +76,8 @@ export default class ActivityFeed extends React.Component {
             searchVal: 'd',
             mapSegment: false,
             userLocation: this.props.userLocation,
+            postFilter: false,
+            drinkFilter: true
 
         };
         this.fileInputRef = React.createRef();
@@ -102,7 +106,7 @@ export default class ActivityFeed extends React.Component {
                 });
             },
             () => {
-                this.setState({ done: false });
+                this.setState({ done: false});
             }
         );
         console.log(this.state.userLocation);
@@ -121,9 +125,9 @@ export default class ActivityFeed extends React.Component {
                     measurement: ""
                 }
             ],
-            value: 'd'
+            value: 'd',
         })
-        this.getSearchResults();
+        //this.getSearchResults();
     }
 
     async getSearchResults(){
@@ -138,10 +142,9 @@ export default class ActivityFeed extends React.Component {
             },
         }).then(res => res.json()).then(async (data) => {
             
-            this.setState({results: data.results})
+            this.setState({results: data.results, postFilter: true, drinkFilter: false})
                     
             for (let res in data.results) {
-                console.log(data.results[res].userName)
                 let names = {}
                 await fetch(config.url.API_URL + "/user/"+data.results[res].userName, {
                     method: 'GET',
@@ -376,7 +379,6 @@ export default class ActivityFeed extends React.Component {
                 date: n,
             })
         }).then(res => res.json()).then((data) => {
-            console.log(data);
             this.setState({response: data, modalOpen2: false})
             //window.location.replace('/feed');
         }).catch(console.log);
@@ -404,10 +406,37 @@ export default class ActivityFeed extends React.Component {
         this.setState({mapSegment: false});
     }
 
+    async handleDrinkFilter() {
+        await fetch(config.url.API_URL + "/drink/search?s=", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(res => res.json()).then((data) => {
+            let tempArray;
+            tempArray = [];
+            let i = 0;
+            let j = 0;
+            for (let res in data.results) {
+                if (data.results[j].publisher != "IBA_Official") {
+                    tempArray[i] = data.results[j];
+                    i = i + 1;
+                }
+                j = j + 1;
+            }
+            //console.log(tempArray);
+            this.setState({results: tempArray, postFilter: false, drinkFilter: true})
+        }).catch(console.log);
+    }
+
+
     render(){
         const value = this.state.searchVal;
 
         let mapSeg;
+        console.log("drink filter: " + this.state.drinkFilter);
+        console.log(this.state.results);
 
         if(!this.state.mapSegment){
             if(this.state.geoTag === {} || this.state.geoTag === undefined){
@@ -692,19 +721,34 @@ export default class ActivityFeed extends React.Component {
                             <Button icon="beer" color="yellow" onClick={this.handleOpen}>
                                 Create A Post
                             </Button>
+
+                            <br/>
+                            <br/>
+
+                            <div className='ui two buttons'>
+                                <Button width={8} content="Posts" onClick={this.getSearchResults}/>
+                                <Button width={8} content="Drinks" onClick={this.handleDrinkFilter}/>
+                            </div>
+
+
                             
                         </Grid.Column>
                         <Grid.Column width={4}/>
                     </GridRow>
-                    
+
                     <br/>
                     <br/>
                     <GridRow>
                         <GridColumn style={{width: "auto"}}>
-                            {this.state.results === undefined
+                            {this.state.results === undefined && this.state.drinkFilter === true
                                 ? <Header textAlign="center">No Results Found</Header>
                                 : this.state.results.map((result, index) => {
-                                    return (<PostCard post={this.state.results[index]} user={this.state.user}/>)
+                                    if (this.state.drinkFilter) {
+                                        return (<DrinkCard drink={this.state.results[index]} user={this.state.user}/>)
+                                    }
+                                    else {
+                                        return (<PostCard post={this.state.results[index]} user={this.state.user}/>)
+                                    }
                                 })
                             }
 

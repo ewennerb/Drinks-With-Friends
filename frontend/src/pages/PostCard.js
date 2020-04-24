@@ -15,7 +15,7 @@ export class PostCard extends React.Component{
     }
 
     async componentDidMount(){
-        console.log(this.props.post);
+        //console.log(this.props.post);
         this.setState({
             post: this.props.post
         });
@@ -28,10 +28,10 @@ export class PostCard extends React.Component{
         let post = this.state.post;
 
 
-        console.log("POSTCARD DEBUG");
-        console.log(post.userName);
-        console.log(post.profileImage);
-        console.log(this.props.user);
+        //  console.log("POSTCARD DEBUG");
+        //console.log(post.userName);
+        //console.log(post.profileImage);
+        //console.log(this.props.user);
 
 
         if (post.profileImage === null || post.profileImage === "" || post.profileImage === undefined){
@@ -50,7 +50,7 @@ export class PostCard extends React.Component{
 
         let postLocation;
 
-        console.log(post);
+        //console.log(post);
         if(post.geolocation !== " " && post.geolocation !== ""){
             let locString;
             try {
