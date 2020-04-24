@@ -200,7 +200,7 @@ export default class Search extends React.Component{
 
     getTrendingDrinks(e){
         
-        fetch('http://localhost:8080/drink/trending', {
+        fetch(config.url.API_URL + '/drink/trending', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
