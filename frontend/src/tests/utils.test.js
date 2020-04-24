@@ -5,6 +5,7 @@ import {dotdCard, userCard} from "../pages/utils";
 import {PostCard} from "../pages/PostCard"
 import {render, getByTestId, queryByTestId} from "@testing-library/react";
 import b64Img from "./resources/4horsemen.js"
+import 'regenerator-runtime/runtime'
 
 const ingredients = [
     {
