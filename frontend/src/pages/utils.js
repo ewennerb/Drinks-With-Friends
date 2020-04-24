@@ -17,6 +17,47 @@ import {NavLink, Link} from "react-router-dom";
 import {config} from '../config/config'
 
 
+export const userCardNeither = (index, username, photo) => {
+    let pfp;
+    if (photo === null || photo === ""){
+        pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"user-placeholder-img-" + index.toString()}/>
+        }else{
+        pfp = <Image floated="right" size="tiny" src={`data:image/jpeg;base64,${photo}`} data-testid={"user-b64-img-" + index.toString()}/>
+        }
+    //Todo: Add photo functionality
+    console.log("Index: " + index.toString());
+
+    let newPath;
+    newPath = "/" + username;
+
+    return(
+        
+        <Card centered data-testid={"user-card-" + index.toString()}>
+            <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
+                <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
+        {pfp}
+                    </CardContent>
+                <Card.Content>
+                   
+                <Card.Header data-testid={"user-name-" + index.toString()}>@{username}</Card.Header>
+                   
+                </Card.Content>
+                <Card.Content extra>
+                    <div className='ui two buttons'>
+                        <Button basic color='grey' onClick={() => {window.location.href = newPath}}>
+                            <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
+                                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
+                                    View Profile
+                            </p>
+                            </Link>
+                        </Button>
+                    </div>
+                </Card.Content>
+            </Segment>
+        </Card>
+    )
+        };
+
 
 export const userCard = (index, username, photo, loggedInUsername) => {
     let pfp;
