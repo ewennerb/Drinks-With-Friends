@@ -6,7 +6,7 @@ import {EmailShareButton, EmailIcon, FacebookShareButton, FacebookIcon, TwitterS
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 import Map from "./MapContainer";
 import GeoSearch from "./geoSearch";
-import "../css/Drink.css"
+// import "../css/Drink.css"
 var base64 = require('base-64');
 
 export default class DrinkCard extends React.Component {
@@ -412,8 +412,8 @@ export default class DrinkCard extends React.Component {
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-img-placeholder"}/>
             }
 
+
             let shareURL =  "fiveo-clocksomewhere.web.app/" + encodeURIComponent(drink.publisher) + "/drink/" + encodeURIComponent(drink.name);
-            //shareURL = encodeURIComponent(shareURL);
 
             return(
                 <div>

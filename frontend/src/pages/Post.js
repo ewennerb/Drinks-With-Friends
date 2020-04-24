@@ -63,18 +63,31 @@ class Post extends Component{
                 'Content-Type': 'application/json',
             },
         }).then(res => res.json()).then(async (data) => {
-            // await fetch(config.url.API_URL + "/user/")
-            console.log("retard");
-            console.log(data);
-            if(data.length === 0){
+            if (data.length === 0) {
                 post = 404;
-            }else{
-                data[0].userName = this.props.match.params.publisher;
-                post = data;
+            } else {
+                await fetch(config.url.API_URL + "/user/" + this.props.match.params.publisher, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json()).then(async (data2) => {
+                    console.log(data2);
+                    data[0].profileImage = data2.photo;
+                    data[0].name = data2.name;
+                    data[0].userName = this.props.match.params.publisher;
+                    post = data;
+                }).catch(err => {
+                    console.log(err)
+                });
+
             }
+        }).catch(err => {
+            console.log(err)
+        });
 
 
-        }).catch(console.log);
         return post;
     }
 
