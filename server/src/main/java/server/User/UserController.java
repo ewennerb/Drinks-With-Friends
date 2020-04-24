@@ -98,12 +98,8 @@ public class UserController {
 		UserSQL user = new UserSQL();
 		String dbPass = user.login(u.userName, u.password);
 		
-		byte[] bytes = "test".getBytes();
-		String s = new String(bytes);
-		byte[] arr2 = s.getBytes();
-		String r = new String(arr2);
-		System.out.println("s1: "+s+"..... s2: "+r);
-
+		if(dbPass == "")
+			return "{ \"status\" : \"Error: Login Failed.\"}";
 		//byte[] saltSubstr = dbPass.substring(0, dbPass.indexOf(".")).getBytes();
 		String saltSubstr = dbPass.substring(0, dbPass.indexOf("."));
 		System.out.println("Salt string from database: "+saltSubstr);
