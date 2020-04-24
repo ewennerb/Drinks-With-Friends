@@ -21,15 +21,16 @@ class Friends extends Component{
     super(props);
     this.handleGetFollowing = this.handleGetFollowing.bind(this);
 
-    console.log(this.props.location.state);
     this.state = {
-        user: this.props.location.state,
+        user: this.props.location.state.user,
         results: [],
-        recevied: false
+        received: false
     }
+    console.log(this.state.user);
   }
 
   async handleGetFollowing() {
+    let results = [];
     await fetch(config.url.API_URL + '/user/getFollowing/' + this.state.user, {
       method: 'GET',
       headers: {
@@ -38,30 +39,32 @@ class Friends extends Component{
       },
   }).then(res => res.json()).then(async (data) => {
       console.log(data);
-      await this.setState({results: data})
+      results = data;
   }).catch(console.log);
+
+  return results;
 
   }
 
   async componentDidMount() {
+    let x;
     console.log(this.state.user);
-    await this.handleGetFollowing();
-    if (this.state.results != undefined) {
-      this.setState({recevied: true});
+    x = await this.handleGetFollowing();
+    if (x != undefined && x != []) {
+      this.setState({received: true, results: x});
     }
   }
 
   render(){
-
-    console.log(this.props.userName);
     let search;
 
     if (this.state.received) {
+      console.log(this.state.results);
       search = 
       <div>
       {this.state.results === undefined
         ? <Header textAlign="center">No Results Found</Header>
-        : this.state.results.map((result, index) => {
+        : this.state.results.results.map((result, index) => {
             console.log(result.followedFlag)
 
             if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display

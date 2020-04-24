@@ -232,7 +232,7 @@ class Profile extends Component{
             <Menu.Item
               name="map"
               as={Link}
-              to={{pathname: `/${this.state.userName}/map`}}
+              to={{pathname: `/${this.state.profile}/map`}}
 
               active={activeItem === "map"}
               onClick={this.handleItemClick}
@@ -242,8 +242,8 @@ class Profile extends Component{
             <Menu.Item
               name="friends"
               as={Link}
-              to={{pathname: `/${this.state.userName}/friends`,
-                  state:{user: this.state.profile}}}
+              to={{pathname: `/${this.state.profile}/friends`,
+                  state: {user: this.state.profile}}}
               active={activeItem === "friends"}
               onClick={this.handleItemClick}
             />
