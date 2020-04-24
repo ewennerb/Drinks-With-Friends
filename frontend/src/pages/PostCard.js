@@ -84,11 +84,6 @@ export class PostCard extends React.Component{
                 <Card.Content>
                     {this.state.user === post.userName
                         ? <div className='ui two icons right floated inline'>
-                            <Icon link color='grey' name='edit' onClick={(ev) => {
-                                let input = document.getElementById("postInput");
-                                console.log(ev);
-                                input.focus();
-                            }}/>
                             <Icon link color='grey' name="trash" onClick={() =>
                                 fetch(config.url.API_URL + '/post/delete', {
                                     method: 'POST',
