@@ -130,12 +130,16 @@ class Profile extends Component{
 
     let currentUser = localStorage.getItem("username");
 
+    // handleFollow(){s
+
+    // }s
+
     //vars
     let editProfile = <p/>;
     let favoriteDrink = <p/>;
     let pfp;
     //methods
-    //console.log(this.state)
+    //console.log(this.state)s
     //console.log(this.state.profile === this.state.browser)
     if (this.state.profile === this.state.browser) {
         //allow the option to edit profile
@@ -295,7 +299,7 @@ class Profile extends Component{
           <Segment stacked>
           {/* file input */}
           <Button
-            content="Choose File"
+            content="Choose File">
             labelPosition="left"
             icon="file"
             onClick={() => this.fileInputRef.current.click()}
