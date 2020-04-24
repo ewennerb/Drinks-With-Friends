@@ -1241,7 +1241,9 @@ public class DrinkSQL {
 
 	public String editDrink(Drink d){
 		try {
-			psmt.close();
+			if (psmt != null) {
+				psmt.close();
+			}
 			String query = "UPDATE " + this.database + ".drink SET name = ?, description = ?" + ((d.photo.equals("")) ? " " : ", stockPhoto = ? ") +
 				"WHERE drinkId = ?";
 			System.out.println(query);
@@ -1296,8 +1298,9 @@ public class DrinkSQL {
 			try {
 				if (rs != null) {
 					rs.close();
+					psmt.close();
 				}
-				psmt.close();
+				
 				conn.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
