@@ -13,7 +13,7 @@ import {
   Form, 
   //Message,
   Image,
-} from "semantic-ui-react";
+  } from "semantic-ui-react";
 import LikedDrinks from "./userpages/LikedDrinks.js"
 import DislikedDrinks from "./userpages/DislikedDrinks.js"
 import Map from "./userpages/Map.js"
@@ -24,420 +24,434 @@ var base64 = require('base-64');
 //import "../css/Profile.css"
 
 class Profile extends Component{
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
     
-    this.handleClose = this.handleClose.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-    // this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
-    // this.handleSubmit2 = this.handleSubmit2.bind(this);
-    this.handleBioChange = this.handleBioChange.bind(this);    
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handleFileSelect = this.handleFileSelect.bind(this);
-    this.handleFavoriteDrinkChange = this.handleFavoriteDrinkChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        // this.handleOpen2 = this.handleOpen2.bind(this); //Paul added
+        // this.handleSubmit2 = this.handleSubmit2.bind(this);
+        this.handleBioChange = this.handleBioChange.bind(this);    
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handleFileSelect = this.handleFileSelect.bind(this);
+        this.handleFavoriteDrinkChange = this.handleFavoriteDrinkChange.bind(this);
 
-    this.fileReader = new FileReader();
-    this.handleFileRead = this.handleFileRead.bind(this)
-    //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
-    this.fileInputRef = React.createRef();
+        this.fileReader = new FileReader();
+        this.handleFileRead = this.handleFileRead.bind(this)
+        //im so sorry its too late to change user to username so ill do capital u fro teh object ;)
+        this.fileInputRef = React.createRef();
     
-    //let User = props.UserObject;
-    this.state = {
-      modalOpen: false, 
-      activeItem: "posts",
-      browser: localStorage.getItem("username"),
-      profile: props.match.params.profile,
-      User: {},
-      profileOwner: false,
+        //let User = props.UserObject;
+        this.state = {
+            modalOpen: false, 
+            activeItem: "posts",
+            browser: localStorage.getItem("username"),
+            profile: props.match.params.profile,
+            User: {},
+            profileOwner: false,
+            followed: false,
+        }
     }
-  }
 
-  async componentDidMount(){
-    // getting user
-    // let userPage = this.state.profile;
-    //todo always request user profile
-    //let User = this.state.User;
-    await navigator.geolocation.getCurrentPosition(
-      async(position) => {
-          const { latitude, longitude } = position.coords;
-          console.log(latitude);
-          console.log(longitude);
-          await this.setState({
-              userLocation: { lat: latitude, lng: longitude },
-          });
-      },
+    async componentDidMount(){
+        // getting user
+        // let userPage = this.state.profile;
+        //todo always request user profile
+        //let User = this.state.User;
+        await navigator.geolocation.getCurrentPosition(
+          async(position) => {
+              const { latitude, longitude } = position.coords;
+              console.log(latitude);
+              console.log(longitude);
+              await this.setState({
+                  userLocation: { lat: latitude, lng: longitude },
+              });
+          },
      
-    );
-    this.getUser(this.state.profile);
+        );
+        this.getUser(this.state.profile);
     
-    if (this.state.profile === this.state.browser) {
-      this.setState({profileOwner: true});
-    }
-    // if (User != undefined){
-    //   if (User.likedDrinks == undefined){
-    //     await this.getLikedDrinks(this.state.profile);
-    //   }
-    //   if (User.dislikedDrinks == undefined){
-    //     await this.getDislikedDrinks(this.state.profile);
-    //   }
-    // }
+        if (this.state.profile === this.state.browser) {
+            this.setState({profileOwner: true});
+        } else {
+            //not owner of profile so either follow or unfollow button
+     
+            let ownerfollowers = await this.handleGetFollowing(this.state.browser);
+            ownerfollowers.results.map(user=> {
+                if(this.state.profile === user.userName){
+                    this.setState({followed: true, })
+                }
+            })
+
+        }
+        // if (User != undefined){
+        //   if (User.likedDrinks == undefined){
+        //     await this.getLikedDrinks(this.state.profile);
+        //   }
+        //   if (User.dislikedDrinks == undefined){
+        //     await this.getDislikedDrinks(this.state.profile);
+        //   }
+        // }
  
   
     
-  }// end of component did mount
+    }// end of component did mount
 
 
-  handleClose() {
-    this.setState({
-      modalOpen: false,   
-    })
-  }
+    handleClose() {
+        this.setState({
+            modalOpen: false,   
+        })
+    }
 
-  handleOpen() {
-      this.setState({
-      modalOpen: true
-    }) 
-  }
+    handleOpen() {
+        this.setState({
+            modalOpen: true
+        }) 
+    }
 
-  handleItemClick = (e, {name}) => {
-    this.setState({ activeItem: name })
-    console.log(name)
-  }
+    handleItemClick = (e, {name}) => {
+        this.setState({ activeItem: name })
+        console.log(name)
+    }
 
-  render(){
+        render(){
 
-    const { activeItem } = this.state.activeItem
-    let notUser = <p/>;
-    // if (this.props.user === "" || this.props.user === undefined){
-    //   notUser =
-    //       <Modal open={true}>
-    //         <Segment stacked>
-    //           <h1>Create an Free Account!</h1>
-    //           <p>
-    //             <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
-    //             <Message>
-    //               <Icon name='help'/>
-    //               Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
-    //             </Message>
-    //           </p>
+            const { activeItem } = this.state.activeItem
+            let notUser = <p/>;
+            // if (this.props.user === "" || this.props.user === undefined){
+            //   notUser =
+            //       <Modal open={true}>
+            //         <Segment stacked>
+            //           <h1>Create an Free Account!</h1>
+            //           <p>
+            //             <Link to='/register'>Sign up </Link> for Drinks With Friends to create your own drinks and save your favorites from others!
+            //             <Message>
+            //               <Icon name='help'/>
+            //               Already signed up?&nbsp;<Link to='/login'>Login here</Link>&nbsp;instead.
+            //             </Message>
+            //           </p>
 
-    //         </Segment>
-    //       </Modal>
-    // }
+            //         </Segment>
+            //       </Modal>
+            // }
 
-    let currentUser = localStorage.getItem("username");
+            let currentUser = localStorage.getItem("username");
 
-    // handleFollow(){s
+            // handleFollow(){s
 
-    // }s
+            // }s
+            //vars
+            let editProfile = <p/>;
+            let favoriteDrink = <p/>;
+            let pfp;
+            //methods
+            //console.log(this.state)s
+            //console.log(this.state.profile === this.state.browser)
+            if (this.state.profile === this.state.browser) {
+                //allow the option to edit profile
+                editProfile = 
+                <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+                  <Button animated="fade" onClick={(this.handleOpen)}  >
+                  <Button.Content visible>Edit Profile</Button.Content>
+                  <Button.Content hidden>
+                  <Icon name="edit"/>
+                  </Button.Content>
+                  </Button>
+                </Grid.Column>
 
-    //vars
-    let editProfile = <p/>;
-    let favoriteDrink = <p/>;
-    let pfp;
-    //methods
-    //console.log(this.state)s
-    //console.log(this.state.profile === this.state.browser)
-    if (this.state.profile === this.state.browser) {
-        //allow the option to edit profile
-        editProfile = 
-        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-          <Button animated="fade" onClick={(this.handleOpen)}  >
-          <Button.Content visible>Edit Profile</Button.Content>
-          <Button.Content hidden>
-          <Icon name="edit"/>
-          </Button.Content>
-          </Button>
+            } else {
+                //follow button
+                if(this.state.followed){
+                    console.log("that not u");
+                    editProfile =
+                    <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+                      <Button animated="fade" onClick={ () => {
+                        fetch(config.url.API_URL + '/user/unfollow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
+                          method: 'POST',
+                          headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                              userName: this.state.browser,
+                              phoneNumber: "",
+                              password: "",
+                              name: "",
+                              email: "",
+                              photo: "",
+                              bio: "",
+                              likedDrinks: "",
+                              dislikedDrinks: "",
+                              favoritedDrink: "",
+                              publishedDrinks: "",
+                              postHistory: "",
+                              friendsList: "",
+                              dateCreated: "",
+                              lastLogin: "",
+                              response: undefined,
+                              darkMode: 0
+                          })
+                      }).then(res => res.json()).then((data) => {
+                          window.location.replace('/');
+                      }).catch(console.log) 
+
+
+
+                } } >
+                <Button.Content visible>Unfollow</Button.Content>
+                <Button.Content hidden>
+                <Icon name="edit"/>
+                </Button.Content>
+                </Button>
+              </Grid.Column>
+        } else {
+        //not follow give button uwu
+          editProfile =
+          <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+            <Button animated="fade" onClick={() => {
+              fetch(config.url.API_URL + '/user/follow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userName: this.state.browser,
+                    phoneNumber: "",
+                    password: "",
+                    name: "",
+                    email: "",
+                    photo: "",
+                    bio: "",
+                    likedDrinks: "",
+                    dislikedDrinks: "",
+                    favoritedDrink: "",
+                    publishedDrinks: "",
+                    postHistory: "",
+                    friendsList: "",
+                    dateCreated: "",
+                    lastLogin: "",
+                    response: undefined,
+                    darkMode: 0
+                })
+            }).then(res => res.json()).then((data) => {
+                window.location.replace('/');
+            }).catch(console.log) 
+    }}  >
+    <Button.Content visible>Follow</Button.Content>
+    <Button.Content hidden>
+    <Icon name="edit"/>
+    </Button.Content>
+    </Button>
+  </Grid.Column>
+
+}
+}
+//check if fav drink is undefined or empty
+if (this.isValidInput(this.state.favoriteDrink)){
+    favoriteDrink = 
+    <p>My favorite drink is {this.state.favoriteDrink}</p>
+}
+if (this.state.photo === null || this.state.photo === "" ){
+    pfp = <Image size="small" src={process.env.PUBLIC_URL + "/nopfp.png"} />
+    //what this data-testid={"user-placeholder-img-"}
+    } else {
+    pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.photo}`}/>
+    }
+
+  return(
+    <Container>
+      <BrowserRouter>
+    {notUser}
+        <Grid className="grid" columns={3} padded relaxed textAlign="center">
+        <Grid.Row>
+        <Grid.Column  
+          as={Link}
+          to={{pathname: `/${this.state.profile}/posts`}}
+        >
+    {pfp}
+
         </Grid.Column>
-
-    } else {
-        //follow button
-        if(this.state.followed){
-            console.log("that not u");
-            editProfile =
-            <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-              <Button animated="fade" onClick={ () => {
-                fetch(config.url.API_URL + '/user/unfollow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
-                  method: 'POST',
-                  headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      userName: this.state.browser,
-                      phoneNumber: "",
-                      password: "",
-                      name: "",
-                      email: "",
-                      photo: "",
-                      bio: "",
-                      likedDrinks: "",
-                      dislikedDrinks: "",
-                      favoritedDrink: "",
-                      publishedDrinks: "",
-                      postHistory: "",
-                      friendsList: "",
-                      dateCreated: "",
-                      lastLogin: "",
-                      response: undefined,
-                      darkMode: 0
-                  })
-              }).then(res => res.json()).then((data) => {
-                  window.location.replace('/');
-              }).catch(console.log) 
-
-
-
-        } } >
-        <Button.Content visible>Unfollow</Button.Content>
-        <Button.Content hidden>
-        <Icon name="edit"/>
-        </Button.Content>
-        </Button>
-      </Grid.Column>
-} else {
-      //not follow give button uwu
-        editProfile =
-        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-          <Button animated="fade" onClick={() => {
-            fetch(config.url.API_URL + '/user/follow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
-              method: 'POST',
-              headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                  userName: this.state.browser,
-                  phoneNumber: "",
-                  password: "",
-                  name: "",
-                  email: "",
-                  photo: "",
-                  bio: "",
-                  likedDrinks: "",
-                  dislikedDrinks: "",
-                  favoritedDrink: "",
-                  publishedDrinks: "",
-                  postHistory: "",
-                  friendsList: "",
-                  dateCreated: "",
-                  lastLogin: "",
-                  response: undefined,
-                  darkMode: 0
-              })
-          }).then(res => res.json()).then((data) => {
-              window.location.replace('/');
-          }).catch(console.log) 
-  }}  >
-  <Button.Content visible>Follow</Button.Content>
-  <Button.Content hidden>
-  <Icon name="edit"/>
-  </Button.Content>
-  </Button>
-</Grid.Column>
-
-}
-}
-    //check if fav drink is undefined or empty
-    if (this.isValidInput(this.state.favoriteDrink)){
-      favoriteDrink = 
-      <p>My favorite drink is {this.state.favoriteDrink}</p>
-    }
-    if (this.state.photo === null || this.state.photo === "" ){
-      pfp = <Image size="small" src={process.env.PUBLIC_URL + "/nopfp.png"} />
-      //what this data-testid={"user-placeholder-img-"}
-    } else {
-      pfp = <Image size="small" src={`data:image/jpeg;base64,${this.state.photo}`}/>
-    }
-
-    return(
-      <Container>
-        <BrowserRouter>
-          {notUser}
-          <Grid className="grid" columns={3} padded relaxed textAlign="center">
-          <Grid.Row>
-          <Grid.Column  
-            as={Link}
-            to={{pathname: `/${this.state.profile}/posts`}}
-          >
-          {pfp}
-
-          </Grid.Column>
           
-          <Grid.Column textAlign="left">
-            <h2>{this.ifNullthenEmpty(this.state.User.name)}</h2>
-            <h3>&nbsp;{this.ifNullthenEmpty(this.state.profile)}</h3>
+        <Grid.Column textAlign="left">
+          <h2>{this.ifNullthenEmpty(this.state.User.name)}</h2>
+          <h3>&nbsp;{this.ifNullthenEmpty(this.state.profile)}</h3>
             {/* bio */}
-            <p>{this.state.bio}</p>
+                  <p>{this.state.bio}</p>
             {/* favorite drink */}
             {favoriteDrink}
 
-          </Grid.Column> 
+                </Grid.Column> 
           
-          {editProfile}
-          {/* {editUsername} */}
+            {editProfile}
+            {/* {editUsername} */}
 
-          </Grid.Row>
+                </Grid.Row>
           
-          <Grid.Row centered columns={1} textAlign="right">          
+                <Grid.Row centered columns={1} textAlign="right">          
             {/* <Grid.Column stretched width={4}/> */}
-            <Grid.Column stretched verticalAlign="middle" >
-            <Menu  pointing secondary floated="right" widths={6}>
-            <Menu.Item
-            //  this one will be hard to decide how to do 
-              name="posts"
-              as={Link}
-              to={{pathname: `/${this.state.profile}/posts` }}
-              active={activeItem === "posts"}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="likedDrinks"
-              as={Link}
-              to={{pathname: `/${this.state.profile}/likedDrinks`}}
-              active={activeItem === "likedDrinks"}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="dislikedDrinks"
-              as={Link}
-              to={{pathname: `/${this.state.profile}/dislikedDrinks`}}
-              active={activeItem === "dislikedDrinks"}
-              onClick={this.handleItemClick}
-            />
-            <Menu.Item
-              name="map"
-              as={Link}
-              to={{pathname: `/${this.state.profile}/map`}}
+                  <Grid.Column stretched verticalAlign="middle" >
+                  <Menu  pointing secondary floated="right" widths={6}>
+                  <Menu.Item
+                  //  this one will be hard to decide how to do 
+                    name="posts"
+                    as={Link}
+                    to={{pathname: `/${this.state.profile}/posts` }}
+        active={activeItem === "posts"}
+        onClick={this.handleItemClick}
+        />
+        <Menu.Item
+        name="likedDrinks"
+        as={Link}
+        to={{pathname: `/${this.state.profile}/likedDrinks`}}
+        active={activeItem === "likedDrinks"}
+        onClick={this.handleItemClick}
+        />
+        <Menu.Item
+        name="dislikedDrinks"
+        as={Link}
+        to={{pathname: `/${this.state.profile}/dislikedDrinks`}}
+        active={activeItem === "dislikedDrinks"}
+        onClick={this.handleItemClick}
+        />
+        <Menu.Item
+        name="map"
+        as={Link}
 
-              active={activeItem === "map"}
-              onClick={this.handleItemClick}
+        to={{pathname: `/${this.state.profile}/map`}}
+
+
+        active={activeItem === "map"}
+        onClick={this.handleItemClick}
           
-            />
-            {() => console.log(this.state.profile)}
-            <Menu.Item
-              name="friends"
-              as={Link}
-              to={{pathname: `/${this.state.profile}/friends`,
-                  state: {user: this.state.profile}}}
-              active={activeItem === "friends"}
-              onClick={this.handleItemClick}
-            />
+        />
+        {() => console.log(this.state.profile)}
+        <Menu.Item
+        name="friends"
+                      as={Link}
+
+                      to={{pathname: `/${this.state.profile}/friends`,
+        state: {user: this.state.profile}}}
+
+        active={activeItem === "friends"}
+        onClick={this.handleItemClick}
+        />
             
-            </Menu>
+        </Menu>
 
-            </Grid.Column>
-          </Grid.Row>
+        </Grid.Column>
+        </Grid.Row>
           
-          <Grid.Column>
+        <Grid.Column>
         
           
-          </Grid.Column>
-          <Grid.Row>
-          <Segment basic placeholder>
-            <Switch>
-              {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
-                 Drinks={this.state.Drinks} match={match}  />} /> */}
-              <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
-                 userLocation={this.state.userLocation} browser={this.state.browser} profileOwner={this.state.profileOwner} match={match}  />} />
-              <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
-                  userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
-              <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
-                  userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
+        </Grid.Column>
+        <Grid.Row>
+        <Segment basic placeholder>
+          <Switch>
+            {/* <Route exact path="/:profile" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
+                         Drinks={this.state.Drinks} match={match}  />} /> */}
+            <Route exact path="/:profile/posts" component={({match}) => <Posts User={this.state.User} profile={this.state.profile}
+               userLocation={this.state.userLocation} browser={this.state.browser} profileOwner={this.state.profileOwner} match={match}  />} />
+            <Route exact path="/:profile/likedDrinks" component={({match}) => <LikedDrinks User={this.state.User} profile={this.state.profile} 
+                userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
+            <Route exact path="/:profile/dislikedDrinks" component={({match}) => <DislikedDrinks User={this.state.User} profile={this.state.profile} 
+                userLocation={this.state.userLocation} browser={this.state.browser} match={match}  />}/>
               
-              <Route exact path="/:profile/map" component={({match}) => <Map User={this.state.User} profile={this.state.profile} 
-                  userLocation={this.state.userLocation} match={match}/>}/>
-               <Route exact path="/:profile/friends" component={Friends}/>
-            </Switch>
-          </Segment>
-          </Grid.Row>
-          </Grid>
+            <Route exact path="/:profile/map" component={({match}) => <Map User={this.state.User} profile={this.state.profile} 
+                userLocation={this.state.userLocation} match={match}/>}/>
+             <Route exact path="/:profile/friends" component={Friends}/>
+          </Switch>
+        </Segment>
+        </Grid.Row>
+        </Grid>
           
 
-          {/* profile edit modal */}
+        {/* profile edit modal */}
 
-          <Grid>
-          <Modal
-          open={this.state.modalOpen}
-          onClose={this.handleClose}
-          size="large">
-          <Modal.Content image scrolling>
-          {/*display current profile info with the option to change it */}
-          <Container>
-          <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
-          <br/>
+        <Grid>
+        <Modal
+        open={this.state.modalOpen}
+        onClose={this.handleClose}
+        size="large">
+        <Modal.Content image scrolling>
+        {/*display current profile info with the option to change it */}
+        <Container>
+        <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
+        <br/>
           
-          <Form size='large'>
-          <Segment stacked>
-          {/* file input */}
-          <Button
-            content="Choose File">
-            labelPosition="left"
-            icon="file"
-            onClick={() => this.fileInputRef.current.click()}
-          />
-          <input
-              ref={this.fileInputRef}
-              type="file"
-              hidden
-              onChange={this.handleFileSelect}
-          />
-          {/* <Form.Input
-            type="file"
-            accept="image/gif, image/jpeg, image/png"
-            id="imageselector"
-            onChange={this.handleFileSelect}
-          /> */}
-         {/* username change input */}
-          <Form.Input
-            fluid icon='user'
-            iconPosition='left'
-            placeholder={this.state.profile}
-            onChange={this.handleUsernameChange}
-          />
-          {/* password chang einput */}
-          <Form.Input
-          fluid icon='lock'
-          iconPosition='left'
-          placeholder='Password'
-          onChange={this.handlePasswordChange}
-          />
-          {/* bio change input */}
-          <Header as='h2' color='grey' textAlign='center'>Bio</Header>
-          <Form.Input
-          fluid
-          value={this.ifNullthenEmpty(this.state.bio)}
-          onChange={this.handleBioChange}
-          />
-          {/* favorite drink change input */}
-          <Form.Input
-          fluid icon='beer'
-          placeholder='My Favorite Drink Is:'
-          iconPosition='left'
-          value={this.ifNullthenEmpty(this.state.favoriteDrink)}
-          onChange={this.handleFavoriteDrinkChange}
-          />
+        <Form size='large'>
+        <Segment stacked>
+        {/* file input */}
+        <Button
+        content="Choose File"
+        labelPosition="left"
+        icon="file"
+        onClick={() => this.fileInputRef.current.click()}
+        />
+        <input
+          ref={this.fileInputRef}
+          type="file"
+          hidden
+          onChange={this.handleFileSelect}
+        />
+        {/* <Form.Input
+                    type="file"
+                    accept="image/gif, image/jpeg, image/png"
+                    id="imageselector"
+                    onChange={this.handleFileSelect}
+                  /> */}
+        {/* username change input */}
+        <Form.Input
+        fluid icon='user'
+        iconPosition='left'
+        placeholder={this.state.profile}
+        onChange={this.handleUsernameChange}
+        />
+        {/* password chang einput */}
+        <Form.Input
+        fluid icon='lock'
+        iconPosition='left'
+        placeholder='Password'
+        onChange={this.handlePasswordChange}
+        />
+        {/* bio change input */}
+        <Header as='h2' color='grey' textAlign='center'>Bio</Header>
+        <Form.Input
+        fluid
+        value={this.ifNullthenEmpty(this.state.bio)}
+        onChange={this.handleBioChange}
+        />
+        {/* favorite drink change input */}
+        <Form.Input
+        fluid icon='beer'
+        placeholder='My Favorite Drink Is:'
+        iconPosition='left'
+        value={this.ifNullthenEmpty(this.state.favoriteDrink)}
+        onChange={this.handleFavoriteDrinkChange}
+        />
           
-          <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
-          Update
-          </Button>
-          </Segment>
-          </Form>
-          {/* need to add profile picture and how to store kind of confused */}
+        <Button onClick={this.handleSubmit} color='yellow' fluid size='large'>
+        Update
+        </Button>
+        </Segment>
+        </Form>
+        {/* need to add profile picture and how to store kind of confused */}
           
-          </Container>
+        </Container>
           
-          </Modal.Content>
-          </Modal>
-          </Grid>
+        </Modal.Content>
+        </Modal>
+        </Grid>
       
         </BrowserRouter> 
-      </Container> //end container
-    )
-  }//end render
+        </Container> //end container
+            )
+        }//end render
 
   handleFileRead = (e) => {
     let res = base64.encode(this.fileReader.result);
@@ -670,6 +684,26 @@ class Profile extends Component{
           console.log(data);
           this.setState({allDrinks: data});
       }).catch(console.log);
+
+  }
+
+  async handleGetFollowing(owner) {
+      let results = [];
+
+      await fetch(config.url.API_URL + '/user/getFollowing/' + owner, {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+      }).then(res => res.json()).then(async (data) => {
+          console.log(data);
+
+          results = data;
+      }).catch(console.log);
+
+      return results;
+
   }
 
   isValidInput(input) {
