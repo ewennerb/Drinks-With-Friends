@@ -412,7 +412,8 @@ export default class DrinkCard extends React.Component {
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"}/>
             }
 
-            let shareURL = config.url.API_URL + "/" + drink.publisher + "/drink/" + drink.name;
+            let shareURL =  "fiveo-clocksomewhere.web.app/" + drink.publisher + "/drink/" + drink.name;
+            shareURL = encodeURIComponent(shareURL);
 
             return(
                 <div>

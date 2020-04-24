@@ -350,6 +350,7 @@ class Map extends Component{
                             marginBottom: '50px'
                         }}
                         onPlaceSelected={async (e) => await this.onPlaceSelected(e, window.google)}
+
                         types={['(cities)']}
                     />
                 )
