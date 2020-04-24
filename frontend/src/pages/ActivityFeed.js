@@ -380,6 +380,7 @@ export default class ActivityFeed extends React.Component {
             this.setState({response: data, modalOpen2: false})
             //window.location.replace('/feed');
         }).catch(console.log);
+        window.location.reload(false);
 
     };
 

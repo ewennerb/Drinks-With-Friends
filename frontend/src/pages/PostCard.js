@@ -23,14 +23,24 @@ export class PostCard extends React.Component{
 
     render(){
         let pfp;
+
+
         let post = this.state.post;
-        if (post.profileImage === null || post.profileImage === ""){
+
+
+        console.log("POSTCARD DEBUG");
+        console.log(post.userName);
+        console.log(post.profileImage);
+        console.log(this.props.user);
+
+
+        if (post.profileImage === null || post.profileImage === "" || post.profileImage === undefined){
             pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
         }else{
             pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
         }
         let text_image;
-        if (post.image === null || post.image === ""){
+        if (post.image === null || post.image === "" || post.image === undefined){
 
             text_image = <div  data-testid={"user-div-img-0"}/>
 
@@ -42,43 +52,52 @@ export class PostCard extends React.Component{
 
         console.log(post);
         if(post.geolocation !== " " && post.geolocation !== ""){
-            let locString = post.geolocation.split(" - ");
-            console.log(post.geolocation);
-            console.log(locString);
-            postLocation = <div>
-                <Header as="h4" color="grey" floated="left">
-                    <Icon name='map marker alternate' color="grey"/>
-                    <Header.Content>
-                        {locString[0]}
-                        <Header.Subheader>
-                            {locString[1]}
-                        </Header.Subheader>
-                    </Header.Content>
-                </Header>
-            </div>
+            let locString;
+            try {
+                locString = post.geolocation.split(" - ");
+                console.log(post.geolocation);
+                console.log(locString);
+                postLocation = <div>
+                    <Header as="h4" color="grey" floated="left">
+                        <Icon name='map marker alternate' color="grey"/>
+                        <Header.Content>
+                            {locString[0]}
+                            <Header.Subheader>
+                                {locString[1]}
+                            </Header.Subheader>
+                        </Header.Content>
+                    </Header>
+                </div>
+            }catch(e){
+                postLocation = <div/>
+            }
+
+
         }else{
             postLocation = <div/>
         }
+
+        let x = "/" + post.userName;
 
         return(
             <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
 
                 <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                    <Link to={(`${post.userName}`)}>
+                    <Link to={x}>
                         <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
                             {pfp}
                         </CardContent>
                     </Link>
                     <Grid columns={1}>
                         <GridRow style={{paddingBottom: "0px"}}>
-                            <Link style={{textDecoration: "none"}} to={(`${post.userName}`)}>
+                            <Link style={{textDecoration: "none"}} to={x}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>
                                     @{post.userName}
                                 </p>
                             </Link>
                         </GridRow>
                         <GridRow  style={{paddingTop: "0px"}}>
-                            <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
+                            <Link style={{textDecoration: "none", color: "grey"}} to={x}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
                                     {post.name}
                                 </p>

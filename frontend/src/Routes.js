@@ -7,6 +7,7 @@ import Search from "./pages/Search"
 import Profile from "./pages/MyProfile"
 import ActivityFeed from "./pages/ActivityFeed"
 import All from "./pages/All"
+import Post from "./pages/Post"
 import ResetPassword from "./pages/ResetPassword";
 import {config} from './config/config'
 import {ThemeProvider} from 'styled-components';
@@ -27,6 +28,8 @@ import {
 import Drink from "./pages/Drink";
 import PopupContent from "semantic-ui-react/dist/commonjs/modules/Popup/PopupContent";
 import List from "semantic-ui-react/dist/commonjs/elements/List";
+import Sticky from "semantic-ui-react/dist/commonjs/modules/Sticky";
+import Posts from "./pages/userpages/Posts";
 
 
 export default class Routes extends React.Component {
@@ -271,7 +274,7 @@ export default class Routes extends React.Component {
                                         message = " published a new drink recipe";
                                         icon = "beer"
                                     }else{
-                                        link = "/" + notif.publisher + "/post/" + notif.postId;
+                                        link = "/post/" + notif.publisher + "/" + notif.postId;
                                         icon = "envelope outline";
                                         message = " published a new post";
                                     }
@@ -376,7 +379,7 @@ export default class Routes extends React.Component {
                             <a href={"http://www.google.com"} onClick={window.close()}>I am baby get me out of here</a>
                         </Segment>
                     </div>
-                    <div hidden={!this.state.is21} style={{overflowY: 'scroll'}}>
+                    <div hidden={!this.state.is21}>
                         <Menu attached="top" size="huge">
                             <Menu.Item
                                 as={Link}
@@ -407,7 +410,7 @@ export default class Routes extends React.Component {
                                             onClick={this.handlePageJump}
                                             name={"Search For Drinks"}
                                             active={activeItem === 'Search For Drinks'}
-                                            
+
                                         />
 
                                         <Menu.Item
@@ -416,7 +419,7 @@ export default class Routes extends React.Component {
                                             name={"Activity Feed"}
                                             active={activeItem === 'Activity Feed'}
                                             onClick={this.handlePageJump}
-                                           
+
                                         />
 
                                         <Menu.Item
@@ -454,18 +457,19 @@ export default class Routes extends React.Component {
                                 <Segment basic placeholder>
                                     <Switch>
                                         <Route exact path="/" render={() => <Search user={this.state.user}/>}/>
-                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>  
+                                        <Route exact path="/login" render={() => <Login passState={this.passState.bind(this)}/>}/>
                                         {/* it doenst like this^ stackoverflow says componentdidmount for "sideeffects" */}
                                         <Route exact path="/feed" render={() => <ActivityFeed user={this.state.user}/>}/>
                                         <Route exact path="/register" component={Register}/>
                                         <Route exact path="/all" render={() => <All user={this.state.user}/>}/>
                                         {/* im so sorry for fucking up the username and user i shouldve fixed it way earlier */}
                                         <Route path="/:username/drink/:name" component={Drink}/>
+                                        <Route path="/post/:publisher/:postId" component={Post}/>
                                         <Route exact path="/resetPassword" component={ResetPassword}/>
                                         <Route path="/:profile" render={({match}) => <Profile user={this.state.user}  match={match}
                                                                                     UserObject={this.state.UserObject}/>}/>
                                         <Route exact path="/profile" render={() => <Profile user={this.state.user}/>}/>
-                                        
+
 
                                     </Switch>
                                 </Segment>

@@ -10,9 +10,9 @@ import {
   Card,
   Image,
 } from 'semantic-ui-react';
-import {PostCard} from "../PostCard"
+import {PostCard} from "../PostCard.js"
 import {ingredientCard} from "../utils";
-import DrinkCard from "../DrinkCard.js";
+import DrinkCard from "../rDrinkCard.js";
 import {config} from '../../config/config'
 import 'semantic-ui-css/semantic.min.css';
 
@@ -24,11 +24,12 @@ class Posts extends Component{
     this.state = {
       // userName: User.userName,
       // posts: User.posts,
-      browser: props.user,
-      profile: props.match.params.profile,
+      browser: props.browser,
+      profile: props.profile,
       userLocation: props.userLocation,
       User: User,
-
+      profileOwner: props.profileOwner,
+      loaded: false
     };
 
   }
@@ -37,79 +38,80 @@ class Posts extends Component{
   //   let userPage = this.state.profile;
     
   //   if (userPage != undefined){
-  await this.getPosts(this.state.profile);
-  await this.getPublishedDrinks(this.state.profile);
+    let posts = await this.getPosts(this.state.profile);
+    let drinks = await this.getPublishedDrinks(this.state.profile);
+    this.setState({
+        posts: posts,
+        publishedDrinks: drinks,
+        loaded: true
+    })
   //   //should have posts and drinks
   //   console.log(this.state.posts);
-  //   let userDrinks =[];
-  //   if (this.state.Drinks != undefined) {
-  //   this.state.Drinks.map((drink) => {
-  //     // console.log(index)
-  //     if (drink.publisher === userPage){
-  //           console.log(drink);
-  //           userDrinks.push(drink);
-  //     }
-  //   })
-  //   //putting that profiles drinks in state
-  //   this.setState({userDrinks: userDrinks});
-  //   }
   //  }
   }
 
   render(){
 
-    return (
-        <Container  >
+      if(this.state.loaded === true){
+          return (
+              <Container  >
 
-        <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
-          <Grid.Column width={4}/>
-          <Grid.Column width={8} textAlign="center">
-            <Grid.Row centered>
-              <br/>
-             <Segment>
-              <Header>{this.state.profile}'s Posts</Header>
-             </Segment>
-              {/* so what the fuck are posts? im more confused */}
-              {(this.state.posts == undefined || this.state.posts.length < 1)
-                ? <Header>No Posts Found</Header>
-                : this.state.posts.map((post, index) => {
-                    //console.log(post);
-                    return(<PostCard post={post}/>)
-                })
-              }
-                <br/>
-              <Segment>
-                 <Header>{this.state.profile}'s Published Drinks</Header>
-              </Segment>
+                  <Grid style={{height: '100vh', overflowY: 'scroll'}} columns={16} centered>
+                      <Grid.Column width={4}/>
+                      <Grid.Column width={8} textAlign="center">
+                          <Grid.Row centered>
+                              <br/>
+                              <Segment>
+                                  <Header>{this.state.profile}'s Posts</Header>
+                              </Segment>
+                              {/* so what the fuck are posts? im more confused */}
+                              {(this.state.posts == undefined || this.state.posts.length < 1)
+                                  ? <Header>No Posts Found</Header>
+                                  : this.state.posts.map((post, index) => {
+                                      //console.log(post);
+                                      return(<PostCard post={post} user={this.state.browser}/>)
+                                  })
+                              }
+                              <br/>
+                              <Segment>
+                                  <Header>{this.state.profile}'s Published Drinks</Header>
+                              </Segment>
 
-              <br/>
-              
-              {(this.state.publishedDrinks == undefined || this.state.publishedDrinks.length < 1)
-                ? <Header>No Drinks Found</Header>
-                : this.state.publishedDrinks.map((drink, index) => {
-                    // console.log(drink);
-                    return(
-                      <DrinkCard
-                        user={this.state.userName}
-                        index={index}
-                        drink={drink}
-                        userLocation={this.state.userLocation}
-                      />
-                      // rodsDrinkCard ({
-                      //   user: this.state.userName,
-                      //   index: {index},
-                      //   drink: drink,
-                      // })
-                    )
-                })
-              }
-              <br/>
-            </Grid.Row>
-          </Grid.Column>
-          <Grid.Column width={4}/>
-          </Grid>      
-        </Container>
-    ); //end of return
+                              <br/>
+
+                              {(this.state.publishedDrinks == undefined || this.state.publishedDrinks.length < 1)
+                                  ? <Header>No Drinks Found</Header>
+                                  : this.state.publishedDrinks.map((drink, index) => {
+                                      // console.log(drink);
+                                      return(
+                                          <DrinkCard
+                                              user={this.state.userName}
+                                              index={index}
+                                              drink={drink}
+                                              userLocation={this.state.userLocation}
+                                              profileOwner={this.state.profileOwner}
+                                          />
+                                          // rodsDrinkCard ({
+                                          //   user: this.state.userName,
+                                          //   index: {index},
+                                          //   drink: drink,
+                                          // })
+                                      )
+                                  })
+                              }
+                              <br/>
+                          </Grid.Row>
+                      </Grid.Column>
+                      <Grid.Column width={4}/>
+                  </Grid>
+              </Container>
+          ); //end of return
+      }else{
+          return(
+              <Segment basic loading placeholder/>
+          )
+      }
+
   }// end of render
 
 
@@ -129,7 +131,7 @@ class Posts extends Component{
 
   async getPosts(userName) {
     //get posts
-  
+    let posts = [];
     if (this.isValidInput(userName)){
     
       await fetch(config.url.API_URL + '/post/'+userName, {
@@ -138,29 +140,53 @@ class Posts extends Component{
           'Accept': 'application/json',
           'Content-Type': 'application/json',
       },
-      }).then(res => res.json()).then((data) => { //dk tbh
+      }).then(res => res.json()).then(async (data) => { //dk tbh
           console.log(data);
-          
-          this.setState({posts: data});
+          // I took out a bunch of setStates so that it renders better now - EJ
+          for (let i = 0; i < data.length; i++) {
+              data[i].userName = this.state.profile;
+              console.log(data[i].userName);
+              let names = {};
+              await fetch(config.url.API_URL + "/user/"+this.state.profile, {
+                  method: 'GET',
+                  headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                  },
+              }).then(res => res.json()).then(async (data2) => {
+                  names = data2;
+                  console.log(data2)
+              }).catch(err => {
+                  console.log(err)
+              });
+              data[i].profileImage = names.photo
+
+          }
+          posts = data;
+
       }).catch(console.log);
+      return posts;
     }
     
 
     
   }// end of getposts
   async getPublishedDrinks(user) {
-    await fetch(config.url.API_URL + '/user/getPublishedDrinks/'+user, {
-      method: 'GET',
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-      },
-      }).then(res => res.json()).then((data) => { 
-          console.log((data));
-          //JSON.parse
-          // let likedDrinks = [];
-          this.setState({publishedDrinks: data});
+      let drinks = [];
+      await fetch(config.url.API_URL + '/user/getPublishedDrinks/'+user, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        }).then(res => res.json()).then((data) => {
+            console.log((data));
+            //JSON.parse
+            // let likedDrinks = [];
+            drinks = data;
+            // this.setState({publishedDrinks: data});
       }).catch(console.log);
+      return drinks;
   }
   
 

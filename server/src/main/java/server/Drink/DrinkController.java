@@ -190,7 +190,9 @@ public class DrinkController {
     public String searchOfficialDrink(@RequestParam(name = "s") String request) throws JsonProcessingException {
         DrinkSQL ds = new DrinkSQL();
         Drink[] drinkss = ds.searchDrink(request, 1);
-
+		int topId = ds.topResultDrinkId;
+        ds = new DrinkSQL();
+		ds.topResultDrinkId = topId;
 		Drink[] drinks = ds.getSimilarDrinks();
         if (drinkss == null) {
             return "{\"results\": \"DNE\"";

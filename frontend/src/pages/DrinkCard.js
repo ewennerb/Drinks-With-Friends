@@ -256,20 +256,22 @@ export default class DrinkCard extends React.Component {
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-placeholder-img-" + index.toString()}/>
             }
 
+            let shareURL = config.url.API_URL + "/" + drink.publisher + "/drink/" + drink.name;
+
             return(
                 <div>
                     <Modal open={this.state.shareModal} onClose={this.closeShare} closeOnEscape={false} size="mini" centered closeIcon>
                         <Header textAlign="left">Share Via:</Header>
                         {/*Todo: Actually plug in a legit URL and all the other paramters*/}
                         <Segment basic textAlign="center">
-                            <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                            <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={shareURL}>
                                 <FacebookIcon size={32}/>
                             </FacebookShareButton>&nbsp;
-                            <TwitterShareButton title={"Drinks With Friends"} url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                            <TwitterShareButton title={"Drinks With Friends"} url={shareURL}>
                                 <TwitterIcon size={32}/>
                             </TwitterShareButton>&nbsp;
                             {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
-                            <EmailShareButton subject="Check out this drink I found!" url={`http://localhost:3000/${drink.publisher}/drink/${drink.name}`}>
+                            <EmailShareButton subject="Check out this drink I found!" url={shareURL}>
                                 <EmailIcon size={32}/>
                             </EmailShareButton>
                         </Segment>
@@ -298,7 +300,11 @@ export default class DrinkCard extends React.Component {
                             <Card.Header textAlign="left" data-testid={"drink-name-" + index.toString()}>
                                 <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
-                                <Icon link name="globe" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.openMap}/>
+                                {/*Todo: Rod - Put your flag in the 'hidden' value and your method to open the modal in the onClick here */}
+                                <div hidden={false}>
+                                    <Icon link name="edit" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={() => console.log("beans")}/>
+                                </div>
+
                             </Card.Header>
 
                             <Card.Meta className="pub" textAlign="left" data-testid={"drink-publisher-" + index.toString()}> <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}`)}>{drink.publisher}</Link></Card.Meta>
