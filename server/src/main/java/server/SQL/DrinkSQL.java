@@ -873,7 +873,7 @@ public class DrinkSQL {
 		try {
 			ArrayList<Drink> drinks = new ArrayList<Drink>();
 			Drink drink = new Drink();
-			String query = "select * from test_schema.drink where publisher = ?" ;
+			String query = "select * from "+ this.database+".drink where publisher = ?" ;
 			System.out.println(query);
 			psmt = conn.prepareStatement(query);
 			psmt.setString(1, user);
@@ -930,7 +930,7 @@ public class DrinkSQL {
 	public Drink[] getTopLikedDrinks(){
 		try {
 		//get 15 most likeDrink
-		String query = "SELECT * FROM test_schema.drink ORDER BY likes DESC LIMIT 15";
+		String query = "SELECT * FROM " + this.database +".drink ORDER BY likes DESC LIMIT 15";
 		System.out.println(query);
 		psmt = conn.prepareStatement(query);
 		rs = psmt.executeQuery();
@@ -988,14 +988,21 @@ public class DrinkSQL {
 
 		}catch(Exception e){
 			e.printStackTrace();
+			try {
+				
+				psmt.close();
+				conn.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
 			return null;
 		}
 	}
 
 	/*
 	
-			String query = "SELECT * FROM test_schema.drink d "+
-				"where d.drinkId in (select drink_id from test_schema.drink_ingredient where ingredient like \""+searchString+"\")";
+			String query = "SELECT * FROM "+ this.database+".drink d "+
+				"where d.drinkId in (select drink_id from "+ this.database+".drink_ingredient where ingredient like \""+searchString+"\")";
 			System.out.println(query);
 			rs = smt.executeQuery(query);
 
@@ -1012,7 +1019,7 @@ public class DrinkSQL {
 				String publisher=rs.getString("publisher");
 				
 				String query_ingreds = "SELECT quantity, measurement, ingredient " +
-					"FROM test_schema.drink_ingredient " +
+					"FROM "+ this.database+".drink_ingredient " +
 					"WHERE drink_id = "+ drinkId + " AND username = \"" + publisher + "\"";
 				Statement smt2 = conn.createStatement();
 				ResultSet rs2 = smt2.executeQuery(query_ingreds);
