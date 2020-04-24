@@ -94,11 +94,8 @@ public class UserSQL {
 			rs.close();
 			psmt.close();
 			conn.close();
-			if(password1.equals(password)) {
-				return "{ \"status\" : \"ok.\"}";
-			} else {
-				return "{ \"status\" : \"Error: Login Failed.\"}";
-			}
+			
+			return password1;
 			
 		}catch(Exception e){
 			e.printStackTrace();

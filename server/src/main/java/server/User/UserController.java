@@ -85,7 +85,13 @@ public class UserController {
 		User u = om.readValue(userName, User.class);
 
 		UserSQL user = new UserSQL();
-		return user.login(u.userName, u.password);
+		String dbPass = user.login(u.userName, u.password);
+
+		if( dbPass.equals(u.password)){
+			return "{ \"status\" : \"ok.\"}";
+		} else {
+			return "{ \"status\" : \"Error: Login Failed.\"}";
+		}
 	}
 
     @GetMapping("")
