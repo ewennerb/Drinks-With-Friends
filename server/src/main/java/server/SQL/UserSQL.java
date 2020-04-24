@@ -18,11 +18,11 @@ public class UserSQL {
 
 	public UserSQL(){
 		url = "jdbc:mysql://localhost:3306/";
-		url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
+		//url = "jdbc:mysql://b4e9xxkxnpu2v96i.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/hiqietg4casioadz"; 	//production
 		
 		try{
-			conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
-			//conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
+			//conn = DriverManager.getConnection(url, "gzgsvv5r3zidpv57", "xf590wkdp1qeejrj"); //production
+			conn = DriverManager.getConnection(url, "root", "1234DrinksWithFriends");//development
 		
 			smt = conn.createStatement();
 			
@@ -31,7 +31,7 @@ public class UserSQL {
 			
 		}
 		database = "test_schema";		//development
-		database = "hiqietg4casioadz";	//production
+		//database = "hiqietg4casioadz";	//production
 
 
 	}
@@ -344,7 +344,7 @@ public class UserSQL {
 				//System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL user update failed.\"}";
 			}
-
+			
 			String query1 = "update "+ this.database+".drink set publisher = ? where publisher = ?";
 			psmt = conn.prepareStatement(query1);
 			psmt.setString(1, newUsername);
