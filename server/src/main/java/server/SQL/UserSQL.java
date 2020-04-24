@@ -304,6 +304,8 @@ public class UserSQL {
 		try{
 
 			String query = "update "+ this.database+".user set password = ? where userName = ?";
+			//System.out.println("Updating password: "+newPass);
+
 			psmt = conn.prepareStatement(query);
 			psmt.setString(1, newPass);
 			psmt.setString(2, userName);
@@ -312,7 +314,7 @@ public class UserSQL {
 				//System.out.print("********* ITS !");
 				return "{ \"status\" : \"ok\" }";
 			}else if (updateResult == 0) {
-				//System.out.print("****** IS 0");
+				System.out.print("****** IS 0");
 				return "{ \"status\" : \"Error: SQL update failed.\"}";
 			}
 			psmt.close();

@@ -159,7 +159,8 @@ class Posts extends Component{
               }).catch(err => {
                   console.log(err)
               });
-              data[i].profileImage = names.photo
+              data[i].profileImage = names.photo;
+              data[i].name = names.name;
 
           }
           posts = data;

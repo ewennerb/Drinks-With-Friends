@@ -31,6 +31,7 @@ class Friends extends Component{
 
   async handleGetFollowing() {
     let results = [];
+
     await fetch(config.url.API_URL + '/user/getFollowing/' + this.state.user, {
       method: 'GET',
       headers: {
@@ -39,6 +40,7 @@ class Friends extends Component{
       },
   }).then(res => res.json()).then(async (data) => {
       console.log(data);
+
       results = data;
   }).catch(console.log);
 
@@ -52,19 +54,24 @@ class Friends extends Component{
     x = await this.handleGetFollowing();
     if (x != undefined && x != []) {
       this.setState({received: true, results: x});
+
     }
   }
 
   render(){
+
     let search;
 
     if (this.state.received) {
       console.log(this.state.results);
+
       search = 
       <div>
       {this.state.results === undefined
         ? <Header textAlign="center">No Results Found</Header>
+
         : this.state.results.results.map((result, index) => {
+
             console.log(result.followedFlag)
 
             if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
