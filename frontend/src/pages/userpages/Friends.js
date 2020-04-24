@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {userCardFollowed} from "../utils";
+import {userCardNeither} from "../utils";
 import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import {config} from '../../config/config'
