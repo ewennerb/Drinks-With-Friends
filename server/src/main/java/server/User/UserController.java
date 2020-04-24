@@ -7,6 +7,8 @@ import server.SQL.UserSQL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.security.*;
+import java.nio.charset.StandardCharsets;
 
 import server.SQL.DrinkSQL;
 import server.Drink.Drink;
@@ -27,6 +29,64 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @CrossOrigin //(origins = "https://fiveo-clocksomewhere.firebaseapp.com/", maxAge =  3600, allowedHeaders = "*")     //production
 @RequestMapping(path="/user")
 public class UserController {
+	//make private and called in insert user or somewhere after testing
+	byte[] g_salt = new byte[16];
+	int count = 0;
+
+	//@GetMapping("/hashPassword/{password}/{salty}")
+	public String hashPass(String password)
+		throws IOException{
+		
+		MessageDigest ms;
+		StringBuilder stringBuilder = new StringBuilder();
+		String out = "";
+		try{
+			ms = MessageDigest.getInstance("SHA-256");
+
+			SecureRandom r = new SecureRandom();
+			byte[] salt = new byte[16];
+			r.nextBytes(salt);
+	/*		if(count == 0)
+				g_salt = salt;
+			if(password.equals("2Pokemon")){
+				System.out.println("Salt: "+salt);
+				if(count++ > 0)
+					salt = g_salt;
+			}*/
+			System.out.println("Salt2: "+salt+" count: "+count);
+
+			ms.update(salt);
+
+			byte[] hashedPass = ms.digest(password.getBytes(StandardCharsets.UTF_8));
+
+			
+			for (byte b : hashedPass){
+				stringBuilder.append(String.format("%02x", b));
+			}
+			System.out.println("SB output: "+stringBuilder);
+
+			out = salt+"."+stringBuilder.toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			return "ERROr";
+		}
+
+		return out;
+	}
+
+	@GetMapping("/login")
+	public String login(@RequestBody String userName)
+		throws JsonParseException, JsonMappingException, IOException {
+		
+		ObjectMapper om = new ObjectMapper();
+		SimpleModule sm = new SimpleModule("UserDeserializer", new Version(1, 0, 0, null, null, null));
+		sm.addDeserializer(User.class, new UserDeserializer());
+		om.registerModule(sm);
+		User u = om.readValue(userName, User.class);
+
+		UserSQL user = new UserSQL();
+		return user.login(u.userName, u.password);
+	}
 
     @GetMapping("")
     public String findAll() {
