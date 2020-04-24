@@ -35,9 +35,9 @@ export class PostCard extends React.Component{
 
 
         if (post.profileImage === null || post.profileImage === "" || post.profileImage === undefined){
-            pfp = <Image floated="right" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
+            pfp = <Image floated="left" size="tiny" src={process.env.PUBLIC_URL + "/nopfp.png"} data-testid={"post-user-placeholder-img-0"}/>
         }else{
-            pfp = <Image floated="right" size="tiny" src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
+            pfp = <Image floated="left" size="tiny" verticalAlign="middle" circular src={`data:image/png;base64,${post.profileImage}`} data-testid={"post-user-b64-img-0"}/>
         }
         let text_image;
         if (post.image === null || post.image === "" || post.image === undefined){
@@ -45,7 +45,7 @@ export class PostCard extends React.Component{
             text_image = <div  data-testid={"user-div-img-0"}/>
 
         }else{
-            text_image = <Image size="tiny" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
+            text_image = <Image size="large" src={`data:image/png;base64,${post.image}`}  data-testid={"post-b64-img-0"}/>
         }
 
         let postLocation;
@@ -81,84 +81,87 @@ export class PostCard extends React.Component{
 
         return(
             <Card style={{width: "500px"}} centered data-testid={"post-card-0"}>
+                <Card.Content>
+                    {this.state.user === post.userName
+                        ? <div className='ui two icons right floated inline'>
+                            <Icon link color='grey' name="trash" onClick={() =>
+                                fetch(config.url.API_URL + '/post/delete', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        text: "",
+                                        image: "",
+                                        userName: post.userName,
+                                        userId: 0,
+                                        geolocation: "",
+                                        date: "",
+                                        postId: post.postId
+                                    })
+                                }).then(res => res.json()).then((data) => {
+                                    console.log(data);
+                                    window.location.replace('/feed');
+                                }).catch(console.log)
+                            }/>
+                        </div>
 
-                <Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>
-                    <Link to={x}>
-                        <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>
-                            {pfp}
-                        </CardContent>
-                    </Link>
-                    <Grid columns={1}>
-                        <GridRow style={{paddingBottom: "0px"}}>
-                            <Link style={{textDecoration: "none"}} to={x}>
-                                <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>
-                                    @{post.userName}
-                                </p>
-                            </Link>
-                        </GridRow>
-                        <GridRow  style={{paddingTop: "0px"}}>
-                            <Link style={{textDecoration: "none", color: "grey"}} to={x}>
-                                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
-                                    {post.name}
-                                </p>
-                            </Link>
-                        </GridRow>
-                        <GridRow>
-                            {postLocation}
-                        </GridRow>
-                    </Grid>
+                        : <div/>
+                    }
+                    {text_image}
 
-                </Segment>
+
+                    <Header as="h4" textAlign="left" data-testid={"user-name-"} dividing>
+                        {pfp}
+                        <div className="left aligned">
+                            <Header.Content>
+                                    <Link to={x}>@{post.userName}</Link>
+                                    <div className="meta">
+                                        <p style={{fontSize: "75%"}}>({post.name})</p>
+                                    </div>
+                            </Header.Content>
+                            <Header.Subheader>{post.text}</Header.Subheader>
+                        </div>
+
+                    </Header>
+                    <Card.Meta>
+                        {postLocation}
+                    </Card.Meta>
+                </Card.Content>
+
+
+
+                {/*<Segment basic textAlign="left" attached="bottom" style={{width: "500px"}}>*/}
+                {/*    <Link to={x}>*/}
+                {/*        <CardContent textAlign="center" style={{marginTop: "0px",marginRight: "10px", float: "left"}}>*/}
+                {/*            {pfp}*/}
+                {/*        </CardContent>*/}
+                {/*    </Link>*/}
+                {/*    <Grid columns={1}>*/}
+                {/*        <GridRow style={{paddingBottom: "0px"}}>*/}
+                {/*            <Link style={{textDecoration: "none"}} to={x}>*/}
+                {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left", fontSize: "larger", fontWeight: "bolder"}} data-testid={"post-username-0"}>*/}
+                {/*                    @{post.userName}*/}
+                {/*                </p>*/}
+                {/*            </Link>*/}
+                {/*        </GridRow>*/}
+                {/*        <GridRow  style={{paddingTop: "0px"}}>*/}
+                {/*            <Link style={{textDecoration: "none", color: "grey"}} to={x}>*/}
+                {/*                <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>*/}
+                {/*                    {post.name}*/}
+                {/*                </p>*/}
+                {/*            </Link>*/}
+                {/*        </GridRow>*/}
+                {/*        <GridRow>*/}
+                {/*            {postLocation}*/}
+                {/*        </GridRow>*/}
+                {/*    </Grid>*/}
+
+                {/*</Segment>*/}
 
                 {/*This figures out if the user is logged in or not and renders a delete/edit button for you if that's the case. Otherwise it does nothing*/}
-                {this.state.user === post.userName
-                    ? <GridRow style={{paddingTop: "0px"}}>
-                        <Button color='grey' onClick={(ev) => {
-                            //button
-                            let input = document.getElementById("postInput");
-                            console.log(ev)
-                            input.focus();
 
-                        }}
-                        >
-                            Edit
-                        </Button>
-
-                        <Button color='red' onClick={() =>
-                            fetch(config.url.API_URL + '/post/delete', {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    text: "",
-                                    image: "",
-                                    userName: post.userName,
-                                    userId: 0,
-                                    geolocation: "",
-                                    date: "",
-                                    postId: post.postId
-                                })
-                            }).then(res => res.json()).then((data) => {
-                                console.log(data);
-                                window.location.replace('/feed');
-                            }).catch(console.log)
-
-                        }>
-                            Delete
-                        </Button>
-                        <Link style={{textDecoration: "none", color: "grey"}} to={(`${post.userName}`)}>
-                            <p style={{marginTop: "0px", marginRight: "10px", float: "left"}}
-                               data-testid={"post-name-0"}>
-                                {post.name}
-                            </p>
-                        </Link>
-                    </GridRow>
-                    : <div/>
-                }
-                <CardContent data-testid={"post-text-0"}>{post.text}</CardContent>
-                <CardContent>{text_image}</CardContent>
             </Card>
         )
     }
