@@ -52,6 +52,7 @@ class Profile extends Component{
       profile: props.match.params.profile,
       User: {},
       profileOwner: false,
+      followed: false,
     }
   }
 
@@ -75,6 +76,16 @@ class Profile extends Component{
     
     if (this.state.profile === this.state.browser) {
       this.setState({profileOwner: true});
+    } else {
+      //not owner of profile so either follow or unfollow button
+     
+      let ownerfollowers = await this.handleGetFollowing(this.state.browser);
+      ownerfollowers.results.map(user=> {
+        if(this.state.profile === user.userName){
+          this.setState({followed: true, })
+        }
+      })
+
     }
     // if (User != undefined){
     //   if (User.likedDrinks == undefined){
@@ -130,6 +141,9 @@ class Profile extends Component{
 
     let currentUser = localStorage.getItem("username");
 
+    // handleFollow(){
+
+    // }
     //vars
     let editProfile = <p/>;
     let favoriteDrink = <p/>;
@@ -141,7 +155,7 @@ class Profile extends Component{
         //allow the option to edit profile
         editProfile = 
         <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-          <Button animated="fade" onClick={this.handleOpen}  >
+          <Button animated="fade" onClick={(this.handleOpen)}  >
           <Button.Content visible>Edit Profile</Button.Content>
           <Button.Content hidden>
           <Icon name="edit"/>
@@ -151,16 +165,91 @@ class Profile extends Component{
 
     } else {
       //follow button
+      if(this.state.followed){
       console.log("that not u");
       editProfile =
       <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-      <Button animated="fade" onClick={this.handleOpen}  >
-      <Button.Content visible>Follow</Button.Content>
-      <Button.Content hidden>
-      <Icon name="edit"/>
-      </Button.Content>
-      </Button>
-    </Grid.Column>
+        <Button animated="fade" onClick={ () => {
+          fetch(config.url.API_URL + '/user/unfollow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+            userName: this.state.browser,
+                phoneNumber: "",
+                password: "",
+                name: "",
+                email: "",
+                photo: "",
+                bio: "",
+                likedDrinks: "",
+                dislikedDrinks: "",
+                favoritedDrink: "",
+                publishedDrinks: "",
+                postHistory: "",
+                friendsList: "",
+                dateCreated: "",
+                lastLogin: "",
+                response: undefined,
+                darkMode: 0
+    })
+    }).then(res => res.json()).then((data) => {
+            window.location.replace('/');
+    }).catch(console.log) 
+
+
+
+        } } >
+        <Button.Content visible>Unfollow</Button.Content>
+        <Button.Content hidden>
+        <Icon name="edit"/>
+        </Button.Content>
+        </Button>
+      </Grid.Column>
+      } else {
+        //not follow give button uwu
+        editProfile =
+        <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
+          <Button animated="fade" onClick={() => {
+            fetch(config.url.API_URL + '/user/follow/' + this.state.profile, { //NEED TO SEND THE RIGHT CALL
+              method: 'POST',
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+              userName: this.state.browser,
+                  phoneNumber: "",
+                  password: "",
+                  name: "",
+                  email: "",
+                  photo: "",
+                  bio: "",
+                  likedDrinks: "",
+                  dislikedDrinks: "",
+                  favoritedDrink: "",
+                  publishedDrinks: "",
+                  postHistory: "",
+                  friendsList: "",
+                  dateCreated: "",
+                  lastLogin: "",
+                  response: undefined,
+                  darkMode: 0
+            })
+            }).then(res => res.json()).then((data) => {
+              window.location.replace('/');
+            }).catch(console.log) 
+          }}  >
+          <Button.Content visible>Follow</Button.Content>
+          <Button.Content hidden>
+          <Icon name="edit"/>
+          </Button.Content>
+          </Button>
+        </Grid.Column>
+
+      }
     }
     //check if fav drink is undefined or empty
     if (this.isValidInput(this.state.favoriteDrink)){
@@ -595,6 +684,26 @@ class Profile extends Component{
           console.log(data);
           this.setState({allDrinks: data});
       }).catch(console.log);
+  }
+
+  
+  async handleGetFollowing(owner) {
+    let results = [];
+
+    await fetch(config.url.API_URL + '/user/getFollowing/' + owner, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+  }).then(res => res.json()).then(async (data) => {
+      console.log(data);
+
+      results = data;
+  }).catch(console.log);
+
+  return results;
+
   }
 
   isValidInput(input) {
