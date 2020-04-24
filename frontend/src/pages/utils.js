@@ -45,7 +45,7 @@ export const userCard = (index, username, photo, loggedInUsername) => {
                 </Card.Content>
                 <Card.Content extra>
                     <div className='ui two buttons'>
-                        <Button basic color='grey'>
+                        <Button basic color='grey' onClick={() => {window.location.href = newPath}}>
                             <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>
                                     View Profile

@@ -301,9 +301,9 @@ export default class DrinkCard extends React.Component {
                                 <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
                                 <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
                                 {/*Todo: Rod - Put your flag in the 'hidden' value and your method to open the modal in the onClick here */}
-                                <div hidden={false}>
+                                {/*<div>*/}
                                     <Icon link name="edit" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={() => console.log("beans")}/>
-                                </div>
+                                {/*</div>*/}
 
                             </Card.Header>
 
