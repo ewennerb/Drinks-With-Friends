@@ -363,7 +363,7 @@ class Map extends Component{
                 <Segment.Group horizontal>
                     <Segment placeholder textAlign="center" style={{"width": "50%"}}>
                         <Header>
-                            <AsyncMap
+                            <AsyncMap data-testid={"map-async"}
                                 googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k&libraries=places"
                                 loadingElement={
                                     <div style={{ height: `100%` }} />
