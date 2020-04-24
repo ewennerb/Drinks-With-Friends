@@ -22,6 +22,7 @@ export class PostCard extends React.Component{
             shareModal: false
         }
         this.openShare = this.openShare.bind(this);
+        this.closeShare = this.closeShare.bind(this);
     }
 
     async componentDidMount(){
@@ -36,6 +37,12 @@ export class PostCard extends React.Component{
             shareModal: true
         })
     }
+
+    closeShare(){
+        this.setState({
+            shareModal: false
+        })
+    };
 
     render(){
         let pfp;
