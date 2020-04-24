@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {userCardFollowed} from "../utils";
+import {userCardFollowed, userCardNeither} from "../utils";
 import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import {config} from '../../config/config'
@@ -77,7 +77,7 @@ class Friends extends Component{
 
             console.log(result.followedFlag)
 
-            if (result.userName == this.state.user || this.state.user == undefined) { //If when searching and yourself comes up, do not display
+            if (result.userName == this.state.user || localStorage.getItem("Username") == undefined) { //If when searching and yourself comes up, do not display
                 console.log("yourself! or not logged in");
                 return (userCardNeither(index, result.userName, result.photo));
             }
