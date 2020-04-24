@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withGoogleMap, GoogleMap, withScriptjs, InfoWindow, Marker, P } from "react-google-maps";
-import {Search, Segment, Header, List, Icon, Button, Container, Grid, Message} from "semantic-ui-react";
+import {Search, Segment, Header, List, Icon, Button, Container
+  , Grid, Message, Loader} from "semantic-ui-react";
+import Dimmer from "semantic-ui-react/dist/commonjs/modules/Dimmer";
 import Geocode from "react-geocode";
 import _ from 'lodash';
 import {config} from '../../config/config'
@@ -10,28 +12,34 @@ Geocode.setApiKey( "AIzaSyA0jKEk1Wwq_0Ny1z7y70JyE_4XJhho15k" );
 Geocode.enableDebug();
 
 
-
-
 class Map extends Component{
   constructor( props ){
       super( props );
+      let usrlat = props.userLocation.lat;
+      let usrlng = props.userLocation.lng;
+      if (usrlat == undefined || usrlng == undefined){
+        usrlat = 0;
+        usrlng = 0;
+      }
       this.state = {
           //rod
           browser: props.browser,
           profile: props.profile,
           userLocation: props.userLocation,
-          userlat: props.userLocation.lat,
-          userlng: props.userLocation.lng,
+          userlat: usrlat,
+          userlng: usrlng,
           User: props.User,
           profileOwner: props.profileOwner,
           posts: [],
           tags: [],
           places: [],
           markerPosition: props.userLocation,
+          done: false,
+          CLICKED: '',
       };
-      this.createMarkers = this.createMarkers.bind(this); 
+      // this.createMarkers = this.createMarkers.bind(this); 
      
-      this.createList = this.createList.bind(this);
+      // this.createList = this.createList.bind(this);
   }
   async componentDidMount(){
     //console.log(match.params)
@@ -39,38 +47,39 @@ class Map extends Component{
     
   //   if (userPage != undefined){
     let posts = await this.getPosts(this.state.profile);
-    this.setState({
-        posts: posts,
-    })
-    this.createMarkers();
+    this.setState({posts: posts, done:true})
+    // await this.createMarkers(posts);
 
+    
+    console.log("FUCK")
+    console.log(posts.length)
+    console.log(posts)
   }
 
-  createMarkers() {
-    let geotags = [];
-    let places = [];
-    this.state.posts.map(async (post,index) => {
-      await Geocode.fromAddress(post.geolocation).then(
-        response => {
-           const { lat, lng } = response.results[0].geometry.location;
-           //console.log("geo locations ;): " + lat + " " + lng);
-           geotags.push({lat,lng});
-
-           //this.state.tags.push({lat,lng});
-           let place = {name: response.results[0].formatted_address,pos:{lat,lng}}
-           places.push(place);
-        }, error => {
-          //console.error(error);
-        });
-    })
-    this.setState({places: places})
+  // createMarkers(posts) {
+  //   let geotags = [];
+  //   let places = [];
+  //   posts.map(async (post,index) => {
+  //     await Geocode.fromAddress(post.geolocation).then(
+  //       response => {
+  //          const { lat, lng } = response.results[0].geometry.location;
+  //          //console.log("geo locations ;): " + lat + " " + lng);
+  //          geotags.push({lat,lng});
+  //          //this.state.tags.push({lat,lng});
+  //          let place = {name: response.results[0].formatted_address,pos:{lat,lng}}
+  //          places.push(place);
+  //       }, error => {
+  //         //console.error(error);
+  //       });
+  //   })
+  //   this.setState({places: places, done: true})
  
-    // this.state.tags.map(tag =>{
-    //   console.log("Fuck")
-    //   console.log(tag)
-    // })
-   
-  }
+  //   // this.state.tags.map(tag =>{
+  //   //   console.log("Fuck")
+  //   //   console.log(tag)
+  //   // })
+  // }
+
   createList () { 
     return this.state.places.map((place, index) => { 
       console.log(place)
@@ -81,44 +90,86 @@ class Map extends Component{
      /> )
     }) 
   } 
-
+  handleClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log(e)
+    console.log(e.target.innerText)
+    if(e.target.innerText != undefined){
+    Geocode.fromAddress(e.target.innerText).then(
+      response => {
+          const { lat, lng } = response.results[0].geometry.location;
+          //console.log("geo locations ;): " + lat + " " + lng);
+          let place = {name: response.results[0].formatted_address,pos:{lat,lng}}
+          this.setState({CLICKED: place.name,
+            userlat: lat,
+            userlng: lng,
+            markerPosition:{lat,lng} 
+            
+          })
+      }, error => {
+        //console.error(error);
+      });
+    }
+  }
   
+  render() {
+      let userlat = this.state.userlat;
+      let userlng = this.state.userlng;
+      let done = this.state.done;
+      if (userlat == undefined || userlng == undefined) {
+        userlat = 0;
+        userlng = 0;
+      }
+      // if (done == true){
+      //   if(this.state.posts.length === 0){
+      //     done = false;
+      //   }
+      // }
+      const AsyncMap = compose(withScriptjs, withGoogleMap)(props => {
+          return (
+          <GoogleMap id="map" google={this.props.google}
+            defaultZoom={15}
+          
+            defaultCenter={{ lat: this.state.userlat, lng: this.state.userlng }}
+          >
+            {/* {this.displayMarkers()} */}
+          <Marker
+              google={this.props.google}
+            position={{ lat: this.state.markerPosition.lat, lng: this.state.markerPosition.lng }}
+            />
+          </GoogleMap>
+          )
+      });
 
- 
-    render(){
-      let lat, lng;
-      
-        const AsyncMap = compose(withScriptjs, withGoogleMap)(props => {
-                  return (
-                  <GoogleMap id="map" google={this.props.google}
-                    defaultZoom={5}
-                    
 
-                    defaultCenter={{ lat: this.state.userlat, lng: this.state.userlng }}
-                  >
-                   {/* {this.displayMarkers()} */}
-                  <Marker
-                     google={this.props.google}
-                    position={{ lat: this.state.markerPosition.lat, lng: this.state.markerPosition.lng }}
-                    />
-                  </GoogleMap>
-                  )
-              });
+        if (done) {
             return(
               <Grid>
               <Segment>
               <Segment>
                   <Header>{this.state.profile}'s Geotags</Header>
               </Segment>
-              <Segment style={{height: '100vh', overflowY: 'scroll'}}>
-              { console.log(this.state.places.length) }
-              {(this.state.places == undefined || this.state.places.length <1)
+              <Segment style={{width:'100vh', overflowY: 'scroll'}}>
+              { console.log(this.state.posts.length) }
+              {(this.state.posts == undefined || this.state.posts.length <1)
                 ? <Header>No Places Found</Header>
-                : this.state.places.map(place => {
+                : this.state.posts.map(place => {
                     console.log(place);
+                    let loc = place.geolocation.trim();
+                    console.log("LOC: "+loc)
+                    if(this.isValidInput(loc)) {
                     return(
-                        <Header>fuck</Header>
+                        <Segment
+                          key={place.postId}
+                          name={loc}
+                          onClick={this.handleClick}
+                          
+                        >
+                        {place.geolocation}
+                        </Segment>
                     )
+                  }
                 })
                }
                      {console.log("FUCK")}
@@ -140,7 +191,21 @@ class Map extends Component{
               </Grid>
 
             );
+      } else {
+        return (
+          <div>
+              <Segment style={{height: '40vh', overflow:"auto"  }} textAlign={"center"}>
+                  <Dimmer active>
+                      <Loader content='Loading'/>
+                  </Dimmer>
+              </Segment>
+          </div>
+        )
+      }
+
+
     }
+
     //killnme
     isValidInput(input) {
       return !(input == undefined || input === '' || input == null);
