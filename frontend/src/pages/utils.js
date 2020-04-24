@@ -117,8 +117,16 @@ export const userCardFollowed = (index, username, photo, loggedInUsername) => {
                    
                 </Card.Content>
                 <Card.Content extra>
+<<<<<<< HEAD
                     <div className='ui two buttons'>
                         <Button basic color='grey' onClick={() => {window.location.href=newPath}}>
+||||||| merged common ancestors
+                    <div className='ui two buttons'>
+                        <Button basic color='grey'>
+=======
+                    <div className='ui two buttons' onClick={() => {window.location.href=newPath}}>
+                        <Button basic color='grey'>
+>>>>>>> 27c81d9376faa74728f3a7789eaaea9017bab1df
                            
                             <Link style={{textDecoration: "none", color: "grey"}} to={newPath}>
                                 <p style={{marginTop: "0px",marginRight: "10px", float: "left"}} data-testid={"post-name-0"}>

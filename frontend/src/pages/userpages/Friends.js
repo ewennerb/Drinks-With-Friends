@@ -29,25 +29,26 @@ class Friends extends Component{
     console.log(this.state.user);
   }
 
-    async handleGetFollowing() {
-        let results = [];
+  async handleGetFollowing() {
+    let results = [];
 
-        await fetch(config.url.API_URL + '/user/getFollowing/' + this.state.user, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then(res => res.json()).then(async (data) => {
-            console.log(data);
+    await fetch(config.url.API_URL + '/user/getFollowing/' + this.state.user, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+      },
+  }).then(res => res.json()).then(async (data) => {
+      console.log(data);
 
-            results = data;
-        }).catch(console.log);
-        if(results.results === "DNE"){
-            return [];
-        } else {
-            return results;
-        }
+      results = data;
+  }).catch(console.log);
+
+  if(results.results === "DNE"){
+    //console.log(" I WANT TO FUCKING DIE")
+    return [];
+  }
+  return results.results;
   }
 
   async componentDidMount() {
@@ -69,15 +70,15 @@ class Friends extends Component{
 
       search = 
       <div>
-      {this.state.results === undefined 
+      {this.state.results == undefined || this.state.results.length < 1
         ? <Header textAlign="center">No Results Found</Header>
 
         : Array.from(this.state.results).map((result, index) => {
 
-            // console.log(result.followedFlag)
+            console.log(result.followedFlag)
 
             if (result.userName == this.state.user) { //If when searching and yourself comes up, do not display
-                // console.log("yourself!");
+                console.log("yourself!");
             }
             else { //if user IS already followed by user, display unfollow card
                 return (userCardFollowed(index, result.userName, result.photo, this.state.user))

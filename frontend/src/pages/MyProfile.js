@@ -264,7 +264,7 @@ class Profile extends Component{
     }
 
     return(
-      <Container>
+      <Container data-testid="user">
         <BrowserRouter>
           {notUser}
           <Grid className="grid" columns={3} padded relaxed textAlign="center">
