@@ -376,7 +376,7 @@ export default class DrinkCard extends React.Component {
                 let dColor = this.dislikeColor();
 
                 likes =
-                    <Menu fluid>
+                    <Menu fluid data-testid={"drink-likeDislike-loggedIn"}>
                         <Menu.Item position="left">
                             <FeedLike>
                                 <Icon name="caret up" size="large" onClick={() => this.handleLikeDislike("like")} color={lColor}/>
@@ -394,7 +394,7 @@ export default class DrinkCard extends React.Component {
 
             }else{
                 likes = <div>
-                    <Menu fluid>
+                    <Menu fluid data-testid={"drink-likeDislike-loggedOut"}>
                         <Menu.Item position="left">
                             {this.state.likes} Likes
                         </Menu.Item>
@@ -407,12 +407,13 @@ export default class DrinkCard extends React.Component {
 
             //Figures out if the drink comes with an image or not
             if(drink.photo !== ""){
-                drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${drink.photo}`}/>
+                drinkPic = <Image floated="right" size="small" src={`data:image/jpeg;base64,${drink.photo}`} data-testid={"drink-img"}/>
             }else{
-                drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"}/>
+                drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-img-placeholder"}/>
             }
 
-            let shareURL = config.url.API_URL + "/" + drink.publisher + "/drink/" + drink.name;
+            let shareURL =  "fiveo-clocksomewhere.web.app/" + encodeURIComponent(drink.publisher) + "/drink/" + encodeURIComponent(drink.name);
+            //shareURL = encodeURIComponent(shareURL);
 
             return(
                 <div>
@@ -541,8 +542,8 @@ export default class DrinkCard extends React.Component {
                         <Card.Content>
 
                             <Card.Header textAlign="left">
-                                <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)}>{drink.name}</Link>
-                                <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare}/>
+                                <Link style={{textDecoration: "none"}} to={(`/${drink.publisher}/drink/${drink.name}`)} data-testid={"drink-name"}>{drink.name}</Link>
+                                <Icon link name="share alternate" color="grey" style={{"position": "absolute", "right": "0px"}} onClick={this.openShare} data-testid={"drink-share"}/>
                                 {/*Todo: Rod - Put your flag in the 'hidden' value and your method to open the modal in the onClick here */}
                                 
                                 {this.state.editable && <Icon link name="edit" color="grey" style={{"position": "absolute", "right": "25px"}} onClick={this.handleEdit}/>}
@@ -564,7 +565,7 @@ export default class DrinkCard extends React.Component {
                                 <br/>
                                 <p><strong>Ingredients: </strong></p>
                                 <Card.Content>
-                                    <List bulleted >
+                                    <List bulleted data-testid={"drink-ingredient-list"}>
                                         {drink.ingredients.map((ingr, idx) => {
                                             return (
                                                 <p key={idx} >
@@ -586,7 +587,7 @@ export default class DrinkCard extends React.Component {
             );
         }else{
             return(
-                <Loader active inline='centered' />
+                <Loader active data-testid={"drink-loader"} inline='centered' />
             )
         }
     }

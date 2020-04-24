@@ -1,0 +1,66 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "async-wait-until": "^1.2.4",
+    "axios": "^0.19.2",
+    "base-64": "^0.1.0",
+    "firebase": "^7.14.0",
+    "lodash": "^4.17.15",
+    "nock": "^12.0.3",
+    "nodemailer": "^5.1.1",
+    "nodemailer-mailgun-transport": "^1.4.0",
+    "react": "^16.12.0",
+    "react-dev-utils": "10.2.1",
+    "react-dom": "^16.12.0",
+    "react-geocode": "^0.2.1",
+    "react-google-autocomplete": "^1.1.4",
+    "react-google-maps": "^9.4.5",
+    "react-google-places-autocomplete": "^2.0.3",
+    "react-phone-input-2": "^2.12.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^3.4.0",
+    "react-share": "^4.1.0",
+    "react-smart-data-table": "^0.7.4",
+    "regenerator-runtime": "^0.13.5",
+    "save-file": "^2.3.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
+    "styled-components": "^5.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "jest",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:8080",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "jest": "24.9.0",
+    "jest-css-modules": "^2.1.0",
+    "react-test-renderer": "^16.13.1"
+  }
+}

@@ -106,7 +106,9 @@ public class UserController {
 			//for our use cuz no hashed pass
 			String testHashedPass = hashPass(dbPass, null, 1);
 			user = new UserSQL();
-			return user.updatePassword(u.userName, testHashedPass);
+			String str = user.updatePassword(u.userName, testHashedPass);
+			System.out.println("output: " +str);
+			return str;
 			//return "{ \"status\" : \"ok.\"}";
 		}
 
