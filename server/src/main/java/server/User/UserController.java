@@ -34,7 +34,7 @@ public class UserController {
 	int count = 0;
 
 	//@GetMapping("/hashPassword/{password}/{salty}")
-	public String hashPass(String password)
+	public String hashPass(String password, String salt2)
 		throws IOException{
 		
 		MessageDigest ms;
@@ -54,6 +54,11 @@ public class UserController {
 					salt = g_salt;
 			}*/
 			System.out.println("Salt2: "+salt+" count: "+count);
+			if(salt2.equals("")){
+				System.out.println("Salt is empty!");
+			}else{
+				//salt = salt2;
+			}
 
 			ms.update(salt);
 
@@ -74,7 +79,7 @@ public class UserController {
 		return out;
 	}
 
-	@GetMapping("/login")
+	@PostMapping("/login")
 	public String login(@RequestBody String userName)
 		throws JsonParseException, JsonMappingException, IOException {
 		
@@ -86,6 +91,10 @@ public class UserController {
 
 		UserSQL user = new UserSQL();
 		String dbPass = user.login(u.userName, u.password);
+		//String saltSub = dbPass.substring(0, dbPass.indexOf("."));
+		//System.out.println("SALT: "+saltSub);
+
+		//String testHashedPass = hashPass(u.password, "");
 
 		if( dbPass.equals(u.password)){
 			return "{ \"status\" : \"ok.\"}";
