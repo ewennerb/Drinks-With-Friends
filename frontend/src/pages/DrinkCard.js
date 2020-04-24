@@ -412,6 +412,7 @@ export default class DrinkCard extends React.Component {
                 drinkPic = <Image floated="right" size="small" src={process.env.PUBLIC_URL + "/placeholder-drink.png"} data-testid={"drink-img-placeholder"}/>
             }
 
+
             let shareURL =  "fiveo-clocksomewhere.web.app/" + encodeURIComponent(drink.publisher) + "/drink/" + encodeURIComponent(drink.name);
 
             return(
@@ -508,7 +509,7 @@ export default class DrinkCard extends React.Component {
                             <FacebookShareButton quote="Check out this drink I found!" hashtag="#DWF" url={shareURL}>
                                 <FacebookIcon size={32}/>
                             </FacebookShareButton>&nbsp;
-                            <TwitterShareButton title={"Drinks With Friends"} url={shareURL}>
+                            <TwitterShareButton title={"Check out this drink I found! "+shareURL} url={shareURL}>
                                 <TwitterIcon size={32}/>
                             </TwitterShareButton>&nbsp;
                             {/*Todo: Figure out how to set up a noReply email address that can send this shit*/}
