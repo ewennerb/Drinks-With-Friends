@@ -242,9 +242,10 @@ export default class Routes extends React.Component {
         let notifBell;
         const { activeItem } = this.state;
         if (this.state.user !== undefined){
-             logOrProfile = <Menu.Item
-                as={Link}
-                to={{pathname: `/${this.state.user}`, state: {user: this.state.user, profile: this.state.user}}}
+            logOrProfile = <Menu.Item
+            //  as={Link}
+            //  to={{pathname: `/${this.state.user}`, state: {user: this.state.user, profile: this.state.user}}}
+                onClick={() => {window.location.href="/"+this.state.user}}
                 icon="user circle outline"
                 position="right"
                 size="large"

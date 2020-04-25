@@ -78,10 +78,20 @@ class Profile extends Component{
             this.setState({profileOwner: true});
         } else {
             //not owner of profile so either follow or unfollow button
-     
-            let ownerfollowers = await this.handleGetFollowing(this.state.browser);
-            ownerfollowers.results.map(user=> {
+            console.log(this.state.browser)
+            console.log(this.state.profile)
+            let ownerfollowers;
+            if( this.state.browser === "undefined"){
+                console.log("undefined username")
+                ownerfollowers = [];   
+            } else {
+                console.log("where am i")
+                ownerfollowers = await this.handleGetFollowing(this.state.browser);
+            }
+            console.log("WTF")
+            ownerfollowers.map(user=> {
                 if(this.state.profile === user.userName){
+                    console.log("Setting followed to true")
                     this.setState({followed: true, })
                 }
             })
@@ -118,6 +128,7 @@ class Profile extends Component{
         console.log(name)
     }
 
+
         render(){
 
             const { activeItem } = this.state.activeItem
@@ -150,8 +161,12 @@ class Profile extends Component{
             let pfp;
             //methods
             //console.log(this.state)s
-            //console.log(this.state.profile === this.state.browser)
-            if (this.state.profile === this.state.browser) {
+            console.log(this.state.profile)
+            console.log(this.state.browser)
+            if (this.state.browser === "undefined"){
+                editProfile = ""
+                console.log("undefined editprod");
+            } else if (this.state.profile === this.state.browser) {
                 //allow the option to edit profile
                 editProfile = 
                 <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
@@ -165,7 +180,7 @@ class Profile extends Component{
 
             } else {
                 //follow button
-                if(this.state.followed){
+                if(this.state.followed) {
                     console.log("that not u");
                     editProfile =
                     <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
@@ -335,7 +350,8 @@ if (this.state.photo === null || this.state.photo === "" ){
                       as={Link}
 
                       to={{pathname: `/${this.state.profile}/friends`,
-        state: {user: this.state.profile}}}
+                      state: {user: this.state.profile,
+                      loggedIn: this.state.browser}}}
 
         active={activeItem === "friends"}
         onClick={this.handleItemClick}
@@ -384,6 +400,7 @@ if (this.state.photo === null || this.state.photo === "" ){
         <Header as='h2' color='grey' textAlign='center'>Edit Profile</Header>
         <br/>
           
+
         <Form size='large'>
         <Segment stacked>
         {/* file input */}
@@ -689,7 +706,7 @@ if (this.state.photo === null || this.state.photo === "" ){
 
   async handleGetFollowing(owner) {
       let results = [];
-
+      //console.log("Owner: "+owner);
       await fetch(config.url.API_URL + '/user/getFollowing/' + owner, {
           method: 'GET',
           headers: {
@@ -698,8 +715,8 @@ if (this.state.photo === null || this.state.photo === "" ){
           },
       }).then(res => res.json()).then(async (data) => {
           console.log(data);
-
-          results = data;
+          console.log(data.results);
+          results = data.results;
       }).catch(console.log);
 
       return results;
@@ -721,85 +738,3 @@ if (this.state.photo === null || this.state.photo === "" ){
 }
 
 export default Profile
-
-//pauls code for the modal :^) not using it but i felt bad deleting it
-
-    // editUsername = 
-    // <Grid.Column textAlign="center" verticalAlign="middle" floated="left">
-    // <Button animated="fade" onClick={this.handleOpen2}  >
-    // <Button.Content visible>Change Username</Button.Content>
-    // <Button.Content hidden>
-    // <Icon name="edit"/>
-    // </Button.Content>
-    // </Button>
-    // </Grid.Column>
-
-
-        // {/* PAUL ADDED */}
-        //   <Grid>
-        //   <Modal
-        //   open={this.state.modalOpen2}
-        //   onClose={this.handleClose}
-        //   size="large">
-        //   <Modal.Content image scrolling>
-        //   {/*display current profile info with the option to change it */}
-        //   <Container>
-        //   <Header as='h2' color='grey' textAlign='center'>Change Username</Header>
-        //   <br/>
-          
-        //   <Form size='large'>
-        //   <Segment stacked>
-          
-        //   {/* old username is autofilled */}
-        //   <Form.Input 
-        //     fluid icon='lock'
-        //     iconPosition='left'
-        //     placeholder='Old Username'
-        //     value={this.state.user}
-        //   />
-
-        //   {/* new username needs to be inputted */}
-        //   <Form.Input
-        //     fluid icon='lock'
-        //     iconPosition='left'
-        //     placeholder='New Username'
-        //     onChange={this.handleUsernameChange}
-        //   />
-
-          
-        //   <Button onClick={this.handleSubmit2} color='yellow' fluid size='large'>
-        //   Update
-        //   </Button>
-          
-          
-        //   </Segment>
-        //   </Form>
-          
-        //   </Container>
-          
-        //   </Modal.Content>
-        //   </Modal>
-        //   </Grid>
-        // //pauls code for the submit
-        // async handleSubmit2() { //Paul Added for submitting new username
-        //   await fetch('http://localhost:8080/user/updateUsername', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         userName: this.state.username,
-        //         password: this.state.password,
-        //         phoneNumber: '',
-        //         name: this.newUsername,
-        //         email: '',
-                
-        //     })
-        //   }).then(res => res.json()).then((data) => {
-        //     console.log("UPDATE USERNAME");
-        //     console.log(data);
-        //     this.setState({response: data});
-        //   }).catch(console.log);
-      
-        // };
