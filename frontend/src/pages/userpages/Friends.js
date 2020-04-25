@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import {userCardFollowed, userCardNeither} from "../utils";
+
+import {userCardFollowed} from "../utils";
+import {userCardNeither} from "../utils";
+
 import {Link} from 'react-router-dom';
 import {Input, Segment, Grid, Loader, Button, Form, FormCheckbox, Header, Accordion, GridColumn, GridRow} from 'semantic-ui-react'
 import {config} from '../../config/config'
@@ -23,6 +26,7 @@ class Friends extends Component{
 
     this.state = {
         user: this.props.location.state.user,
+        loggedIn: this.props.location.state.loggedIn,
         results: [],
         received: false
     }
@@ -76,8 +80,9 @@ class Friends extends Component{
         : Array.from(this.state.results).map((result, index) => {
 
             console.log(result.followedFlag)
-
-            if (result.userName == this.state.user || localStorage.getItem("Username") == undefined) { //If when searching and yourself comes up, do not display
+            console.log(localStorage.getItem("Username"))
+            console.log(this.state.loggedIn)
+            if (result.userName == this.state.loggedIn || this.state.loggedIn === "undefined") { //If when searching and yourself comes up, do not display
                 console.log("yourself! or not logged in");
                 return (userCardNeither(index, result.userName, result.photo));
             }
